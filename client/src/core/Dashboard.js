@@ -7,9 +7,9 @@ import { getCookie, isAuth } from '../utils/helpers';
 import Layout from './Layout';
 import Avatar from '../assets/avatar.png';
 
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+// import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { MdOutlineContentCopy } from 'react-icons/md';
-import { Bar, Line, Pie } from 'react-chartjs-2';
+// import { Bar, Line, Pie } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
@@ -381,11 +381,11 @@ const UsersContent = ({ list, token, shorten }) => {
                                 <td className='px-5 py-3 whitespace-nowrap'>
                                     <div className='flex items-center'>
                                         <span>{shorten(user._id)}</span>
-                                        <CopyToClipboard text={user._id}>
+                                        {/* <CopyToClipboard text={user._id}>
                                             <button className='ml-2'>
                                                 <MdOutlineContentCopy className='text-gray-500 hover:text-gray-800' />
                                             </button>
-                                        </CopyToClipboard>
+                                        </CopyToClipboard> */}
                                     </div>
                                 </td>
 
@@ -555,11 +555,11 @@ const MessagesContent = ({ list, token, shorten }) => {
                                 <td className='px-5 py-3 whitespace-nowrap'>
                                     <div className='flex items-center'>
                                         <span>{shorten(contact._id)}</span>
-                                        <CopyToClipboard text={contact._id}>
+                                        {/* <CopyToClipboard text={contact._id}>
                                             <button className='ml-2'>
                                                 <MdOutlineContentCopy className='text-gray-500 hover:text-gray-800' />
                                             </button>
-                                        </CopyToClipboard>
+                                        </CopyToClipboard> */}
                                     </div>
                                 </td>
 
@@ -619,19 +619,19 @@ const AnalyticsContent = ({ activeUsers, inactiveUsers, usersTrend, unreadMessag
             <div className='grid grid-cols-2 lg:grid-cols-3 md:gap-4 gap-6'>
                 <div className='p-5 bg-white rounded-lg shadow'>
                     <h3 className='text-lg font-semibold text-gray-700 mb-4'> Users </h3>
-                    <Pie data={usersData} />
+                    {/* <Pie data={usersData} /> */}
                 </div>
 
                 <div className='p-5 bg-white rounded-lg shadow'>
                     <h3 className='text-lg font-semibold text-gray-700 mb-4'> Messages </h3>
-                    <Pie data={messagesData} />
+                    {/* <Pie data={messagesData} /> */}
                 </div>
             </div>
 
             <div className='grid grid-cols-1 lg:grid-cols-2 md:gap-4 gap-6'>
                 <div className='p-5 bg-white rounded-lg shadow'>
                     <h3 className='text-lg font-semibold text-gray-700 mb-4'> User Trends </h3>
-                    <Bar
+                    {/* <Bar
                         data={{
                             labels: usersTrend.map(trend => `${trend._id.month}/${trend._id.day}/${trend._id.year}`),
                             datasets: [
@@ -644,12 +644,12 @@ const AnalyticsContent = ({ activeUsers, inactiveUsers, usersTrend, unreadMessag
                                 }
                             ]
                         }}
-                    />
+                    /> */}
                 </div>
 
                 <div className='p-5 bg-white rounded-lg shadow'>
                     <h3 className='text-lg font-semibold text-gray-700 mb-4'> Message Trends </h3>
-                    <Bar
+                    {/* <Bar
                         data={{
                             labels: messagesTrend.map(trend => `${trend._id.month}/${trend._id.day}/${trend._id.year}`),
                             datasets: [
@@ -662,7 +662,7 @@ const AnalyticsContent = ({ activeUsers, inactiveUsers, usersTrend, unreadMessag
                                 }
                             ]
                         }}
-                    />
+                    /> */}
                 </div>
             </div>
         </section >

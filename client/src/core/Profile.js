@@ -4,7 +4,7 @@ import axios from 'axios';
 import { app } from '../firebase';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.min.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Layout from './Layout';
 import { getCookie, isAuth, signout, updateUser } from '../utils/helpers';
