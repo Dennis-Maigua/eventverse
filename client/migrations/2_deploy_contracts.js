@@ -1,5 +1,5 @@
-const Event = artifacts.require("Event");
+const EventContract = artifacts.require("EventContract");
 
 module.exports = function (deployer) {
-  deployer.deploy(Event, { value: web3.utils.toWei("1", "ether") });
+  deployer.deploy(EventContract);
 };
