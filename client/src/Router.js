@@ -33,10 +33,14 @@ const Router = () => {
                 <Route path='/reset-password/:token' element={<Reset />} />
                 <Route element={<UserRoute />}>
                     <Route path='/profile' element={<Profile />} />
+                    <Route path='/create-event' element={<CreateEvent />} />
+                    <Route path='/my-events' element={<MyEvents />} />
+                    <Route path='/my-tickets' element={<MyTickets />} />
                 </Route>
                 <Route element={<AdminRoute />}>
                     <Route path='/admin/dashboard' element={<Dashboard />} />
                 </Route>
+                <Route path='/events' element={<Events />} />
                 <Route path='/about-us' element={<About />} />
                 <Route path='/contact' element={<Contact />} />
             </Routes>

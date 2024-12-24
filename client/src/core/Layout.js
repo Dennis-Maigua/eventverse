@@ -43,7 +43,7 @@ const Layout = ({ children }) => {
                                 </li>
                             ) : (
                                 <li>
-                                    <NavLink to='/' className={`${isActive('/')}`}> Events </NavLink>
+                                    <NavLink to='/events' className={`${isActive('/events')}`}> Events </NavLink>
                                 </li>
                             )}
                             <li>
@@ -82,10 +82,10 @@ const Layout = ({ children }) => {
                                                 <NavLink to='/profile' className={`${isActive('/profile')}`}> Profile </NavLink>
                                             </li>
                                             <li>
-                                                <NavLink to='/' className={`${isActive('/')}`}> My Events </NavLink>
+                                                <NavLink to='/my-events' className={`${isActive('/my-events')}`}> My Events </NavLink>
                                             </li>
                                             <li>
-                                                <NavLink to='/' className={`${isActive('/')}`}> My Tickets </NavLink>
+                                                <NavLink to='/my-tickets' className={`${isActive('/my-tickets')}`}> My Tickets </NavLink>
                                             </li>
                                             <li>
                                                 <span onClick={handleLogout} className='hover:text-red-500 cursor-pointer'> Log Out </span>

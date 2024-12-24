@@ -23,7 +23,7 @@ const HeroSection = () => {
         <section className='bg-gray-600 text-white py-14'>
             <div className='container mx-auto px-6 text-center'>
                 <h1 className='text-3xl font-bold mb-2'>
-                    Contact
+                    Contact Us
                 </h1>
             </div>
         </section>

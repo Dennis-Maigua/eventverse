@@ -196,9 +196,9 @@ const Dashboard = () => {
 
 const Sidebar = ({ isActive, setActiveComponent }) => {
     return (
-        <section className='md:block static hidden w-60 bg-white shadow p-8'>
+        <section className='md:block static hidden w-48 bg-white shadow p-8'>
             <h1 className='text-xl font-bold text-gray-800'> Admin </h1>
-            <nav className='flex flex-col mt-10'>
+            <nav className='flex flex-col mt-8 text-sm'>
                 <span onClick={() => setActiveComponent({ name: 'Dashboard', header: 'Dashboard' })} className={isActive('Dashboard')}> Dashboard </span>
                 <span onClick={() => setActiveComponent({ name: 'Analytics', header: 'Analytics' })} className={isActive('Analytics')}> Analytics </span>
                 <span onClick={() => setActiveComponent({ name: 'Users', header: 'Users' })} className={isActive('Users')}> Users </span>
@@ -253,32 +253,32 @@ const DashContent = ({ activeUsers, inactiveUsers, totalUsers, unreadMessages, r
         <section className='grid grid-cols-2 lg:grid-cols-3 gap-4'>
             <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {activeUsers} </h3>
-                <p className='text-gray-500'> Active Users </p>
+                <p className='text-gray-500 text-sm'> Active Users </p>
             </div>
 
             <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {inactiveUsers} </h3>
-                <p className='text-gray-500'> Inactive Users </p>
+                <p className='text-gray-500 text-sm'> Inactive Users </p>
             </div>
 
             <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {totalUsers.length} </h3>
-                <p className='text-gray-500'> Total Users </p>
+                <p className='text-gray-500 text-sm'> Total Users </p>
             </div>
 
             <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {unreadMessages} </h3>
-                <p className='text-gray-500'> Unread Messages </p>
+                <p className='text-gray-500 text-sm'> Unread Messages </p>
             </div>
 
             <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {readMessages} </h3>
-                <p className='text-gray-500'> Read Messages </p>
+                <p className='text-gray-500 text-sm'> Read Messages </p>
             </div>
 
             <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {totalMessages.length} </h3>
-                <p className='text-gray-500'> Total Messages </p>
+                <p className='text-gray-500 text-sm'> Total Messages </p>
             </div>
         </section>
     );
