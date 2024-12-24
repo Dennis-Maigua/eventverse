@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
 
 import Signup from './auth/Signup';
 import Signin from './auth/Signin';
@@ -11,9 +10,14 @@ import Reset from './auth/Reset';
 import UserRoute from './utils/UserRoute';
 import AdminRoute from './utils/AdminRoute';
 
-import Profile from './pages/Profile';
-import Dashboard from './pages/Dashboard';
+import Profile from './core/Profile';
+import CreateEvent from './core/CreateEvent';
+import MyEvents from './core/MyEvents';
+import MyTickets from './core/MyTickets';
 
+import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
+import Events from './pages/Events';
 import About from './pages/About';
 import Contact from './pages/Contact';
 

@@ -457,22 +457,22 @@ const UsersContent = ({ list, token, shorten }) => {
         <section className='max-w-md md:min-w-full mx-auto bg-white rounded-lg shadow'>
             <div className='overflow-x-auto'>
                 <table className='min-w-full divide-y divide-gray-200'>
-                    <thead>
+                    <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
                         <tr>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> ID </th>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> Role </th>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> Profile </th>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> Name </th>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> Email </th>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> Phone </th>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> Address </th>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> Actions </th>
+                            <th className='px-5 py-3'> ID </th>
+                            <th className='px-5 py-3'> Role </th>
+                            <th className='px-5 py-3'> Profile </th>
+                            <th className='px-5 py-3'> Name </th>
+                            <th className='px-5 py-3'> Email </th>
+                            <th className='px-5 py-3'> Phone </th>
+                            <th className='px-5 py-3'> Address </th>
+                            <th className='px-5 py-3'> Actions </th>
                         </tr>
                     </thead>
-                    <tbody className='bg-white divide-y divide-gray-200'>
+                    <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
                         {list.map((user) => (
                             <tr key={user._id}>
-                                <td className='px-5 py-3 whitespace-nowrap'>
+                                <td className='px-5 py-3'>
                                     <div className='flex items-center'>
                                         <span>{shorten(user._id)}</span>
                                         {/* <CopyToClipboard text={user._id}>
@@ -483,17 +483,17 @@ const UsersContent = ({ list, token, shorten }) => {
                                     </div>
                                 </td>
 
-                                <td className='px-5 py-3 whitespace-nowrap'>{user.role}</td>
-                                <td className='px-5 py-3 whitespace-nowrap'>
+                                <td className='px-5 py-3'>{user.role}</td>
+                                <td className='px-5 py-3'>
                                     <div className='flex items-center'>
                                         <img src={user.profileUrl || Avatar} alt='Profile' className='w-10 h-10 rounded-full' />
                                     </div>
                                 </td>
-                                <td className='px-5 py-3 whitespace-nowrap'>{user.name}</td>
-                                <td className='px-5 py-3 whitespace-nowrap'>{user.email}</td>
-                                <td className='px-5 py-3 whitespace-nowrap'>{user.phone}</td>
-                                <td className='px-5 py-3 whitespace-nowrap'>{user.address}</td>
-                                <td className='px-5 py-3 whitespace-nowrap font-medium'>
+                                <td className='px-5 py-3'>{user.name}</td>
+                                <td className='px-5 py-3'>{user.email}</td>
+                                <td className='px-5 py-3'>{user.phone}</td>
+                                <td className='px-5 py-3'>{user.address}</td>
+                                <td className='px-5 py-3 font-medium'>
                                     <button className='text-blue-500 hover:opacity-80' onClick={() => clickEditUser(user)}> Edit </button>
                                     <button className='text-red-500 hover:opacity-80 ml-3' onClick={() => handleDeleteUser(user._id)}> Delete </button>
                                 </td>
@@ -613,27 +613,27 @@ const MessagesContent = ({ list, token, shorten }) => {
         <section className='max-w-md md:min-w-full mx-auto bg-white rounded-lg shadow'>
             <div className='overflow-x-auto'>
                 <table className='min-w-max divide-y divide-gray-200'>
-                    <thead>
+                    <thead className='bg-gray-50 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
                         <tr>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> Actions </th>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> Status </th>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> ID </th>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> Name </th>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> Email </th>
-                            <th className='px-5 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'> Message </th>
+                            <th className='px-5 py-3'> Actions </th>
+                            <th className='px-5 py-3'> Status </th>
+                            <th className='px-5 py-3'> ID </th>
+                            <th className='px-5 py-3'> Name </th>
+                            <th className='px-5 py-3'> Email </th>
+                            <th className='px-5 py-3'> Message </th>
                         </tr>
                     </thead>
-                    <tbody className='bg-white divide-y divide-gray-200'>
+                    <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
                         {list.map((contact) => (
                             <tr key={contact._id}>
                                 {contact.status === 'Unread' ? (
-                                    <td className='px-6 py-4 whitespace-nowrap'>
-                                        <button className='text-blue-500 hover:opacity-80 font-semibold' onClick={() => handleReadMessage(contact._id)}>
+                                    <td className='px-6 py-4'>
+                                        <button className='text-blue-500 hover:opacity-80 font-medium' onClick={() => handleReadMessage(contact._id)}>
                                             Mark as Read
                                         </button>
                                     </td>
                                 ) : (
-                                    <td className='px-6 py-4 whitespace-nowrap'>
+                                    <td className='px-6 py-4'>
                                         <button disabled className='text-gray-300 font-medium'>
                                             None
                                         </button>
@@ -641,12 +641,12 @@ const MessagesContent = ({ list, token, shorten }) => {
                                 )}
 
                                 {contact.status === 'Unread' ? (
-                                    <td className='px-5 py-3 text-red-500 font-semibold whitespace-nowrap'>{contact.status}</td>
+                                    <td className='px-5 py-3 text-red-500 font-medium'>{contact.status}</td>
                                 ) : (
-                                    <td className='px-5 py-3 text-green-500 font-semibold whitespace-nowrap'>{contact.status}</td>
+                                    <td className='px-5 py-3 text-green-500 font-medium'>{contact.status}</td>
                                 )}
 
-                                <td className='px-5 py-3 whitespace-nowrap'>
+                                <td className='px-5 py-3'>
                                     <div className='flex items-center'>
                                         <span>{shorten(contact._id)}</span>
                                         {/* <CopyToClipboard text={contact._id}>
@@ -657,9 +657,9 @@ const MessagesContent = ({ list, token, shorten }) => {
                                     </div>
                                 </td>
 
-                                <td className='px-5 py-3 whitespace-nowrap'>{contact.name}</td>
-                                <td className='px-5 py-3 whitespace-nowrap'>{contact.email}</td>
-                                <td className='px-5 py-3 whitespace-nowrap'>{contact.message}</td>
+                                <td className='px-5 py-3'>{contact.name}</td>
+                                <td className='px-5 py-3'>{contact.email}</td>
+                                <td className='px-5 py-3'>{contact.message}</td>
                             </tr>
                         ))}
                     </tbody>

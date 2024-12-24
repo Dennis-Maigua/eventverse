@@ -22,12 +22,17 @@ const Reset = () => {
 
     useEffect(() => {
         if (token) {
-            const { name } = jwtDecode(token);
-            setValues(values => ({ ...values, name, token }));
+            try {
+                const { name } = jwtDecode(token);
+                setValues(values => ({ ...values, name, token }));
+            }
+            catch (error) {
+                toast.error('Something went wrong');
+            }
         }
     }, [token]);
 
-    const { name, newPassword, confirmPassword, buttonText } = values;
+    const { newPassword, confirmPassword, buttonText } = values;
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -54,7 +59,7 @@ const Reset = () => {
         catch (err) {
             console.log('RESET PASSWORD FAILED:', err);
             setValues({ ...values, buttonText: 'Reset Now' });
-            toast.error(err.response.data.error);
+            toast.error(err.response?.data?.error);
         }
     };
 

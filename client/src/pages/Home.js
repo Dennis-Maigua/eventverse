@@ -20,21 +20,31 @@ const HeroSection = () => {
     <section className="bg-gray-600 text-white py-28">
       <div className="m-auto flex flex-col items-center text-center gap-4 px-4">
         <h1 className="text-3xl font-bold mb-2">
-          Events and Tickets Available
+          Welcome to EventVerse
         </h1>
 
         <p className="mb-2">
-          Easy, reliable, and secure platform for buying local event tickets.
+          A blockchain-based platform for event management and ticketing.
         </p>
 
         {!isAuth() ? (
-          <Link to="/signup" className="py-2 px-3 font-semibold text-white bg-red-500 hover:opacity-80 shadow rounded">
-            Buy Now
-          </Link>
+          <section className='grid grid-cols-2 gap-4'>
+            <Link to="/signin" className="py-2 px-3 font-semibold text-white bg-red-500 hover:opacity-80 shadow rounded">
+              Buy Tickets
+            </Link>
+            <Link to="/signin" className="py-2 px-3 font-semibold text-red-500 bg-white hover:opacity-80 shadow rounded">
+              Create Events
+            </Link>
+          </section>
         ) : (
-          <Link to="/events" className="py-3 px-4 font-semibold text-white bg-red-500 hover:opacity-80 shadow rounded">
-            Buy Now
-          </Link>
+          <section className='grid grid-cols-2 gap-4'>
+            <Link to="/events" className="py-2 px-3 font-semibold text-white bg-red-500 hover:opacity-80 shadow rounded">
+              Buy Tickets
+            </Link>
+            <Link to="/create-event" className="py-2 px-3 font-semibold text-red-500 bg-white hover:opacity-80 shadow rounded">
+              Create Events
+            </Link>
+          </section>
         )}
       </div>
     </section>
@@ -50,21 +60,21 @@ const HowItWorksSection = () => {
         <div className="flex flex-wrap -mx-4">
           <div className="w-full md:w-1/3 px-4 mb-8">
             <div className="bg-white rounded-lg shadow p-10">
-              <h3 className="font-bold mb-4"> 1. Sign Up </h3>
+              <h3 className="font-bold mb-4"> 1) Sign Up </h3>
               <p> Register on our platform to get started. It is quick and easy! </p>
             </div>
           </div>
 
           <div className="w-full md:w-1/3 px-4 mb-8">
             <div className="bg-white rounded-lg shadow p-10">
-              <h3 className="font-bold mb-4"> 2. Search Event </h3>
-              <p> Explore and find your local event from anywhere, anytime. </p>
+              <h3 className="font-bold mb-4"> 2) Search Event </h3>
+              <p> Explore and find your favorite event from anywhere, anytime. </p>
             </div>
           </div>
 
           <div className="w-full md:w-1/3 px-4 mb-8">
             <div className="bg-white rounded-lg shadow p-10">
-              <h3 className="font-bold mb-4"> 3. Buy Tickets </h3>
+              <h3 className="font-bold mb-4"> 3) Buy Tickets </h3>
               <p> Follow our simple step-by-step process to buy your tickets. </p>
             </div>
           </div>

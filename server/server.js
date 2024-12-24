@@ -17,7 +17,7 @@ mongoose
     .then(() => console.log('MongoDB is connected successfully'))
     .catch(err => console.log(err));
 
-// app.use(cors());
+app.use(cors());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 
@@ -30,5 +30,5 @@ app.use('/api', userRoutes);
 app.use('/api', contactRoutes);
 
 app.listen(port, () => {
-    console.log(`API server is running on port ${port}`);
+    console.log(`Server is running on port ${port}`);
 });

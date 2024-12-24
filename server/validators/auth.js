@@ -44,7 +44,7 @@ exports.forgotValidator = [
 ];
 
 exports.resetValidator = [
-    check('password')
+    check('confirmPassword')
         .isLength({ min: 8 })
         .withMessage('Password must be at least 8 characters long!')
         .matches(/[a-z]/)
