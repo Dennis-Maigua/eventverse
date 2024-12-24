@@ -55,7 +55,7 @@ const Activate = () => {
             {isAuth() ? <Navigate to='/' /> : null}
             <div className="bg-gray-600 text-white py-14">
                 <div className="container mx-auto px-6 text-center">
-                    <h1 className="text-5xl font-bold mb-2">
+                    <h1 className="text-3xl font-bold mb-2">
                         Activate Account
                     </h1>
                 </div>
@@ -63,7 +63,7 @@ const Activate = () => {
 
             {!activated && (
                 <div className='max-w-lg m-auto flex flex-col items-center text-center gap-4 px-4 py-14'>
-                    <h1 className='text-2xl'>
+                    <h1 className='text-xl'>
                         Hello {name}, you are one step close to completing the process:
                     </h1>
                     <button className='py-2 px-4 w-auto text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded' onClick={clickSubmit}>
@@ -74,7 +74,7 @@ const Activate = () => {
 
             {activated && (
                 <div className='max-w-lg m-auto flex items-center text-center px-4 py-14'>
-                    <h1 className='text-2xl'>
+                    <h1 className='text-xl'>
                         Success! You can now sign in to your new account.
                     </h1>
                 </div>

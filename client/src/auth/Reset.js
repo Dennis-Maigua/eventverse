@@ -64,7 +64,7 @@ const Reset = () => {
             {isAuth() ? <Navigate to='/' /> : null}
             <div className="bg-gray-600 text-white py-14">
                 <div className="container mx-auto px-6 text-center">
-                    <h1 className="text-5xl font-bold mb-2">
+                    <h1 className="text-3xl font-bold mb-2">
                         Reset Password
                     </h1>
                 </div>
@@ -92,7 +92,7 @@ const Reset = () => {
                         <input
                             type='submit'
                             value={buttonText}
-                            className='py-3 text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded cursor-pointer'
+                            className='py-2 text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded cursor-pointer'
                         />
                     </form>
                 </div>
@@ -100,7 +100,7 @@ const Reset = () => {
 
             {reset && (
                 <div className='max-w-lg m-auto flex items-center text-center px-4 py-14'>
-                    <h1 className='text-2xl'>
+                    <h1 className='text-xl'>
                         Success! You can now sign in using your new password.
                     </h1>
                 </div>

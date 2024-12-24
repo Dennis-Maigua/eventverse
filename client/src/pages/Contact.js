@@ -22,7 +22,7 @@ const HeroSection = () => {
     return (
         <section className='bg-gray-600 text-white py-14'>
             <div className='container mx-auto px-6 text-center'>
-                <h1 className='text-5xl font-bold mb-2'>
+                <h1 className='text-3xl font-bold mb-2'>
                     Contact
                 </h1>
             </div>
@@ -68,7 +68,7 @@ const FormSection = () => {
 
     return (
         <div className='p-0 md:p-4 lg:p-10'>
-            <h3 className='text-2xl font-bold mb-6'> Get in Touch </h3>
+            <h3 className='text-xl font-bold mb-6'> Get in Touch </h3>
             <form onSubmit={handleSubmit} className='flex flex-col bg-slate-100 rounded shadow p-10 gap-4'>
                 <input
                     type='text'
@@ -99,7 +99,7 @@ const FormSection = () => {
                 ></textarea>
 
                 <button
-                    className='py-3 text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded'
+                    className='py-2 text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded'
                     type='submit'
                 >
                     {buttonText}
@@ -112,7 +112,7 @@ const FormSection = () => {
 const InfoSection = () => {
     return (
         <div className='pt-10 md:p-4 lg:p-10'>
-            <h3 className='text-2xl font-bold mb-4'> Contact Information </h3>
+            <h3 className='text-xl font-bold mb-4'> Contact Information </h3>
 
             <div className='py-6 gap-4 flex flex-col'>
                 <span>
@@ -122,7 +122,7 @@ const InfoSection = () => {
                     <strong> Email: </strong> support@eventverse.com
                 </span>
                 <span>
-                    <strong>Phone: </strong> +254 712 345 678
+                    <strong> Phone: </strong> +254 712 345 678
                 </span>
                 <span>
                     <strong> Address: </strong> 1234 Street, Event City, NA 56789

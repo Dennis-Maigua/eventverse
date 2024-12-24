@@ -24,10 +24,10 @@ const Layout = ({ children }) => {
     return (
         <div>
             <nav className='bg-gray-900 text-white'>
-                <div className='max-w-7xl mx-auto px-4 py-6 flex items-center justify-between'>
+                <div className='max-w-7xl mx-auto py-4 px-8 flex items-center justify-between'>
                     <NavLink to='/' className='flex gap-2'>
-                        <img src={Logo} className='h-8' alt='logo' />
-                        <span className='text-2xl font-bold'> EventVerse </span>
+                        <img src={Logo} className='h-7' alt='logo' />
+                        <span className='text-xl font-bold'> EventVerse </span>
                     </NavLink>
 
                     <div className={`md:bg-transparent bg-gray-800 md:static absolute md:p-0 py-6 text-center left-0 
@@ -58,7 +58,7 @@ const Layout = ({ children }) => {
                     <div className='flex gap-4 font-semibold'>
                         {!isAuth() && (
                             <div className='flex gap-4'>
-                                <NavLink to='/signin' className='py-2 px-3 text-black bg-white hover:text-red-500 shadow rounded'> Sign In </NavLink>
+                                <NavLink to='/signin' className='py-1.5 px-3 text-sm text-black bg-white hover:text-red-500 shadow rounded'> Login </NavLink>
                             </div>
                         )}
 
@@ -71,8 +71,8 @@ const Layout = ({ children }) => {
 
 
                                 {dropdown ? (
-                                    <div className='bg-gray-800 absolute right-0 top-20 w-40 round shadow'>
-                                        <ul className='flex flex-col gap-6 p-6'>
+                                    <div className='bg-gray-800 absolute right-0 top-16 w-40 round shadow'>
+                                        <ul className='flex flex-col gap-4 p-4'>
                                             {isAuth().role === 'admin' && (
                                                 <li>
                                                     <NavLink to='/admin/dashboard' className={`${isActive('/admin/dashboard')}`}> Dashboard </NavLink>
@@ -82,7 +82,10 @@ const Layout = ({ children }) => {
                                                 <NavLink to='/profile' className={`${isActive('/profile')}`}> Profile </NavLink>
                                             </li>
                                             <li>
-                                                <NavLink to='/' className={`${isActive('/')}`}> History </NavLink>
+                                                <NavLink to='/' className={`${isActive('/')}`}> My Events </NavLink>
+                                            </li>
+                                            <li>
+                                                <NavLink to='/' className={`${isActive('/')}`}> My Tickets </NavLink>
                                             </li>
                                             <li>
                                                 <span onClick={handleLogout} className='hover:text-red-500 cursor-pointer'> Log Out </span>

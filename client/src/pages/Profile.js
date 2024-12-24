@@ -6,7 +6,7 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Layout from './Layout';
+import Layout from '../core/Layout';
 import { getCookie, isAuth, signout, updateUser } from '../utils/helpers';
 import Avatar from '../assets/avatar.png';
 
@@ -156,7 +156,7 @@ const Profile = () => {
             {!isAuth() ? <Navigate to='/signin' /> : null}
             <div className='bg-gray-600 text-white py-14'>
                 <div className='container mx-auto px-6 text-center'>
-                    <h1 className='text-5xl font-bold mb-2'> Profile </h1>
+                    <h1 className='text-3xl font-bold mb-2'> Profile </h1>
                 </div>
             </div>
 
@@ -260,11 +260,11 @@ const Profile = () => {
                     <input
                         type='submit'
                         value={buttonText}
-                        className='py-3 text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded cursor-pointer'
+                        className='py-2 text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded cursor-pointer'
                     />
                 </form>
 
-                <span onClick={handleDeleteAccount} className='font-medium text-red-500 hover:opacity-80 cursor-pointer'> Delete Account </span>
+                <span onClick={handleDeleteAccount} className='font-medium mb-10 text-sm text-red-500 hover:opacity-80 cursor-pointer'> Delete Account </span>
             </div>
         </Layout>
     );

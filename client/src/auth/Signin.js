@@ -53,8 +53,8 @@ const Signin = () => {
             {isAuth() ? <Navigate to='/' /> : null}
             <div className="bg-gray-600 text-white py-14">
                 <div className="container mx-auto px-6 text-center">
-                    <h1 className="text-5xl font-bold mb-2">
-                        Sign In
+                    <h1 className="text-3xl font-bold mb-2">
+                        Login
                     </h1>
                 </div>
             </div>
@@ -84,7 +84,7 @@ const Signin = () => {
                     />
                 </form>
 
-                <div className='px-5 flex items-center justify-between font-medium text-gray-500'>
+                <div className='px-5 flex items-center justify-between text-sm font-medium text-gray-500'>
                     <Link to='/signup' className='hover:text-red-500'> Sign Up </Link>
                     <Link to='/forgot-password' className='hover:text-red-500'> Forgot Password? </Link>
                 </div>

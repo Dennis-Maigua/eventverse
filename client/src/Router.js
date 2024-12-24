@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import App from './App';
+import Home from './pages/Home';
 
 import Signup from './auth/Signup';
 import Signin from './auth/Signin';
@@ -11,17 +11,17 @@ import Reset from './auth/Reset';
 import UserRoute from './utils/UserRoute';
 import AdminRoute from './utils/AdminRoute';
 
-import Profile from './core/Profile';
-import Dashboard from './core/Dashboard';
+import Profile from './pages/Profile';
+import Dashboard from './pages/Dashboard';
 
-import About from './components/About';
-import Contact from './components/Contact';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 const Router = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path='/' element={<App />} />
+                <Route path='/' element={<Home />} />
                 <Route path='/signup' element={<Signup />} />
                 <Route path='/signin' element={<Signin />} />
                 <Route path='/activate-account/:token' element={<Activate />} />

@@ -45,7 +45,7 @@ exports.activateAccountTemplate = url => {
                 button {
                     color: white;
                     background: #E8363C;
-                    padding: 15px;
+                    padding: 10px;
                     border-radius: 5px;
                     border: 0;
                     font-size: 16px;
@@ -94,7 +94,7 @@ exports.activationSuccessTemplate = url => {
                 button {
                     color: white;
                     background: #E8363C;
-                    padding: 15px;
+                    padding: 10px;
                     border-radius: 5px;
                     border: 0;
                     font-size: 16px;
@@ -143,7 +143,7 @@ exports.resetPasswordTemplate = url => {
                 button {
                     color: white;
                     background: #E8363C;
-                    padding: 15px;
+                    padding: 10px;
                     border-radius: 5px;
                     border: 0;
                     font-size: 16px;
@@ -192,7 +192,7 @@ exports.resetSuccessTemplate = url => {
                 button {
                     color: white;
                     background: #E8363C;
-                    padding: 15px;
+                    padding: 10px;
                     border-radius: 5px;
                     border: 0;
                     font-size: 16px;

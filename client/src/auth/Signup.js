@@ -52,7 +52,7 @@ const Signup = () => {
             {isAuth() ? <Navigate to='/' /> : null}
             <div className="bg-gray-600 text-white py-14">
                 <div className="container mx-auto px-6 text-center">
-                    <h1 className="text-5xl font-bold mb-2">
+                    <h1 className="text-3xl font-bold mb-2">
                         Sign Up
                     </h1>
                 </div>
@@ -92,7 +92,7 @@ const Signup = () => {
                         />
                     </form>
 
-                    <div className='px-5 flex items-center justify-between font-medium text-gray-500'>
+                    <div className='px-5 flex items-center justify-between text-sm font-medium text-gray-500'>
                         <Link to='/signin' className='hover:text-red-500'> Sign In </Link>
                         <Link to='/forgot-password' className='hover:text-red-500'> Forgot Password? </Link>
                     </div>
@@ -101,7 +101,7 @@ const Signup = () => {
 
             {registered && (
                 <div className='max-w-lg m-auto text-center px-4 py-14'>
-                    <h1 className='text-2xl'>
+                    <h1 className='text-xl'>
                         Success! Please check your email for more instructions...
                     </h1>
                 </div>

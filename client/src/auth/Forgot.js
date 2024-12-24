@@ -51,7 +51,7 @@ const Forgot = () => {
             {isAuth() ? <Navigate to='/' /> : null}
             <div className="bg-gray-600 text-white py-14">
                 <div className="container mx-auto px-6 text-center">
-                    <h1 className="text-5xl font-bold mb-2">
+                    <h1 className="text-3xl font-bold mb-2">
                         Forgot Password
                     </h1>
                 </div>
@@ -71,11 +71,11 @@ const Forgot = () => {
                         <input
                             type='submit'
                             value={buttonText}
-                            className='py-3 text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded cursor-pointer'
+                            className='py-2 text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded cursor-pointer'
                         />
                     </form>
 
-                    <div className='px-5 flex items-center justify-between font-medium text-gray-500'>
+                    <div className='px-5 flex items-center justify-between text-sm font-medium text-gray-500'>
                         <Link to='/signin' className='hover:text-red-500'> Sign In </Link>
                         <Link to='/signup' className='hover:text-red-500'> Sign Up </Link>
                     </div>
@@ -84,7 +84,7 @@ const Forgot = () => {
 
             {requested && (
                 <div className='max-w-lg m-auto text-center px-4 py-14'>
-                    <h1 className='text-2xl'>
+                    <h1 className='text-xl'>
                         Success! Please check your email for more instructions...
                     </h1>
                 </div>

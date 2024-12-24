@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 
 import { getCookie, isAuth } from '../utils/helpers';
-import Layout from './Layout';
+import Layout from '../core/Layout';
 import Avatar from '../assets/avatar.png';
 
 // import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -154,7 +154,7 @@ const Dashboard = () => {
     const renderContent = () => {
         switch (activeComponent.name) {
             case 'Dashboard':
-                return <CardsContent activeUsers={activeCount.active} inactiveUsers={users.length - activeCount.active} totalUsers={users}
+                return <DashContent activeUsers={activeCount.active} inactiveUsers={users.length - activeCount.active} totalUsers={users}
                     unreadMessages={messagesCount.unread} readMessages={messagesCount.read} totalMessages={messages} />;
             case 'Analytics':
                 return <AnalyticsContent activeUsers={activeCount.active} inactiveUsers={users.length - activeCount.active}
@@ -165,7 +165,7 @@ const Dashboard = () => {
             case 'Messages':
                 return <MessagesContent list={messages} token={token} shorten={shortenContent} />;
             default:
-                return <CardsContent />;
+                return <DashContent />;
         }
     };
 
@@ -196,8 +196,8 @@ const Dashboard = () => {
 
 const Sidebar = ({ isActive, setActiveComponent }) => {
     return (
-        <section className='md:block static hidden w-60 bg-white shadow p-10'>
-            <h1 className='text-2xl font-bold text-gray-800'> Admin </h1>
+        <section className='md:block static hidden w-60 bg-white shadow p-8'>
+            <h1 className='text-xl font-bold text-gray-800'> Admin </h1>
             <nav className='flex flex-col mt-10'>
                 <span onClick={() => setActiveComponent({ name: 'Dashboard', header: 'Dashboard' })} className={isActive('Dashboard')}> Dashboard </span>
                 <span onClick={() => setActiveComponent({ name: 'Analytics', header: 'Analytics' })} className={isActive('Analytics')}> Analytics </span>
@@ -214,7 +214,7 @@ const Header = ({ headerName, isActive, setActiveComponent }) => {
     return (
         <header className='flex justify-between items-center py-4 px-5 bg-white border-b-4 border-red-500'>
             <div>
-                <h2 className='text-2xl font-semibold text-gray-800'>{headerName}</h2>
+                <h2 className='text-xl font-semibold text-gray-800'>{headerName}</h2>
             </div>
             <div>
                 <button className='md:hidden text-gray-600 focus:outline-none' onClick={() => { setDropdown(!dropdown) }}>
@@ -248,39 +248,133 @@ const Header = ({ headerName, isActive, setActiveComponent }) => {
     );
 };
 
-const CardsContent = ({ activeUsers, inactiveUsers, totalUsers, unreadMessages, readMessages, totalMessages }) => {
+const DashContent = ({ activeUsers, inactiveUsers, totalUsers, unreadMessages, readMessages, totalMessages }) => {
     return (
         <section className='grid grid-cols-2 lg:grid-cols-3 gap-4'>
-            <div className='py-10 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {activeUsers} </h3>
                 <p className='text-gray-500'> Active Users </p>
             </div>
 
-            <div className='py-10 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {inactiveUsers} </h3>
                 <p className='text-gray-500'> Inactive Users </p>
             </div>
 
-            <div className='py-10 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {totalUsers.length} </h3>
                 <p className='text-gray-500'> Total Users </p>
             </div>
 
-            <div className='py-10 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {unreadMessages} </h3>
                 <p className='text-gray-500'> Unread Messages </p>
             </div>
 
-            <div className='py-10 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {readMessages} </h3>
                 <p className='text-gray-500'> Read Messages </p>
             </div>
 
-            <div className='py-10 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {totalMessages.length} </h3>
                 <p className='text-gray-500'> Total Messages </p>
             </div>
         </section>
+    );
+};
+
+const AnalyticsContent = ({ activeUsers, inactiveUsers, usersTrend, unreadMessages, readMessages, messagesTrend }) => {
+    const usersData = {
+        labels: ['Active', 'Inactive'],
+        datasets: [
+            {
+                label: 'Count',
+                data: [activeUsers, inactiveUsers],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.2)', // Active Users
+                    'rgba(255, 99, 132, 0.2)', // Inactive Users
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)', // Active Users
+                    'rgba(255, 99, 132, 1)', // Inactive Users
+                ],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    const messagesData = {
+        labels: ['Read', 'Unread'],
+        datasets: [
+            {
+                label: 'Count',
+                data: [readMessages, unreadMessages],
+                backgroundColor: [
+                    'rgba(201, 203, 207, 0.2)', // Read Messages
+                    'rgba(50, 50, 50, 0.2)', // Unread Messages
+                ],
+                borderColor: [
+                    'rgba(201, 203, 207, 1)', // Read Messages
+                    'rgba(50, 50, 50, 1)', // Unread Messages
+                ],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    return (
+        <section className='flex flex-col gap-8'>
+            <div className='grid grid-cols-2 lg:grid-cols-3 md:gap-4 gap-6'>
+                <div className='p-5 bg-white rounded-lg shadow'>
+                    <h3 className='font-semibold text-gray-700 mb-4'> Users </h3>
+                    {/* <Pie data={usersData} /> */}
+                </div>
+
+                <div className='p-5 bg-white rounded-lg shadow'>
+                    <h3 className='font-semibold text-gray-700 mb-4'> Messages </h3>
+                    {/* <Pie data={messagesData} /> */}
+                </div>
+            </div>
+
+            <div className='grid grid-cols-1 lg:grid-cols-2 md:gap-4 gap-6'>
+                <div className='p-4 bg-white rounded-lg shadow'>
+                    <h3 className='font-semibold text-gray-700 mb-4'> User Trends </h3>
+                    {/* <Bar
+                        data={{
+                            labels: usersTrend.map(trend => `${trend._id.month}/${trend._id.day}/${trend._id.year}`),
+                            datasets: [
+                                {
+                                    label: 'Accounts Created',
+                                    data: usersTrend.map(trend => trend.count),
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 1,
+                                }
+                            ]
+                        }}
+                    /> */}
+                </div>
+
+                <div className='p-4 bg-white rounded-lg shadow'>
+                    <h3 className='font-semibold text-gray-700 mb-4'> Message Trends </h3>
+                    {/* <Bar
+                        data={{
+                            labels: messagesTrend.map(trend => `${trend._id.month}/${trend._id.day}/${trend._id.year}`),
+                            datasets: [
+                                {
+                                    label: 'Messages Sent',
+                                    data: messagesTrend.map(trend => trend.count),
+                                    backgroundColor: 'rgba(255, 159, 243, 0.2)',
+                                    borderColor: 'rgba(255, 159, 243, 1)',
+                                    borderWidth: 1,
+                                }
+                            ]
+                        }}
+                    /> */}
+                </div>
+            </div>
+        </section >
     );
 };
 
@@ -572,100 +666,6 @@ const MessagesContent = ({ list, token, shorten }) => {
                 </table>
             </div>
         </section>
-    );
-};
-
-const AnalyticsContent = ({ activeUsers, inactiveUsers, usersTrend, unreadMessages, readMessages, messagesTrend }) => {
-    const usersData = {
-        labels: ['Active', 'Inactive'],
-        datasets: [
-            {
-                label: 'Count',
-                data: [activeUsers, inactiveUsers],
-                backgroundColor: [
-                    'rgba(54, 162, 235, 0.2)', // Active Users
-                    'rgba(255, 99, 132, 0.2)', // Inactive Users
-                ],
-                borderColor: [
-                    'rgba(54, 162, 235, 1)', // Active Users
-                    'rgba(255, 99, 132, 1)', // Inactive Users
-                ],
-                borderWidth: 1,
-            },
-        ],
-    };
-
-    const messagesData = {
-        labels: ['Read', 'Unread'],
-        datasets: [
-            {
-                label: 'Count',
-                data: [readMessages, unreadMessages],
-                backgroundColor: [
-                    'rgba(201, 203, 207, 0.2)', // Read Messages
-                    'rgba(50, 50, 50, 0.2)', // Unread Messages
-                ],
-                borderColor: [
-                    'rgba(201, 203, 207, 1)', // Read Messages
-                    'rgba(50, 50, 50, 1)', // Unread Messages
-                ],
-                borderWidth: 1,
-            },
-        ],
-    };
-
-    return (
-        <section className='flex flex-col gap-8'>
-            <div className='grid grid-cols-2 lg:grid-cols-3 md:gap-4 gap-6'>
-                <div className='p-5 bg-white rounded-lg shadow'>
-                    <h3 className='text-lg font-semibold text-gray-700 mb-4'> Users </h3>
-                    {/* <Pie data={usersData} /> */}
-                </div>
-
-                <div className='p-5 bg-white rounded-lg shadow'>
-                    <h3 className='text-lg font-semibold text-gray-700 mb-4'> Messages </h3>
-                    {/* <Pie data={messagesData} /> */}
-                </div>
-            </div>
-
-            <div className='grid grid-cols-1 lg:grid-cols-2 md:gap-4 gap-6'>
-                <div className='p-5 bg-white rounded-lg shadow'>
-                    <h3 className='text-lg font-semibold text-gray-700 mb-4'> User Trends </h3>
-                    {/* <Bar
-                        data={{
-                            labels: usersTrend.map(trend => `${trend._id.month}/${trend._id.day}/${trend._id.year}`),
-                            datasets: [
-                                {
-                                    label: 'Accounts Created',
-                                    data: usersTrend.map(trend => trend.count),
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                    borderColor: 'rgba(75, 192, 192, 1)',
-                                    borderWidth: 1,
-                                }
-                            ]
-                        }}
-                    /> */}
-                </div>
-
-                <div className='p-5 bg-white rounded-lg shadow'>
-                    <h3 className='text-lg font-semibold text-gray-700 mb-4'> Message Trends </h3>
-                    {/* <Bar
-                        data={{
-                            labels: messagesTrend.map(trend => `${trend._id.month}/${trend._id.day}/${trend._id.year}`),
-                            datasets: [
-                                {
-                                    label: 'Messages Sent',
-                                    data: messagesTrend.map(trend => trend.count),
-                                    backgroundColor: 'rgba(255, 159, 243, 0.2)',
-                                    borderColor: 'rgba(255, 159, 243, 1)',
-                                    borderWidth: 1,
-                                }
-                            ]
-                        }}
-                    /> */}
-                </div>
-            </div>
-        </section >
     );
 };
 
