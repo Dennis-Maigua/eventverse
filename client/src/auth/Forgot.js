@@ -16,32 +16,29 @@ const Forgot = () => {
     const [requested, setRequested] = useState(false);
     const { email, buttonText } = values;
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
+    const handleChange = (e) => {
+        const { name, value } = e.target;
         setValues({ ...values, [name]: value });
     };
 
-    const clickSubmit = async (event) => {
-        event.preventDefault();
+    const clickSubmit = async (e) => {
+        e.preventDefault();
         setValues({ ...values, buttonText: 'Requesting...' });
 
         try {
             const response = await axios.put(
-                `${process.env.REACT_APP_API}/forgot-password`, { email }
+                `${process.env.REACT_APP_API}/password/forgot`, 
+                { email }
             );
 
-            console.log('SEND RESET LINK SUCCESS:', response);
-
+            setRequested(true);
             setValues({ ...values, email: '', buttonText: 'Requested' });
             toast.success(response.data.message);
-
-            setRequested(true);
         }
 
         catch (err) {
-            console.log('SEND RESET LINK FAILED:', err);
             setValues({ ...values, buttonText: 'Request Reset Link' });
-            toast.error(err.response.data.error);
+            toast.error(err.response?.data?.error);
         }
     };
 

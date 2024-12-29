@@ -12,29 +12,26 @@ exports.sendMessage = async (req, res) => {
             .then(() => {
                 mailTransport().sendMail({
                     from: email,
-                    to: process.env.GMAIL_USER,
-                    subject: 'Contact Form Entry',
+                    to: process.env.APP_EMAIL,
+                    subject: 'Contact Form Message',
                     html: contactEntryTemplate(name, email, message)
                 });
 
-                console.log('CONTACT ENTRY SUCCESS!');
                 res.json({
                     success: true,
-                    message: `Thank you for your message! We will get back to you soon.`
+                    message: `Message sent successfuly!`
                 });
             })
             .catch((err) => {
-                console.log('EMAIL CONTACT ENTRY FAILED:', err);
                 return res.status(500).json({
-                    error: 'Failed to receive and email contact entry!'
+                    error: 'Error sending message!'
                 });
             });
     }
 
-    catch (error) {
-        console.error('SAVE CONTACT ENTRY FAILED:', error);
+    catch (err) {
         res.status(500).json({
-            error: 'Problem with saving contact entry in database!'
+            error: 'Error sending message!'
         });
     }
 };
@@ -47,26 +44,28 @@ exports.update = async (req, res) => {
 
         updateFields.status = status.trim();
 
-        const message = await Contact.findByIdAndUpdate(
+        const contactMessage = await Contact.findByIdAndUpdate(
             _id,
             { $set: updateFields },
             { new: true, runValidators: true }
         );
 
-        if (!message) {
+        if (!contactMessage) {
             return res.status(404).json({
                 error: 'Message not found!'
             });
         }
 
-        console.log('UPDATE MESSAGE SUCCESS:', message);
-        return res.json(message);
+        res.json({
+            success: true,
+            message: `Message updated successfuly!`,
+            contactMessage
+        });
     }
 
     catch (err) {
-        console.log('UPDATE MESSAGE FAILED:', err);
         return res.status(500).json({
-            error: 'Failed to update message!'
+            error: 'Error updating message!'
         });
     }
 };
@@ -74,15 +73,12 @@ exports.update = async (req, res) => {
 exports.fetchMessages = async (req, res) => {
     try {
         const messages = await Contact.find();
-
-        console.log('FETCH MESSAGES SUCCESS!');
         return res.json(messages);
     }
 
     catch (err) {
-        console.log('FETCH MESSAGES FAILED:', err);
         return res.status(500).json({
-            message: 'Failed to fetch messages from database!'
+            message: 'Error fetching messages!'
         });
     }
 };
@@ -92,16 +88,15 @@ exports.countByStatus = async (req, res) => {
         const unread = await Contact.countDocuments({ status: 'Unread' });
         const read = await Contact.countDocuments({ status: 'Read' });
 
-        return res.json({
+        res.json({
             unread,
             read
         });
     }
 
     catch (err) {
-        console.log('COUNTING MESSAGES FAILED:', err);
         return res.status(500).json({
-            error: 'Failed to count messages!'
+            error: 'Error counting messages!'
         });
     }
 }
@@ -126,7 +121,8 @@ exports.contactTrends = async (req, res) => {
     }
 
     catch (err) {
-        console.log('CONTACT ENTRY TRENDS FAILED:', err);
-        return res.status(500).json({ error: 'Failed to fetch contact entry trends!' });
+        return res.status(500).json({ 
+            error: 'Error loading contact message trends!' 
+        });
     }
 };

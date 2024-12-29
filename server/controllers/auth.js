@@ -12,11 +12,13 @@ exports.signup = async (req, res) => {
         const user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({
-                error: 'Email is already taken!'
+                error: 'Email already exists!'
             });
         }
 
-        const token = jwt.sign({ name, email, password }, process.env.JWT_ACCOUNT_ACTIVATION, { expiresIn: '1h' });
+        const token = jwt.sign({ name, email, password }, 
+            process.env.JWT_ACCOUNT_ACTIVATION, 
+            { expiresIn: '1h' });
 
         try {
             mailTransport().sendMail({
@@ -26,25 +28,22 @@ exports.signup = async (req, res) => {
                 html: activateAccountTemplate(`${process.env.CLIENT_URL}/activate-account/${token}`)
             });
 
-            console.log('EMAIL SENT SUCCESS');
             res.json({
                 success: true,
-                message: `Activation link sent to your email!`
+                message: `Activation link sent successfully!`
             });
         }
 
         catch (err) {
-            console.log('EMAIL NOT SENT:', err);
             return res.status(500).json({
-                error: 'Problem with sendingactivation link!'
+                error: 'Error sending activation link!'
             });
         }
     }
 
     catch (err) {
-        console.log('SIGN UP ERROR:', err);
         return res.status(500).json({
-            error: 'Problem with sign up! Please try again.'
+            error: 'Error signing up!'
         });
     }
 };
@@ -53,7 +52,7 @@ exports.activate = async (req, res) => {
     const { token } = req.body;
     if (!token) {
         return res.status(401).json({
-            error: 'Access Denied!'
+            error: 'Invalid token!'
         });
     }
 
@@ -68,9 +67,8 @@ exports.activate = async (req, res) => {
         }
 
         if (err) {
-            console.log('ACCOUNT ACTIVATION ERROR:', err);
             return res.status(403).json({
-                error: 'Invalid link! Please sign up again.'
+                error: 'Error verifying token!'
             });
         }
 
@@ -84,16 +82,14 @@ exports.activate = async (req, res) => {
                     html: activationSuccessTemplate(`${process.env.CLIENT_URL}/signin`)
                 });
 
-                console.log(`EMAIL SENT SUCCESS`);
                 res.json({
                     success: true,
-                    message: `Hey ${name}, Welcome to EventVerse!`
+                    message: `Account activated successfully!`
                 });
             })
-            .catch((err) => {
-                console.log('DATABASE/EMAIL ERROR:', err);
+            .catch(err => {
                 return res.status(500).json({
-                    error: 'Problem with database or sending email!'
+                    error: 'Error activating your account!'
                 });
             });
     });
@@ -125,16 +121,15 @@ exports.signin = async (req, res) => {
         user.salt = undefined;
 
         return res.json({
-            message: `Hey ${user.name}, Welcome back!`,
+            message: `Success! Welcome ${user.name}`,
             token,
             user
         });
     }
 
     catch (err) {
-        console.log('SIGN IN ERROR:', err);
         return res.status(500).json({
-            error: 'Problem with sign in! Please try again.'
+            error: 'Error signing in!'
         });
     }
 };
@@ -162,24 +157,21 @@ exports.forgotPassword = async (req, res) => {
                     html: resetPasswordTemplate(`${process.env.CLIENT_URL}/reset-password/${token}`)
                 });;
 
-                console.log(`EMAIL SENT SUCCESS`);
                 res.json({
                     success: true,
-                    message: 'Reset link sent to your email!'
+                    message: 'Reset link sent successfully!'
                 });
             })
             .catch((err) => {
-                console.log('DATABASE/EMAIL ERROR:', err);
                 return res.status(500).json({
-                    error: 'Problem with database or sending reset link!'
+                    error: 'Error sending reset link!'
                 });
             });
     }
 
     catch (err) {
-        console.log('FORGOT PASSWORD ERROR:', err);
         return res.status(500).json({
-            error: 'Problem with forgot password! Please try again.'
+            error: 'Error with forgot password!'
         });
     }
 };
@@ -196,9 +188,8 @@ exports.resetPassword = async (req, res) => {
     if (resetPasswordLink) {
         jwt.verify(resetPasswordLink, process.env.JWT_PASSWORD_RESET, async function (err, decoded) {
             if (err) {
-                console.log('JWT VERIFICATION ERROR:', err);
                 return res.status(403).json({
-                    error: 'Invalid link! Please reset again.'
+                    error: 'Error verifying link!'
                 });
             }
 
@@ -206,7 +197,7 @@ exports.resetPassword = async (req, res) => {
                 let user = await User.findOne({ resetPasswordLink });
                 if (!user) {
                     return res.status(401).json({
-                        error: 'Expired link! Please reset again.'
+                        error: 'Expired link or User not found!'
                     });
                 }
 
@@ -233,23 +224,20 @@ exports.resetPassword = async (req, res) => {
                             html: resetSuccessTemplate(`${process.env.CLIENT_URL}/signin`)
                         });
 
-                        console.log(`EMAIL SENT SUCCESS`);
                         return res.json({
-                            message: `Hey ${user.name}, Welcome back!`
+                            message: `Password reset successful!`
                         });
                     })
                     .catch((err) => {
-                        console.log('DATABASE/EMAIL ERROR:', err);
                         return res.status(500).json({
-                            error: 'Problem with database or sending email!'
+                            error: 'Error confirming password reset!'
                         });
                     });
             }
 
             catch (err) {
-                console.log('RESET PASSWORD ERROR:', err);
                 return res.status(500).json({
-                    error: 'Problem with reset password! Please try again.'
+                    error: 'Error resetting password!'
                 });
             }
         });
@@ -262,15 +250,14 @@ exports.requireSignin = (req, res, next) => {
 
     if (!token) {
         return res.status(401).json({
-            error: 'Access denied!'
+            error: 'Invalid token!'
         });
     }
 
     jwt.verify(token, process.env.JWT_SECRET, async function (err, decoded) {
         if (err) {
-            console.log('JWT VERIFICATION ERROR:', err);
             return res.status(403).json({
-                error: 'Invalid token! Please sign in again.'
+                error: 'Error verifying token!'
             });
         }
 
@@ -299,9 +286,8 @@ exports.adminOnly = async (req, res, next) => {
     }
 
     catch (err) {
-        console.log('ADMIN DASHBOARD ERROR:', err);
         return res.status(500).json({
-            error: 'Problem loading admin dashboard!'
+            error: 'Error loading dashboard!'
         });
     }
 };

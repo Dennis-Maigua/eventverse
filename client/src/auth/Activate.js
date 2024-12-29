@@ -26,26 +26,24 @@ const Activate = () => {
 
     const { name, buttonText } = values;
 
-    const clickSubmit = async (event) => {
-        event.preventDefault();
+    const clickSubmit = async (e) => {
+        e.preventDefault();
         setValues({ ...values, buttonText: 'Activating...' });
 
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API}/activate-account`, { token }
+                `${process.env.REACT_APP_API}/account/activate`, 
+                { token }
             );
 
-            console.log('ACCOUNT ACTIVATION SUCCESS:', response);
+            setActivated(true);
             setValues({ ...values, name: '', buttonText: 'Activated' });
             toast.success(response.data.message);
-
-            setActivated(true);
         }
 
         catch (err) {
-            console.log('ACCOUNT ACTIVATION FAILED:', err);
             setValues({ ...values, buttonText: 'Activate Now' });
-            toast.error(err.response.data.error);
+            toast.error(err.response?.data?.error);
         }
     };
 

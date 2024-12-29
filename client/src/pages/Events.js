@@ -1,14 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import axios from 'axios';
+
 import Layout from '../core/Layout';
-import { toast, ToastContainer } from 'react-toastify';
-import { useEventContext } from '../utils/EventContext';
 
 const Events = () => {
     return (
         <Layout>
             <ToastContainer />
             <HeroSection />
-            <AllEventsSection />
+            <EventsSection />
         </Layout>
     );
 };
@@ -25,12 +27,45 @@ const HeroSection = () => {
     );
 };
 
-const AllEventsSection = () => {
+const EventsSection = () => {
+    const [events, setEvents] = useState([]);
+  
+    useEffect(() => {
+        fetchAllEvents();     
+    }, []);
+
+    const fetchAllEvents = async () => {
+        try {
+            const response = await axios.get(
+                `${process.env.REACT_APP_API}/events/all`
+            );
+
+            console.log('FETCH ALL EVENTS SUCCESSFUL: ', response);
+            setEvents(response.data);
+        }
+
+        catch (err) {
+            console.log('ERROR FETCHING ALL EVENTS: ', err);
+        }
+    };
 
     return (
-        <div>
-            
-        </div>
+        <section>
+            <ul>
+                {events.map(event => (
+                    <li key={event._id}>
+                        <h2>{event.name}</h2>
+                        <p>{event.description}</p>
+                        <p>Date: {new Date(event.date).toLocaleDateString()}</p>
+                        <p>Price: {event.price}</p>
+                        <p>Tickets Remaining: {event.ticketRemaining}</p>
+                        <Link to={`/event/${event._id}`}>
+                            View Details
+                        </Link>
+                    </li>
+                ))}
+            </ul>            
+        </section>
     );
 };
 

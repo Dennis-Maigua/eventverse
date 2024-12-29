@@ -31,7 +31,7 @@ const Profile = () => {
         loadProfile();
 
         if (image) {
-            handleFileUpload(image);
+            handleUpload(image);
         }
     }, [image]);
 
@@ -39,7 +39,7 @@ const Profile = () => {
     const navigate = useNavigate();
     const { role, profileUrl, name, email, password, phone, address, buttonText } = values;
 
-    const handleFileUpload = async (image) => {
+    const handleUpload = async (image) => {
         if (image.size > 2 * 1024 * 1024) {
             setImageError(true);
             return;
@@ -56,12 +56,10 @@ const Profile = () => {
                 setImagePercent(Math.round(progress));
             },
             (error) => {
-                console.error('Error uploading image:', error);
                 setImageError(true);
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    // console.log('File available at', downloadURL);
                     setValues({ ...values, profileUrl: downloadURL });
                     setImagePercent(100);
                 });
@@ -76,13 +74,12 @@ const Profile = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log('LOAD PROFILE SUCCESS:', response);
             const { role, profileUrl, name, email, phone, address } = response.data;
             setValues({ ...values, role, profileUrl, name, email, phone, address });
         }
 
         catch (err) {
-            console.log('LOAD PROFILE FAILED:', err);
+            toast.error(err.response?.data?.error);
 
             if (err.response.status === 401) {
                 signout(() => {
@@ -92,41 +89,40 @@ const Profile = () => {
         }
     };
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
+    const handleChange = (e) => {
+        const { name, value } = e.target;
         setValues({ ...values, [name]: value });
     };
 
-    const clickUpdate = async (event) => {
-        event.preventDefault();
+    const handleUpdate = async (e) => {
+        e.preventDefault();
         setValues({ ...values, buttonText: 'Updating' });
 
         if (image) {
-            await handleFileUpload(image);
+            await handleUpload(image);
         }
 
         try {
             const response = await axios.put(
-                `${process.env.REACT_APP_API}/user/update`, values,
+                `${process.env.REACT_APP_API}/user/update`, 
+                values,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log('UPDATE PROFILE SUCCESS:', response);
             updateUser(response, () => {
                 setValues({ ...values, buttonText: 'Updated' });
-                toast.success('Profile updated successfully!');
+                toast.success(response.data.message);
             });
         }
 
         catch (err) {
-            console.log('UPDATE PROFILE FAILED:', err);
             setValues({ ...values, buttonText: 'Update' });
-            toast.error(err.response.data.error);
+            toast.error(err.response?.data?.error);
         }
     };
 
-    const handleDeleteAccount = async () => {
-        const confirmDelete = window.confirm('Are you sure you want to delete your account? This action cannot be undone.');
+    const handleDelete = async () => {
+        const confirmDelete = window.confirm('Are you sure you want to delete your account?');
 
         if (confirmDelete) {
             try {
@@ -135,7 +131,6 @@ const Profile = () => {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
-                console.log('DELETE ACCOUNT SUCCESS:', response);
                 toast.success(response.data.message);
 
                 signout(() => {
@@ -144,8 +139,7 @@ const Profile = () => {
             }
 
             catch (err) {
-                console.log('DELETE ACCOUNT FAILED:', err);
-                toast.error(err.response.data.error);
+                toast.error(err.response?.data?.error);
             }
         }
     };
@@ -161,7 +155,7 @@ const Profile = () => {
             </div>
 
             <div className='max-w-2xl m-auto text-center flex flex-col gap-4 px-4 py-10'>
-                <form onSubmit={clickUpdate} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
+                <form onSubmit={handleUpdate} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
                     <input
                         type='file'
                         ref={fileRef}
@@ -264,7 +258,7 @@ const Profile = () => {
                     />
                 </form>
 
-                <span onClick={handleDeleteAccount} className='font-medium mb-10 text-sm text-red-500 hover:opacity-80 cursor-pointer'> Delete Account </span>
+                <span onClick={handleDelete} className='font-medium mb-10 text-sm text-red-500 hover:opacity-80 cursor-pointer'> Delete Account </span>
             </div>
         </Layout>
     );

@@ -53,12 +53,11 @@ const Dashboard = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log('FETCH USERS SUCCESS:', response);
             setUsers(response.data);
         }
 
         catch (err) {
-            console.log('FETCH USERS FAILED:', err);
+            toast.error(err.response?.data?.error);
         }
     };
 
@@ -69,14 +68,12 @@ const Dashboard = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log('ACTIVE USERS SUCCESS:', response);
             setActiveCount(response.data);
         }
 
         catch (err) {
-            console.log('ACTIVE USERS FAILED:', err);
+            toast.error(err.response?.data?.error);
         }
-
     };
 
     const fetchUserTrends = async () => {
@@ -86,11 +83,11 @@ const Dashboard = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log('FETCH USER TRENDS SUCCESS:', response);
             setUserTrends(response.data);
         }
+
         catch (err) {
-            console.log('FETCH USER TRENDS FAILED:', err);
+            toast.error(err.response?.data?.error);
         }
     };
 
@@ -101,12 +98,11 @@ const Dashboard = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log('FETCH MESSAGES SUCCESS:', response);
             setMessages(response.data);
         }
 
         catch (err) {
-            console.log('FETCH MESSAGES FAILED:', err);
+            toast.error(err.response?.data?.error);
         }
 
     }
@@ -118,11 +114,11 @@ const Dashboard = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log('COUNT MESSAGES SUCCESS:', response);
             setMessagesCount(response.data);
         }
+
         catch (err) {
-            console.log('COUNT MESSAGES FAILED:', err);
+            toast.error(err.response?.data?.error);
         }
     };
 
@@ -133,11 +129,11 @@ const Dashboard = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log('FETCH MESSAGE TRENDS SUCCESS:', response);
             setMessageTrends(response.data);
         }
+
         catch (err) {
-            console.log('FETCH MESSAGE TRENDS FAILED:', err);
+            toast.error(err.response?.data?.error);
         }
     };
 
@@ -393,12 +389,12 @@ const UsersContent = ({ list, token, shorten }) => {
 
     const { id, role, profileUrl, name, email, phone, address, buttonText } = values;
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
+    const handleChange = (e) => {
+        const { name, value } = e.target;
         setValues({ ...values, [name]: value });
     };
 
-    const clickEditUser = (user) => {
+    const clickEdit = (user) => {
         setEditUser(user);
         setValues({
             ...values,
@@ -412,28 +408,30 @@ const UsersContent = ({ list, token, shorten }) => {
         });
     };
 
-    const handleUpdateUser = async (event) => {
-        event.preventDefault();
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        setValues({ ...values, buttonText: 'Updating...' });
 
         try {
             const response = await axios.put(
-                `${process.env.REACT_APP_API}/admin/update`, values,
+                `${process.env.REACT_APP_API}/admin/update`, 
+                values,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log('USER UPDATE SUCCESS:', response.data);
-            toast.success('User updated successfully!');
             setEditUser(null);
+            toast.success(response.data.message);
+            window.location.reload();
         }
 
         catch (err) {
-            console.error('Error updating user:', err);
-            toast.error(err.response.data.error);
+            toast.error(err.response?.data?.error);
         }
     };
 
-    const handleDeleteUser = async (userId) => {
-        const confirmDelete = window.confirm('Are you sure you want to delete this user? This action cannot be undone.');
+    const handleDelete = async (userId) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this user?');
+
         if (confirmDelete) {
             try {
                 const response = await axios.delete(
@@ -441,14 +439,12 @@ const UsersContent = ({ list, token, shorten }) => {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
-                console.log('DELETE USER SUCCESS:', response);
                 toast.success(response.data.message);
-                // Update the user list by removing the deleted user (optional)
+                window.location.reload();
             }
 
             catch (err) {
-                console.error('DELETE ACCOUNT FAILED:', err);
-                toast.error(err.response.data.error);
+                toast.error(err.response?.data?.error);
             }
         }
     };
@@ -470,7 +466,7 @@ const UsersContent = ({ list, token, shorten }) => {
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
-                        {list.map((user) => (
+                        {list.map(user => (
                             <tr key={user._id}>
                                 <td className='px-5 py-3'>
                                     <div className='flex items-center'>
@@ -494,8 +490,8 @@ const UsersContent = ({ list, token, shorten }) => {
                                 <td className='px-5 py-3'>{user.phone}</td>
                                 <td className='px-5 py-3'>{user.address}</td>
                                 <td className='px-5 py-3 font-medium'>
-                                    <button className='text-blue-500 hover:opacity-80' onClick={() => clickEditUser(user)}> Edit </button>
-                                    <button className='text-red-500 hover:opacity-80 ml-3' onClick={() => handleDeleteUser(user._id)}> Delete </button>
+                                    <button className='text-blue-500 hover:opacity-80' onClick={() => clickEdit(user)}> Edit </button>
+                                    <button className='text-red-500 hover:opacity-80 ml-3' onClick={() => handleDelete(user._id)}> Delete </button>
                                 </td>
                             </tr>
                         ))}
@@ -513,7 +509,7 @@ const UsersContent = ({ list, token, shorten }) => {
                             <span className=''> {id} </span>
                         </div>
 
-                        <form onSubmit={handleUpdateUser} className='flex flex-col gap-4'>
+                        <form onSubmit={handleUpdate} className='flex flex-col gap-4'>
                             <div className='grid grid-cols-2 gap-4'>
                                 <select
                                     name='role'
@@ -595,17 +591,16 @@ const MessagesContent = ({ list, token, shorten }) => {
     const handleReadMessage = async (messageId) => {
         try {
             const response = await axios.put(
-                `${process.env.REACT_APP_API}/message/update`, { _id: messageId, status: 'Read' },
+                `${process.env.REACT_APP_API}/message/update`, 
+                { _id: messageId, status: 'Read' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log('MARK AS READ SUCCESS:', response);
-            toast.success('Message marked as read successfully!');
+            toast.success(response.data.message);
         }
 
         catch (err) {
-            console.error('MARK AS READ FAILED:', err);
-            toast.error(err.response.data.error);
+            toast.error(err.response?.data?.error);
         }
     };
 

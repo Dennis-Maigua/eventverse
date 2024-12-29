@@ -26,38 +26,36 @@ const Reset = () => {
                 const { name } = jwtDecode(token);
                 setValues(values => ({ ...values, name, token }));
             }
-            catch (error) {
-                toast.error('Something went wrong');
+            
+            catch (err) {
+                toast.error(err.response?.data?.error);
             }
         }
     }, [token]);
 
     const { newPassword, confirmPassword, buttonText } = values;
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
+    const handleChange = (e) => {
+        const { name, value } = e.target;
         setValues({ ...values, [name]: value });
     };
 
-    const clickSubmit = async (event) => {
-        event.preventDefault();
+    const clickSubmit = async (e) => {
+        e.preventDefault();
         setValues({ ...values, buttonText: 'Resetting...' });
 
         try {
             const response = await axios.put(
-                `${process.env.REACT_APP_API}/reset-password`,
+                `${process.env.REACT_APP_API}/password/reset`,
                 { newPassword, confirmPassword, resetPasswordLink: token }
             );
 
-            console.log('RESET PASSWORD SUCCESS:', response);
+            setReset(true);
             setValues({ ...values, newPassword: '', confirmPassword: '', buttonText: 'Reset Done' });
             toast.success(response.data.message);
-
-            setReset(true);
         }
 
         catch (err) {
-            console.log('RESET PASSWORD FAILED:', err);
             setValues({ ...values, buttonText: 'Reset Now' });
             toast.error(err.response?.data?.error);
         }

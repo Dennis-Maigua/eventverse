@@ -18,31 +18,29 @@ const Signup = () => {
     const [registered, setRegistered] = useState(false);
     const { name, email, password, buttonText } = values;
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
+    const handleChange = (e) => {
+        const { name, value } = e.target;
         setValues({ ...values, [name]: value });
     };
 
-    const clickSubmit = async (event) => {
-        event.preventDefault();
+    const handleSignup = async (e) => {
+        e.preventDefault();
         setValues({ ...values, buttonText: 'Submitting...' });
 
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API}/signup`, { name, email, password }
+                `${process.env.REACT_APP_API}/account/signup`, 
+                { name, email, password }
             );
 
-            console.log('USER SIGNUP SUCCESS:', response);
             setValues({ ...values, name: '', email: '', password: '', buttonText: 'Submitted' });
             toast.success(response.data.message);
-
             setRegistered(true);
         }
 
         catch (err) {
-            console.log('USER SIGNUP FAILED:', err);
             setValues({ ...values, buttonText: 'Submit' });
-            toast.error(err.response.data.error);
+            toast.error(err.response?.data?.error);
         }
     };
 
@@ -60,7 +58,7 @@ const Signup = () => {
 
             {!registered && (
                 <div className='max-w-lg m-auto text-center flex flex-col gap-4 px-4 py-14'>
-                    <form onSubmit={clickSubmit} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
+                    <form onSubmit={handleSignup} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
                         <input
                             type='text'
                             name='name'

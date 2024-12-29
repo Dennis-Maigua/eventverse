@@ -17,21 +17,20 @@ const Signin = () => {
     const navigate = useNavigate();
     const { email, password, buttonText } = values;
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
+    const handleChange = (e) => {
+        const { name, value } = e.target;
         setValues({ ...values, [name]: value });
     };
 
-    const clickSubmit = async (event) => {
-        event.preventDefault();
+    const clickSubmit = async (e) => {
+        e.preventDefault();
         setValues({ ...values, buttonText: 'Submitting...' });
 
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API}/signin`, { email, password }
+                `${process.env.REACT_APP_API}/account/signin`, 
+                { email, password }
             );
-
-            console.log('USER SIGNIN SUCCESS:', response);
 
             authenticate(response, () => {
                 setValues({ ...values, email: '', password: '', buttonText: 'Submitted' });
@@ -41,9 +40,8 @@ const Signin = () => {
         }
 
         catch (err) {
-            console.log('USER SIGNIN FAILED:', err);
             setValues({ ...values, buttonText: 'Submit' });
-            toast.error(err.response.data.error);
+            toast.error(err.response?.data?.error);
         }
     };
 

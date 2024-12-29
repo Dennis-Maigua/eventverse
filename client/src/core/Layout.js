@@ -6,10 +6,11 @@ import Logo from '../assets/logo.png';
 import Avatar from '../assets/avatar.png';
 
 const Layout = ({ children }) => {
-    const { pathname } = useLocation();
-    const navigate = useNavigate();
     const [toggled, setToggled] = useState(false);
     const [dropdown, setDropdown] = useState(false);
+    
+    const { pathname } = useLocation();
+    const navigate = useNavigate();
 
     const isActive = (path) => {
         return path === pathname ? 'text-red-500' : 'text-white hover:text-red-500';
@@ -50,7 +51,7 @@ const Layout = ({ children }) => {
                                 <NavLink to='/about-us' className={`${isActive('/about-us')}`}> About Us </NavLink>
                             </li>
                             <li>
-                                <NavLink to='/contact' className={`${isActive('/contact')}`}> Contact </NavLink>
+                                <NavLink to='/contact-us' className={`${isActive('/contact-us')}`}> Contact </NavLink>
                             </li>
                         </ul>
                     </div>

@@ -12,14 +12,12 @@ exports.loadProfile = async (req, res) => {
         user.hashed_password = undefined;
         user.salt = undefined;
 
-        console.log('LOAD PROFILE SUCCESS:', req.user);
         return res.json(user);
     }
 
     catch (err) {
-        console.log('LOAD PROFILE FAILED:', err);
         return res.status(500).json({
-            error: 'Failed to read profile from database!'
+            error: 'Error loading profile!'
         });
     }
 };
@@ -37,7 +35,6 @@ exports.updateProfile = async (req, res) => {
         if (phone) updateFields.phone = phone.trim();
         if (address) updateFields.address = address.trim();
 
-        // Fetch the user to get the current password if a new password is not provided
         const user = await User.findById(req.user._id);
         if (!user) {
             return res.status(404).json({
@@ -45,9 +42,8 @@ exports.updateProfile = async (req, res) => {
             });
         }
 
-        // If a new password is provided, encrypt it and update hashed_password and salt
         if (password) {
-            user.password = password.trim(); // This will trigger the virtual password setter
+            user.password = password.trim();
             updateFields.hashed_password = user.hashed_password;
             updateFields.salt = user.salt;
         }
@@ -61,14 +57,16 @@ exports.updateProfile = async (req, res) => {
         updatedUser.hashed_password = undefined;
         updatedUser.salt = undefined;
 
-        console.log('UPDATE PROFILE SUCCESS:', req.user);
-        return res.json(updatedUser);
+        res.json({
+            success: true,
+            message: `Profile updated successfuly!`,
+            updatedUser
+        });
     }
 
     catch (err) {
-        console.log('UPDATE PROFILE FAILED:', err);
         return res.status(500).json({
-            error: 'Failed to update profile! Please try again.'
+            error: 'Error updating profile!.'
         });
     }
 };
@@ -85,7 +83,6 @@ exports.deleteProfile = async (req, res) => {
         user.hashed_password = undefined;
         user.salt = undefined;
 
-        console.log('DELETE ACCOUNT SUCCESS:', req.user)
         return res.json({
             success: true,
             message: `Account deleted successfully!`,
@@ -94,9 +91,8 @@ exports.deleteProfile = async (req, res) => {
     }
 
     catch (err) {
-        console.log('DELETE ACCOUNT FAILED:', err);
         return res.status(500).json({
-            error: 'Failed to delete account! Please try again.'
+            error: 'Error deleting account!'
         });
     }
 }
@@ -104,15 +100,12 @@ exports.deleteProfile = async (req, res) => {
 exports.fetchUsers = async (req, res) => {
     try {
         const users = await User.find();
-
-        console.log('FETCH USERS SUCCESS!');
         return res.json(users);
     }
 
     catch (err) {
-        console.log('FETCH USERS FAILED:', err);
         return res.status(500).json({
-            message: 'Failed to fetch users from database!'
+            error: 'Error fetching users!'
         });
     }
 };
@@ -129,8 +122,9 @@ exports.activeUsers = async (req, res) => {
     }
 
     catch (err) {
-        console.log('COUNT ACTIVE USERS FAILED:', err);
-        return res.status(500).json({ error: 'Failed to count active users!' });
+        return res.status(500).json({ 
+            error: 'Error counting active users!' 
+        });
     }
 };
 
@@ -162,14 +156,16 @@ exports.updateUser = async (req, res) => {
         user.hashed_password = undefined;
         user.salt = undefined;
 
-        console.log('UPDATE USER SUCCESS:', req.user);
-        return res.json(user);
+        res.json({
+            success: true,
+            message: `User updated successfuly!`,
+            user
+        });
     }
 
     catch (err) {
-        console.log('UPDATE USER FAILED:', err);
         return res.status(500).json({
-            error: 'Failed to update user! Please try again.'
+            error: 'Error updating user!.'
         });
     }
 };
@@ -186,7 +182,6 @@ exports.deleteUser = async (req, res) => {
         user.hashed_password = undefined;
         user.salt = undefined;
 
-        console.log('DELETE USER SUCCESS:', user)
         return res.json({
             success: true,
             message: `User deleted successfully!`,
@@ -195,9 +190,8 @@ exports.deleteUser = async (req, res) => {
     }
 
     catch (err) {
-        console.log('DELETE USER FAILED:', err);
         return res.status(500).json({
-            error: 'Failed to delete user! Please try again.'
+            error: 'Error deleting user!'
         });
     }
 }
@@ -222,7 +216,8 @@ exports.userTrends = async (req, res) => {
     }
 
     catch (err) {
-        console.log('USER CREATION TRENDS FAILED:', err);
-        return res.status(500).json({ error: 'Failed to fetch user creation trends!' });
+        return res.status(500).json({ 
+            error: 'Error loading users trends!' 
+        });
     }
 };

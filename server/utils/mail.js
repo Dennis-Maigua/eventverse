@@ -7,7 +7,7 @@ exports.mailTransport = () => {
         secure: false,
         requireTLS: true,
         auth: {
-            user: process.env.GMAIL_USER,
+            user: process.env.APP_EMAIL,
             pass: process.env.APP_PASSWORD
         },
         tls: {
@@ -45,7 +45,7 @@ exports.activateAccountTemplate = url => {
                 button {
                     color: white;
                     background: #E8363C;
-                    padding: 10px;
+                    padding: 10px 15px;
                     border-radius: 5px;
                     border: 0;
                     font-size: 16px;
@@ -54,13 +54,11 @@ exports.activateAccountTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Activation Pending </h1>                        
-                <p> To activate your account, please use the following link: </p>
-                <a href="${url}"> 
-                    <button> Activate Now </button> 
-                </a>
-                <br />
+                <h1> Activation Required </h1>
                 <p> This link is only valid for 1 hour and will expire after first use. </p>
+                <a href="${url}"> 
+                    <button> Activate Account </button> 
+                </a>
             </div>
         </body>
     </html>
@@ -94,7 +92,7 @@ exports.activationSuccessTemplate = url => {
                 button {
                     color: white;
                     background: #E8363C;
-                    padding: 10px;
+                    padding: 10px 15px;
                     border-radius: 5px;
                     border: 0;
                     font-size: 16px;
@@ -103,13 +101,11 @@ exports.activationSuccessTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Welcome to EventVerse </h1>
+                <h1> Sign Up Success </h1>
                 <p> Your account has been activated successfully! </p>
                 <a href="${url}"> 
                     <button> Sign In </button> 
                 </a>
-                <br />
-                <p> Thank you for joining us. </p>
             </div>
         </body>
     </html>
@@ -143,7 +139,7 @@ exports.resetPasswordTemplate = url => {
                 button {
                     color: white;
                     background: #E8363C;
-                    padding: 10px;
+                    padding: 10px 15px;
                     border-radius: 5px;
                     border: 0;
                     font-size: 16px;
@@ -152,13 +148,11 @@ exports.resetPasswordTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Reset Pending </h1>                        
-                <p> To reset your password, please use the following link: </p>
-                <a href="${url}"> 
-                    <button> Reset Now </button> 
-                </a>
-                <br />
+                <h1> New Password Required </h1>
                 <p> This link is only valid for 1 hour and will expire after use. </p>
+                <a href="${url}"> 
+                    <button> Reset Password </button> 
+                </a>
             </div>
         </body>
     </html>
@@ -192,7 +186,7 @@ exports.resetSuccessTemplate = url => {
                 button {
                     color: white;
                     background: #E8363C;
-                    padding: 10px;
+                    padding: 10px 15px;
                     border-radius: 5px;
                     border: 0;
                     font-size: 16px;
@@ -201,13 +195,13 @@ exports.resetSuccessTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Welcome Back </h1>
+                <h1> Reset Password Success </h1>
                 <p> Your password has been reset successfully! </p>
                 <a href="${url}"> 
                     <button> Sign In </button> 
                 </a>
                 <br />
-                <p> If this was a mistake, please ignore this email or contact support. </p>
+                <p> If this was a mistake, please contact support for help. </p>
             </div>
         </body>
     </html>
@@ -254,8 +248,8 @@ exports.contactEntryTemplate = (name, email, message) => {
         </head>
         <body>
             <div>
-                <h1> New Message </h1>
-                <span> You have received a new contact entry from the website as follows: </span>
+                <h1> New Contact Message </h1>
+                <span> You have received the following contact message: </span>
                 <div class="container">
                     <p>
                         <strong> Name: </strong> ${name}
@@ -267,7 +261,6 @@ exports.contactEntryTemplate = (name, email, message) => {
                         <strong> Message: </strong> ${message}
                     </p>
                 </div>
-                <span> If this was email was not intended, please delete it or mark as spam. </span>
             </div>
         </body>
     </html>

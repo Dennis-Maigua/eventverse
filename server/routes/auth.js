@@ -8,11 +8,11 @@ const { signupValidator, signinValidator, forgotValidator, resetValidator } =
     require('../validators/auth');
 const { runValidation } = require('../validators');
 
-router.post('/signup', signupValidator, runValidation, signup);
-router.post('/activate-account', activate);
-router.post('/signin', signinValidator, runValidation, signin);
+router.post('/account/signup', signupValidator, runValidation, signup);
+router.post('/account/activate', activate);
+router.post('/account/signin', signinValidator, runValidation, signin);
 
-router.put('/forgot-password', forgotValidator, runValidation, forgotPassword);
-router.put('/reset-password', resetValidator, runValidation, resetPassword);
+router.put('/password/forgot', forgotValidator, runValidation, forgotPassword);
+router.put('/password/reset', resetValidator, runValidation, resetPassword);
 
 module.exports = router;

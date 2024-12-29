@@ -18,6 +18,7 @@ import MyTickets from './core/MyTickets';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Events from './pages/Events';
+import EventDetails from './pages/EventDetails';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
@@ -41,8 +42,9 @@ const Router = () => {
                     <Route path='/admin/dashboard' element={<Dashboard />} />
                 </Route>
                 <Route path='/events' element={<Events />} />
+                <Route path='/event/:id' element={<EventDetails />} />
                 <Route path='/about-us' element={<About />} />
-                <Route path='/contact' element={<Contact />} />
+                <Route path='/contact-us' element={<Contact />} />
             </Routes>
         </BrowserRouter>
     );

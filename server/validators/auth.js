@@ -75,7 +75,7 @@ exports.updateValidator = [
         .normalizeEmail()
         .withMessage('A valid email is required!'),
     check('password')
-        .optional({ checkFalsy: true }) // This will skip validation if the password field is an empty string
+        .optional({ checkFalsy: true }) // This will skip validation if the password field is empty
         .isLength({ min: 8 })
         .withMessage('Password must be at least 8 characters long!')
         .matches(/[a-z]/)

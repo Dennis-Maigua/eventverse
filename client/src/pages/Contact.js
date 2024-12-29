@@ -40,29 +40,28 @@ const FormSection = () => {
 
     const { name, email, message, buttonText } = values;
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
+    const handleChange = (e) => {
+        const { name, value } = e.target;
         setValues({ ...values, [name]: value });
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         setValues({ ...values, buttonText: 'Sending...' });
 
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API}/message/send`, { name, email, message }
+                `${process.env.REACT_APP_API}/message/send`, 
+                { name, email, message }
             );
 
-            console.log('CONTACT ENTRY SUCCESS:', response);
             toast.success(response.data.message);
             setValues({ ...values, name: '', email: '', message: '', buttonText: 'Sent' });
         }
 
         catch (err) {
-            console.log('CONTACT ENTRY FAILED:', err);
             setValues({ ...values, buttonText: 'Send Message' });
-            toast.error(err.response.data.error);
+            toast.error(err.response?.data?.error);
         }
     };
 
@@ -89,8 +88,8 @@ const FormSection = () => {
                 />
 
                 <textarea
-                    type='text'
                     rows='5'
+                    type='text'
                     name='message'
                     value={message}
                     placeholder='Your Message'
