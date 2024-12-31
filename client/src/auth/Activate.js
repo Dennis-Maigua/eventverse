@@ -11,7 +11,7 @@ import { isAuth } from '../utils/helpers';
 const Activate = () => {
     const [values, setValues] = useState({
         name: '',
-        buttonText: 'Activate Now'
+        buttonText: 'Continue'
     });
 
     const { token } = useParams();
@@ -37,12 +37,11 @@ const Activate = () => {
             );
 
             setActivated(true);
-            setValues({ ...values, name: '', buttonText: 'Activated' });
             toast.success(response.data.message);
         }
 
         catch (err) {
-            setValues({ ...values, buttonText: 'Activate Now' });
+            setValues({ ...values, buttonText: 'Continue' });
             toast.error(err.response?.data?.error);
         }
     };
@@ -51,7 +50,7 @@ const Activate = () => {
         <Layout>
             <ToastContainer />
             {isAuth() ? <Navigate to='/' /> : null}
-            <div className="bg-gray-600 text-white py-14">
+            <div className="bg-gray-600 text-white py-12">
                 <div className="container mx-auto px-6 text-center">
                     <h1 className="text-3xl font-bold mb-2">
                         Activate Account
@@ -60,7 +59,7 @@ const Activate = () => {
             </div>
 
             {!activated && (
-                <div className='max-w-lg m-auto flex flex-col items-center text-center gap-4 px-4 py-14'>
+                <div className='max-w-lg m-auto flex flex-col items-center text-center gap-4 px-4 py-12'>
                     <h1 className='text-xl'>
                         Hello {name}, you are one step close to completing the process:
                     </h1>
@@ -71,7 +70,7 @@ const Activate = () => {
             )}
 
             {activated && (
-                <div className='max-w-lg m-auto flex items-center text-center px-4 py-14'>
+                <div className='max-w-lg m-auto flex items-center text-center px-4 py-12'>
                     <h1 className='text-xl'>
                         Success! You can now sign in to your new account.
                     </h1>

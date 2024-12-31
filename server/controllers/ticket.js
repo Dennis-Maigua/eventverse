@@ -29,7 +29,7 @@ exports.buyTickets = async (req, res) => {
         event.ticketRemaining -= quantity;
         await event.save();
 
-        res.json({ 
+        return res.json({ 
             success: true,
             message: 'Ticket purchased successfully!', 
             ticket 
@@ -52,12 +52,6 @@ exports.myTickets = async (req, res) => {
         const tickets = await Ticket.find({ userId })
             .populate('eventId', 'name date price')
             .exec();
-
-        if (!tickets.length) {
-            return res.status(404).json({ 
-                error: 'No tickets found for this user!' 
-            });
-        }
 
         return res.json(tickets);
     } 
@@ -128,7 +122,7 @@ exports.transferTickets = async (req, res) => {
             await newTicket.save();
         }
 
-        res.json({ 
+        return res.json({ 
             success: true,
             message: 'Tickets transferred successfully!' 
         });

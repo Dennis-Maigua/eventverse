@@ -19,7 +19,7 @@ const MyTickets = () => {
 
 const HeroSection = () => {
     return (
-        <section className='bg-gray-600 text-white py-14'>
+        <section className='bg-gray-600 text-white py-12'>
             <div className='container mx-auto px-6 text-center'>
                 <h1 className='text-3xl font-bold mb-2'>
                     My Tickets
@@ -107,9 +107,11 @@ const MyTicketsSection = () => {
     };
   
     return (
-        <section>
+        <section>            
             {tickets.length === 0 ? (
-                <p>No tickets purchased yet.</p>
+                <h1 className='text-xl text-center px-4 py-12'>
+                    No tickets purchased yet.
+                </h1>
             ) : (
                 <ul>
                     {tickets.map(ticket => (

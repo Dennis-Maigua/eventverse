@@ -11,7 +11,7 @@ const Signin = () => {
     const [values, setValues] = useState({
         email: '',
         password: '',
-        buttonText: 'Submit'
+        buttonText: 'Login'
     });
 
     const navigate = useNavigate();
@@ -24,7 +24,7 @@ const Signin = () => {
 
     const clickSubmit = async (e) => {
         e.preventDefault();
-        setValues({ ...values, buttonText: 'Submitting...' });
+        setValues({ ...values, buttonText: 'Logging in...' });
 
         try {
             const response = await axios.post(
@@ -33,14 +33,13 @@ const Signin = () => {
             );
 
             authenticate(response, () => {
-                setValues({ ...values, email: '', password: '', buttonText: 'Submitted' });
-                // toast.success(response.data.message);
+                toast.success(response.data.message);
                 isAuth() && isAuth().role === 'admin' ? navigate('/admin/dashboard') : navigate('/profile');
             });
         }
 
         catch (err) {
-            setValues({ ...values, buttonText: 'Submit' });
+            setValues({ ...values, buttonText: 'Login' });
             toast.error(err.response?.data?.error);
         }
     };
@@ -49,7 +48,7 @@ const Signin = () => {
         <Layout>
             <ToastContainer />
             {isAuth() ? <Navigate to='/' /> : null}
-            <div className="bg-gray-600 text-white py-14">
+            <div className="bg-gray-600 text-white py-12">
                 <div className="container mx-auto px-6 text-center">
                     <h1 className="text-3xl font-bold mb-2">
                         Sign In
@@ -57,7 +56,7 @@ const Signin = () => {
                 </div>
             </div>
 
-            <div className='max-w-lg m-auto text-center flex flex-col gap-4 px-4 py-14'>
+            <div className='max-w-lg m-auto text-center flex flex-col gap-4 px-4 py-12'>
                 <form onSubmit={clickSubmit} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
                     <input
                         type='email'

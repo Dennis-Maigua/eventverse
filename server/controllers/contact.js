@@ -17,7 +17,7 @@ exports.sendMessage = async (req, res) => {
                     html: contactEntryTemplate(name, email, message)
                 });
 
-                res.json({
+                return res.json({
                     success: true,
                     message: `Message sent successfuly!`
                 });
@@ -30,7 +30,7 @@ exports.sendMessage = async (req, res) => {
     }
 
     catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             error: 'Error sending message!'
         });
     }
@@ -56,7 +56,7 @@ exports.update = async (req, res) => {
             });
         }
 
-        res.json({
+        return res.json({
             success: true,
             message: `Message updated successfuly!`,
             contactMessage
@@ -88,7 +88,7 @@ exports.countByStatus = async (req, res) => {
         const unread = await Contact.countDocuments({ status: 'Unread' });
         const read = await Contact.countDocuments({ status: 'Read' });
 
-        res.json({
+        return res.json({
             unread,
             read
         });

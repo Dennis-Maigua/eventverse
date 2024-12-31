@@ -48,7 +48,7 @@ const Layout = ({ children }) => {
                                 </li>
                             )}
                             <li>
-                                <NavLink to='/about-us' className={`${isActive('/about-us')}`}> About Us </NavLink>
+                                <NavLink to='/about-us' className={`${isActive('/about-us')}`}> About </NavLink>
                             </li>
                             <li>
                                 <NavLink to='/contact-us' className={`${isActive('/contact-us')}`}> Contact </NavLink>

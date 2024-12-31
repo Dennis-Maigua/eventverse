@@ -7,43 +7,18 @@ import Layout from './Layout';
 import { getCookie, isAuth } from '../utils/helpers';
 
 const MyEvents = () => {
-    return (
-        <Layout>
-            <ToastContainer />
-            {!isAuth() ? <Navigate to='/signin' /> : null}
-            <HeroSection />
-            <MyEventsSection />
-        </Layout>
-    );
-};
-
-const HeroSection = () => {
-    return (
-        <section className='bg-gray-600 text-white py-14'>
-            <div className='container mx-auto px-6 text-center'>
-                <h1 className='text-3xl font-bold mb-2'>
-                    My Events
-                </h1>
-            </div>
-        </section>
-    );
-};
-
-const MyEventsSection = () => {
     const [events, setEvents] = useState([]);
     const [editEvent, setEditEvent] = useState(null);
     const [values, setValues] = useState({
         id: '',
         name: '',
         date: '',
-        price: '',
-        ticketCount: '',
         description: '',
         buttonText: 'Update'
     });
 
     const token = getCookie('token');
-    const { id, name, date, price, ticketCount, description, buttonText } = values;
+    const { id, name, date, description, buttonText } = values;
 
     useEffect(() => {
         loadMyEvents();
@@ -56,12 +31,10 @@ const MyEventsSection = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             
-            console.log('LOAD MY EVENTS SUCCESSFUL: ', response);
             setEvents(response.data);
         }
 
         catch (err) {
-            console.log('ERROR LOADING MY EVENTS: ', err);
             toast.error(err.response?.data?.error);
         }
     };
@@ -72,14 +45,13 @@ const MyEventsSection = () => {
     };
 
     const clickEdit = (event) => {
+        const formattedDate = new Date(event.date).toISOString().slice(0, 16);
         setEditEvent(event);
         setValues({
             ...values,
             id: event._id,
             name: event.name,
-            date: event.date,
-            price: event.price,
-            ticketCount: event.ticketCount,
+            date: formattedDate,
             description: event.description
         });
     };
@@ -90,20 +62,18 @@ const MyEventsSection = () => {
 
         try {
             const response = await axios.put(
-                `${process.env.REACT_APP_API}/events/${id}`, 
-                values,
+                `${process.env.REACT_APP_API}/event/update/${id}`, 
+                {name, date, description},
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
             setEditEvent(null);
-            console.log('EVENT UPDATE SUCCESSFUL: ', response);
             toast.success(response.data.message);
             window.location.reload();
         } 
         
         catch (err) {
             setValues({ ...values, buttonText: 'Update' });
-            console.log('ERROR UPDATING EVENT: ', err);
             toast.error(err.response?.data?.error);
         }
     };
@@ -118,104 +88,118 @@ const MyEventsSection = () => {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
    
-                console.log('DELETE EVENT SUCCESSFUL: ', response);
                 toast.success(response.data.message);
                 window.location.reload();
             }
 
             catch (err) {
-                console.log('ERROR DELETING EVENT: ', err);
                 toast.error(err.response?.data?.error);
             }
         }
     };
-  
+
     return (
-        <section>
+        <Layout>
+            <ToastContainer />
+            {!isAuth() ? <Navigate to='/signin' /> : null}
+            <div className='bg-gray-600 text-white py-12'>
+                <div className='container mx-auto px-6 text-center'>
+                    <h1 className='text-3xl font-bold mb-2'>
+                        My Events
+                    </h1>
+                </div>
+            </div>
+            
             {events.length === 0 ? (
-                <p>No events created yet.</p>
+                <h1 className='text-xl text-center px-4 py-12'>
+                    No events created yet.
+                </h1>
             ) : (
-                <ul>
-                    {events.map(event => (
-                        <li key={event._id}>
-                            <h2>{event.name}</h2>
-                            <p>{event.description}</p>
-                            <p>Date: {new Date(event.date).toLocaleDateString()}</p>
-                            <p>Tickets Sold: {event.ticketCount - event.ticketRemaining} / {event.ticketCount}</p>
-                            <button className='text-blue-500 hover:opacity-80' onClick={() => clickEdit(event)}> Edit </button>
-                            <button className='text-red-500 hover:opacity-80 ml-3' onClick={() => handleDelete(event._id)}> Delete </button>
-                        </li>
-                    ))}
-                </ul>
-            )}
-
-            {editEvent && (
-                <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
-                    <div className='fixed inset-0 bg-black opacity-50'></div>
-                    <div className='bg-white rounded-lg shadow-lg p-10 z-10 max-w-2xl w-full'>
-                        <div className='text-center mb-10'>
-                            <h1 className='text-3xl font-semibold mb-6'> Edit Event </h1>
-                            <span className='font-semibold'> ID: </span>
-                            <span className=''> {id} </span>
-                        </div>
-
-                        <form onSubmit={handleUpdate} className='flex flex-col gap-4'>
-                            <div className='grid grid-cols-2 gap-4'>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={name}
-                                    placeholder="Name"
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    type="datetime-local"
-                                    name="date"
-                                    value={date}
-                                    placeholder="Date"
-                                    onChange={handleChange}
-                                />
-                            </div>
-
-                            <div className='grid grid-cols-2 gap-4'>
-                                <input
-                                    type="number"
-                                    name="price"
-                                    value={price}
-                                    placeholder="Price"
-                                    onChange={handleChange}
-                                    min="0"
-                                    step="0.01"
-                                />
-                                <input
-                                    type="number"
-                                    name="ticketCount"
-                                    value={ticketCount}
-                                    placeholder="Quantity"
-                                    onChange={handleChange}
-                                    min="1"
-                                />
-                            </div>
-
-                            <textarea
-                                rows='5'
-                                type='text'
-                                name="description"
-                                value={description}
-                                placeholder="Description"
-                                onChange={handleChange}
-                            />
-                            <input
-                                type='submit'
-                                value={buttonText}
-                            />
-
-                            <button type='button' onClick={() => setEditEvent(null)}> Cancel </button>
-                        </form>
+                <div className='max-w-md md:min-w-full mx-auto bg-white rounded-lg shadow p-3'>
+                    <div className='overflow-x-auto'>
+                        <table className='min-w-full divide-y divide-gray-200'>
+                            <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
+                                <tr>
+                                    <th className='p-3'> Name </th>
+                                    <th className='p-3'> Description </th>
+                                    <th className='p-3'> Date Time </th>
+                                    <th className='p-3'> Tickets Sold </th>
+                                    <th className='p-3'> Revenue </th>
+                                    <th className='p-3'> Actions </th>
+                                </tr>
+                            </thead>
+                            <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
+                                {events.map(event => (
+                                    <tr key={event._id}>
+                                        <td className='p-3'>{event.name}</td>
+                                        <td className='p-3'>{event.description}</td>
+                                        <td className='p-3'>{new Date(event.date).toISOString().slice(0, 16)}</td>
+                                        <td className='p-3'>{event.ticketCount - event.ticketRemaining} / {event.ticketCount}</td>
+                                        <td className='p-3'>${event.price * (event.ticketCount - event.ticketRemaining)}</td>
+                                        <td className='p-3 font-medium'>
+                                            <button className='text-blue-500 hover:opacity-80' onClick={() => clickEdit(event)}> Edit </button>
+                                            <button className='text-red-500 hover:opacity-80 ml-3' onClick={() => handleDelete(event._id)}> Delete </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
+
+                    {editEvent && (
+                        <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
+                            <div className='fixed inset-0 bg-black opacity-50'></div>
+                            <div className='bg-white rounded-lg shadow-lg p-10 z-10 max-w-2xl w-full'>
+                                <div className='text-center mb-10'>
+                                    <h1 className='text-3xl font-semibold mb-6'> Edit Event </h1>
+                                    <span className='font-semibold'> ID: </span>
+                                    <span className=''> {id} </span>
+                                </div>
+
+                                <form onSubmit={handleUpdate} className='flex flex-col gap-4'>
+                                    <div className='grid grid-cols-2 gap-4'>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={name}
+                                            placeholder="Event Name"
+                                            onChange={handleChange}
+                                            className='p-3 shadow rounded'
+                                        />
+                                        <input
+                                            type="datetime-local"
+                                            name="date"
+                                            value={date}
+                                            placeholder="Event Date"
+                                            onChange={handleChange}
+                                            className='p-3 shadow rounded'
+                                        />
+                                    </div>
+
+                                    <textarea
+                                        rows='4'
+                                        type='text'
+                                        name="description"
+                                        value={description}
+                                        placeholder="Event Description"
+                                        onChange={handleChange}
+                                        className='p-3 shadow rounded'
+                                    />
+                                    <input
+                                        type='submit'
+                                        value={buttonText}
+                                        className='py-2 text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded cursor-pointer'
+                                    />
+
+                                    <button type='button' onClick={() => setEditEvent(null)}
+                                        className='font-semibold hover:text-red-500'> Cancel </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
-        </section>
+        </Layout>
     );
 };
 

@@ -14,7 +14,7 @@ const Reset = () => {
         token: '',
         newPassword: '',
         confirmPassword: '',
-        buttonText: 'Reset Now'
+        buttonText: 'Continue'
     });
 
     const { token } = useParams();
@@ -51,12 +51,11 @@ const Reset = () => {
             );
 
             setReset(true);
-            setValues({ ...values, newPassword: '', confirmPassword: '', buttonText: 'Reset Done' });
             toast.success(response.data.message);
         }
 
         catch (err) {
-            setValues({ ...values, buttonText: 'Reset Now' });
+            setValues({ ...values, buttonText: 'Continue' });
             toast.error(err.response?.data?.error);
         }
     };
@@ -65,7 +64,7 @@ const Reset = () => {
         <Layout>
             <ToastContainer />
             {isAuth() ? <Navigate to='/' /> : null}
-            <div className="bg-gray-600 text-white py-14">
+            <div className="bg-gray-600 text-white py-12">
                 <div className="container mx-auto px-6 text-center">
                     <h1 className="text-3xl font-bold mb-2">
                         Reset Password
@@ -74,7 +73,7 @@ const Reset = () => {
             </div>
 
             {!reset && (
-                <div className='max-w-lg m-auto text-center px-4 py-14'>
+                <div className='max-w-lg m-auto text-center px-4 py-12'>
                     <form onSubmit={clickSubmit} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
                         <input
                             type='password'
@@ -102,7 +101,7 @@ const Reset = () => {
             )}
 
             {reset && (
-                <div className='max-w-lg m-auto flex items-center text-center px-4 py-14'>
+                <div className='max-w-lg m-auto flex items-center text-center px-4 py-12'>
                     <h1 className='text-xl'>
                         Success! You can now sign in using your new password.
                     </h1>

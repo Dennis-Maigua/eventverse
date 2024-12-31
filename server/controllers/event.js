@@ -1,9 +1,9 @@
 const Event = require('../models/event');
 
 exports.createEvent = async (req, res) => {
+    const { name, date, price, ticketCount, description } = req.body;
+    
     try {
-        const { name, date, price, ticketCount, description } = req.body;
-
         // Ensure all fields are provided
         if (!name || !date || !price || !ticketCount || !description) {
             return res.status(400).json({ 
@@ -11,7 +11,6 @@ exports.createEvent = async (req, res) => {
             });
         }
 
-        // Parse and validate the date
         const eventDate = new Date(date);
         if (eventDate <= Date.now()) {
             return res.status(400).json({ 
@@ -19,9 +18,8 @@ exports.createEvent = async (req, res) => {
             });
         }
 
-        // Create the event
         const event = new Event({
-            owner: req.user.id, // Populated by the requiresignin middleware
+            organizer: req.user._id,
             name,
             date: eventDate,
             price,
@@ -32,8 +30,9 @@ exports.createEvent = async (req, res) => {
         });
 
         await event.save();
+        console.log('CREATE EVENT SUCCESSFUL: ', event)
 
-        res.json({ 
+        return res.json({ 
             success: true,
             message: 'Event created successfully!', 
             event 
@@ -49,12 +48,17 @@ exports.createEvent = async (req, res) => {
 };
 
 exports.myEvents = async (req, res) => {
+    const userId = req.user._id;
+    
     try {
-        const userId = req.user.id;
+        const events = await Event.find({ organizer: userId });
+        if (!events) {
+            return res.status(404).json({
+                error: 'User events not found!'
+            });
+        }
 
-        const events = await Event.find({ owner: userId })
-            .sort({ createdAt: -1 });
-
+        console.log('LOAD MY EVENTS SUCCESSFUL: ', events)
         return res.json(events);
     } 
     
@@ -67,8 +71,9 @@ exports.myEvents = async (req, res) => {
 };
 
 exports.updateEvent = async (req, res) => {
+    const { name, date, description } = req.body;
+    
     try {
-        const { name, date, price, ticketCount, description } = req.body;
         const event = await Event.findById(req.params.id);
 
         // Fetch the event
@@ -78,30 +83,20 @@ exports.updateEvent = async (req, res) => {
             });
         }
 
-        // Check if the user is the owner
-        if (event.owner.toString() !== req.user._id) {
+        // Check if the user is the organizer
+        if (event.organizer.toString() !== req.user._id) {
             return res.status(403).json({ 
                 error: 'Access denied!' 
-            });
-        }
-
-        // Validate new ticket count
-        if (ticketCount < event.ticketCount - event.ticketRemaining) {
-            return res.status(400).json({ 
-                error: 'Cannot reduce ticket count below tickets already sold' 
             });
         }
 
         // Update the event
         event.name = name || event.name;
         event.date = date || event.date;
-        event.price = price || event.price;
-        event.ticketCount = ticketCount || event.ticketCount;
-        event.ticketRemaining = ticketCount - (event.ticketCount - event.ticketRemaining);
         event.description = description || event.description;
 
-        Object.assign(event, req.body);
         await event.save();
+        console.log('UPDATE EVENT SUCCESSFUL:', event)
 
         res.json({ 
             success: true,
@@ -119,26 +114,26 @@ exports.updateEvent = async (req, res) => {
 };
 
 exports.deleteEvent = async (req, res) => {
-    try {
-        const event = await Event.findById(req.params.id);
+    const event = await Event.findByIdAndDelete(req.params.id);
 
+    try {
         if (!event) {
             return res.status(404).json({ 
                 error: 'Event not found!' 
             });
         }
 
-        if (event.owner.toString() !== req.user._id) {
+        if (event.organizer.toString() !== req.user._id) {
             return res.status(403).json({ 
                 error: 'Access denied!' 
             });
         }
 
-        await event.remove();
-
+        console.log('DELETE EVENT SUCCESSFUL:', event)
         res.json({ 
             success: true,
-            message: 'Event deleted successfully!'
+            message: 'Event deleted successfully!',
+            event
         });
     } 
     
@@ -154,7 +149,7 @@ exports.allEvents = async (req, res) => {
     try {
         const events = await Event.find();
 
-        // res.send(events);
+        console.log('FETCH ALL EVENTS SUCCESSFUL: ', events);
         return res.json(events);
     } 
     
@@ -167,15 +162,16 @@ exports.allEvents = async (req, res) => {
 };
 
 exports.loadDetails = async (req, res) => {
-    try {
-        const event = await Event.findById(req.params.id);
+    const event = await Event.findById(req.params.id);
 
+    try {
         if (!event) {
             return res.status(404).json({ 
                 error: 'Event not found!' 
             });
         }
 
+        console.log('LOAD EVENT DETAILS SUCCESSFUL: ', event);
         return res.json(event);
     } 
     

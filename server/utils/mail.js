@@ -57,7 +57,7 @@ exports.activateAccountTemplate = url => {
                 <h1> Activation Required </h1>
                 <p> This link is only valid for 1 hour and will expire after first use. </p>
                 <a href="${url}"> 
-                    <button> Activate Account </button> 
+                    <button> Activate </button> 
                 </a>
             </div>
         </body>
@@ -101,7 +101,7 @@ exports.activationSuccessTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Sign Up Success </h1>
+                <h1> Sign Up Complete </h1>
                 <p> Your account has been activated successfully! </p>
                 <a href="${url}"> 
                     <button> Sign In </button> 
@@ -148,10 +148,10 @@ exports.resetPasswordTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> New Password Required </h1>
+                <h1> Reset Required </h1>
                 <p> This link is only valid for 1 hour and will expire after use. </p>
                 <a href="${url}"> 
-                    <button> Reset Password </button> 
+                    <button> Reset </button> 
                 </a>
             </div>
         </body>
@@ -195,7 +195,7 @@ exports.resetSuccessTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Reset Password Success </h1>
+                <h1> Reset Complete </h1>
                 <p> Your password has been reset successfully! </p>
                 <a href="${url}"> 
                     <button> Sign In </button> 

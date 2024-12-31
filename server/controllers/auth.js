@@ -28,7 +28,7 @@ exports.signup = async (req, res) => {
                 html: activateAccountTemplate(`${process.env.CLIENT_URL}/activate-account/${token}`)
             });
 
-            res.json({
+            return res.json({
                 success: true,
                 message: `Activation link sent successfully!`
             });
@@ -78,11 +78,11 @@ exports.activate = async (req, res) => {
                 mailTransport().sendMail({
                     from: process.env.EMAIL,
                     to: email,
-                    subject: 'Activation Complete',
+                    subject: 'Account Activation Success',
                     html: activationSuccessTemplate(`${process.env.CLIENT_URL}/signin`)
                 });
 
-                res.json({
+                return res.json({
                     success: true,
                     message: `Account activated successfully!`
                 });
@@ -157,7 +157,7 @@ exports.forgotPassword = async (req, res) => {
                     html: resetPasswordTemplate(`${process.env.CLIENT_URL}/reset-password/${token}`)
                 });;
 
-                res.json({
+                return res.json({
                     success: true,
                     message: 'Reset link sent successfully!'
                 });
@@ -220,7 +220,7 @@ exports.resetPassword = async (req, res) => {
                         mailTransport().sendMail({
                             from: process.env.EMAIL,
                             to: email,
-                            subject: 'Reset Complete',
+                            subject: 'Reset Password Success',
                             html: resetSuccessTemplate(`${process.env.CLIENT_URL}/signin`)
                         });
 

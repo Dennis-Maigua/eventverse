@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const { createEvent, updateEvent, deleteEvent, allEvents, loadDetails,
-    myEvents } = require('../controllers/event');
+const { createEvent, updateEvent, deleteEvent, myEvents, allEvents, loadDetails } 
+    = require('../controllers/event');
 const { buyTickets, myTickets, transferTickets } = require('../controllers/ticket');
 const { requireSignin } = require('../controllers/auth');
 
