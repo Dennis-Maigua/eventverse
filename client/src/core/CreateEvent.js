@@ -42,9 +42,12 @@ const CreateEvent = () => {
     });
 
     const handleOnPlacesChanged = () => {
-        const places = inputRef.current.getPlaces();
-        if (places && places.length > 0) {
-            const address = places[0].name;
+        const place = inputRef.current.getPlaces();
+        if (place && place.length > 0) {
+            const address = place[0].name;
+            const latitude = place.geometry.location.lat();
+            const longitude = place.geometry.location.lng();
+
             setValues({ ...values, location: address });
         }
     };
