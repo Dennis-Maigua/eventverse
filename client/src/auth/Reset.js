@@ -46,7 +46,7 @@ const Reset = () => {
 
         try {
             const response = await axios.put(
-                `${process.env.REACT_APP_API}/password/reset`,
+                `${process.env.REACT_APP_SERVER_URL}/password/reset`,
                 { newPassword, confirmPassword, resetPasswordLink: token }
             );
 
@@ -64,16 +64,16 @@ const Reset = () => {
         <Layout>
             <ToastContainer />
             {isAuth() ? <Navigate to='/' /> : null}
-            <div className="bg-gray-600 text-white py-12">
-                <div className="container mx-auto px-6 text-center">
-                    <h1 className="text-3xl font-bold mb-2">
+            <div className="bg-gray-500 text-white py-16">
+                <div className="container mx-auto px-4 md:px-8 text-center">
+                    <h1 className="text-3xl font-bold">
                         Reset Password
                     </h1>
                 </div>
             </div>
 
             {!reset && (
-                <div className='max-w-lg m-auto text-center px-4 py-12'>
+                <div className='max-w-lg m-auto text-center px-4 md:px-8 py-16'>
                     <form onSubmit={clickSubmit} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
                         <input
                             type='password'
@@ -101,7 +101,7 @@ const Reset = () => {
             )}
 
             {reset && (
-                <div className='max-w-lg m-auto flex items-center text-center px-4 py-12'>
+                <div className='max-w-lg m-auto flex items-center text-center px-4 md:px-8 py-16'>
                     <h1 className='text-xl'>
                         Success! You can now sign in using your new password.
                     </h1>

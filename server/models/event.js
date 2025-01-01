@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const EventSchema = new mongoose.Schema({
-    organizer: { 
+    owner: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
         required: true 
@@ -14,26 +14,24 @@ const EventSchema = new mongoose.Schema({
         type: Date, 
         required: true 
     },
-    price: { 
-        type: Number, 
-        required: true 
-    },
-    ticketCount: { 
-        type: Number, 
-        required: true 
-    },
-    ticketRemaining: { 
-        type: Number, 
-        required: true 
+    location: {
+        type: String,
+        required: true
     },
     description: {
         type: String,
-        required: true,
+        required: true
     },
-    createdAt: { 
-        type: Date, 
-        default: Date.now 
-    },
+    tiers: [
+        {
+            type: { type: String, required: true },
+            price: { type: Number, required: true },
+            ticketCount: { type: Number, required: true },
+            ticketRemaining: { type: Number, required: true }
+        },
+    ]
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model('Event', EventSchema);

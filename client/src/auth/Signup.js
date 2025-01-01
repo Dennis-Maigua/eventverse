@@ -29,7 +29,7 @@ const Signup = () => {
 
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API}/account/signup`, 
+                `${process.env.REACT_APP_SERVER_URL}/account/signup`, 
                 { name, email, password }
             );
 
@@ -47,16 +47,16 @@ const Signup = () => {
         <Layout>
             <ToastContainer />
             {isAuth() ? <Navigate to='/' /> : null}
-            <div className="bg-gray-600 text-white py-12">
-                <div className="container mx-auto px-6 text-center">
-                    <h1 className="text-3xl font-bold mb-2">
+            <div className="bg-gray-500 text-white py-16">
+                <div className="container mx-auto px-4 md:px-8 text-center">
+                    <h1 className="text-3xl font-bold">
                         Sign Up
                     </h1>
                 </div>
             </div>
 
             {!registered && (
-                <div className='max-w-lg m-auto text-center flex flex-col gap-4 px-4 py-12'>
+                <div className='max-w-lg m-auto text-center flex flex-col gap-4 px-4 md:px-8 py-16'>
                     <form onSubmit={handleSignup} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
                         <input
                             type='text'
@@ -89,7 +89,7 @@ const Signup = () => {
                         />
                     </form>
 
-                    <div className='px-5 flex items-center justify-between text-sm font-medium text-gray-500'>
+                    <div className='flex items-center justify-between text-sm font-medium text-gray-500 px-4'>
                         <Link to='/signin' className='hover:text-red-500'> Sign In </Link>
                         <Link to='/forgot-password' className='hover:text-red-500'> Forgot Password? </Link>
                     </div>
@@ -97,7 +97,7 @@ const Signup = () => {
             )}
 
             {registered && (
-                <div className='max-w-lg m-auto text-center px-4 py-12'>
+                <div className='max-w-lg m-auto text-center px-4 md:px-8 py-16'>
                     <h1 className='text-xl'>
                         Success! Please check your email for more instructions.
                     </h1>

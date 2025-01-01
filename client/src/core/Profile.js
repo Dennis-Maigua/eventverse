@@ -70,7 +70,7 @@ const Profile = () => {
     const loadProfile = async () => {
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API}/user/${isAuth()._id}`,
+                `${process.env.REACT_APP_SERVER_URL}/user/${isAuth()._id}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -104,7 +104,7 @@ const Profile = () => {
 
         try {
             const response = await axios.put(
-                `${process.env.REACT_APP_API}/user/update`, 
+                `${process.env.REACT_APP_SERVER_URL}/user/update`, 
                 values,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -127,7 +127,7 @@ const Profile = () => {
         if (confirmDelete) {
             try {
                 const response = await axios.delete(
-                    `${process.env.REACT_APP_API}/user/delete`,
+                    `${process.env.REACT_APP_SERVER_URL}/user/delete`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
@@ -148,13 +148,13 @@ const Profile = () => {
         <Layout>
             <ToastContainer />
             {!isAuth() ? <Navigate to='/signin' /> : null}
-            <div className='bg-gray-600 text-white py-12'>
-                <div className='container mx-auto px-6 text-center'>
-                    <h1 className='text-3xl font-bold mb-2'> Profile </h1>
+            <div className='bg-gray-600 text-white py-16'>
+                <div className='container mx-auto px-4 md:px-8 text-center'>
+                    <h1 className='text-3xl font-bold'> Profile </h1>
                 </div>
             </div>
 
-            <div className='max-w-2xl m-auto text-center flex flex-col gap-4 px-4 py-10'>
+            <div className='max-w-2xl m-auto text-center flex flex-col gap-4 px-4 md:px-8 py-16'>
                 <form onSubmit={handleUpdate} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
                     <input
                         type='file'
@@ -258,7 +258,7 @@ const Profile = () => {
                     />
                 </form>
 
-                <span onClick={handleDelete} className='font-medium mb-10 text-sm text-red-500 hover:opacity-80 cursor-pointer'> Delete Account </span>
+                <span onClick={handleDelete} className='font-medium text-sm text-red-500 hover:opacity-80 cursor-pointer'> Delete Account </span>
             </div>
         </Layout>
     );

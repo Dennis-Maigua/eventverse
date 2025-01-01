@@ -25,14 +25,14 @@ const Layout = ({ children }) => {
     return (
         <div>
             <nav className='bg-gray-900 text-white'>
-                <div className='max-w-7xl mx-auto py-4 px-8 flex items-center justify-between'>
+                <div className='mx-auto p-4 md:px-8 flex items-center justify-between'>
                     <NavLink to='/' className='flex gap-2'>
                         <img src={Logo} className='h-7' alt='logo' />
                         <span className='text-xl font-bold'> EventVerse </span>
                     </NavLink>
 
-                    <div className={`md:bg-transparent bg-gray-800 md:static absolute md:p-0 py-6 text-center left-0 
-                        md:w-auto w-full md:flex ${toggled ? 'block top-20' : 'hidden'}`}>
+                    <div className={`md:bg-transparent bg-gray-700 md:static absolute md:p-0 py-4 text-center left-0 
+                        md:w-auto w-full md:flex ${toggled ? 'block top-16' : 'hidden'}`}>
                         <ul className='flex md:flex-row flex-col md:gap-8 gap-6 font-medium'>
                             <li>
                                 <NavLink to='/' className={`${isActive('/')}`}> Home </NavLink>
@@ -72,7 +72,7 @@ const Layout = ({ children }) => {
 
 
                                 {dropdown ? (
-                                    <div className='bg-gray-800 absolute right-0 top-16 w-40 round shadow'>
+                                    <div className='bg-gray-800 absolute right-4 md:right-0 top-16 w-40 round shadow'>
                                         <ul className='flex flex-col gap-4 p-4'>
                                             {isAuth().role === 'admin' && (
                                                 <li>

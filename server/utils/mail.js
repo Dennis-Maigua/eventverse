@@ -54,7 +54,7 @@ exports.activateAccountTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Activation Required </h1>
+                <h1> Activation Pending </h1>
                 <p> This link is only valid for 1 hour and will expire after first use. </p>
                 <a href="${url}"> 
                     <button> Activate </button> 
@@ -148,7 +148,7 @@ exports.resetPasswordTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Reset Required </h1>
+                <h1> Reset Pending </h1>
                 <p> This link is only valid for 1 hour and will expire after use. </p>
                 <a href="${url}"> 
                     <button> Reset </button> 

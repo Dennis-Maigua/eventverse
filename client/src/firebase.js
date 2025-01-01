@@ -2,11 +2,12 @@ import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
     apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: "willguard-18181.firebaseapp.com",
-    projectId: "willguard-18181",
-    storageBucket: "willguard-18181.appspot.com",
-    messagingSenderId: "813590251813",
-    appId: "1:813590251813:web:5add320010e34a3bdd72cc"
+    authDomain: "my-apps-f9116.firebaseapp.com",
+    projectId: "my-apps-f9116",
+    storageBucket: "my-apps-f9116.firebasestorage.app",
+    messagingSenderId: "55140563277",
+    appId: "1:55140563277:web:42847543de8cb0064c9f04",
+    measurementId: "G-X8E2HMKLDM"
 };
 
 export const app = initializeApp(firebaseConfig);

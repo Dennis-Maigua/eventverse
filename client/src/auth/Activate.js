@@ -32,7 +32,7 @@ const Activate = () => {
 
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API}/account/activate`, 
+                `${process.env.REACT_APP_SERVER_URL}/account/activate`, 
                 { token }
             );
 
@@ -50,16 +50,16 @@ const Activate = () => {
         <Layout>
             <ToastContainer />
             {isAuth() ? <Navigate to='/' /> : null}
-            <div className="bg-gray-600 text-white py-12">
-                <div className="container mx-auto px-6 text-center">
-                    <h1 className="text-3xl font-bold mb-2">
+            <div className="bg-gray-500 text-white py-16">
+                <div className="container mx-auto px-4 md:px-8 text-center">
+                    <h1 className="text-3xl font-bold">
                         Activate Account
                     </h1>
                 </div>
             </div>
 
             {!activated && (
-                <div className='max-w-lg m-auto flex flex-col items-center text-center gap-4 px-4 py-12'>
+                <div className='max-w-lg m-auto flex flex-col items-center text-center gap-4 px-4 md:px-8 py-16'>
                     <h1 className='text-xl'>
                         Hello {name}, you are one step close to completing the process:
                     </h1>
@@ -70,7 +70,7 @@ const Activate = () => {
             )}
 
             {activated && (
-                <div className='max-w-lg m-auto flex items-center text-center px-4 py-12'>
+                <div className='max-w-lg m-auto flex items-center text-center px-4 md:px-8 py-16'>
                     <h1 className='text-xl'>
                         Success! You can now sign in to your new account.
                     </h1>

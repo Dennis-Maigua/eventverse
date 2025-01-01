@@ -17,8 +17,8 @@ const Home = () => {
 
 const HeroSection = () => {
     return (
-        <section className="bg-gray-600 text-white py-28">
-            <div className="m-auto flex flex-col items-center text-center gap-4 px-4">
+        <section className="bg-gray-500 text-white py-28">
+            <div className="m-auto flex flex-col items-center text-center gap-4 px-4 md:px-8">
                 <h1 className="text-3xl font-bold mb-2"> Welcome to EventVerse </h1>
                 <p className="mb-2"> Explore Events and Buy Tickets Online. </p>
 
@@ -47,15 +47,15 @@ const HowItWorksSection = () => {
         <section className="py-16 bg-slate-100 text-center">
             <h2 className="text-2xl font-bold mb-10"> How It Works </h2>
 
-            <div className="flex flex-wrap mx-8">
-                <div className="w-full md:w-1/3 px-4 mb-8">
+            <div className="flex flex-wrap px-4 md:px-8">
+                <div className="w-full md:w-1/3 px-4 mb-4">
                     <div className="bg-white rounded-lg shadow p-8">
                         <h3 className="font-bold mb-4"> 1. Sign Up </h3>
                         <p> Register your account to get started quick and easy! </p>
                     </div>
                 </div>
 
-                <div className="w-full md:w-1/3 px-4 mb-8">
+                <div className="w-full md:w-1/3 px-4 mb-4">
                     <div className="bg-white rounded-lg shadow p-8">
                         <h3 className="font-bold mb-4"> 2. Explore </h3>
                         <p> Browse our events and find your favourite go to place. </p>
@@ -78,8 +78,8 @@ const TestimonialsSection = () => {
         <section className="py-16 text-center">
             <h2 className="text-2xl font-bold mb-10"> Testimonials </h2>
 
-            <div className="flex flex-wrap mx-8">
-                <div className="w-full md:w-1/3 px-4 mb-8">
+            <div className="flex flex-wrap px-4 md:px-8">
+                <div className="w-full md:w-1/3 px-4 mb-4">
                     <div className="bg-slate-100 rounded-lg shadow p-8">
                         <p className="italic">
                             "This platform made it so easy to purchase tickets. I feel at ease knowing my tickets are legit."
@@ -88,7 +88,7 @@ const TestimonialsSection = () => {
                     </div>
                 </div>
 
-                <div className="w-full md:w-1/3 px-4 mb-8">
+                <div className="w-full md:w-1/3 px-4 mb-4">
                     <div className="bg-slate-100 rounded-lg shadow p-8">
                         <p className="italic">
                             "The process was straightforward, and I was able to get my ticket effortlessly. Highly recommend!"

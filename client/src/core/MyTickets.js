@@ -7,29 +7,6 @@ import Layout from './Layout';
 import { getCookie, isAuth } from '../utils/helpers';
 
 const MyTickets = () => {
-    return (
-        <Layout>
-            <ToastContainer />
-            {!isAuth() ? <Navigate to='/signin' /> : null}
-            <HeroSection />
-            <MyTicketsSection />
-        </Layout>
-    );
-};
-
-const HeroSection = () => {
-    return (
-        <section className='bg-gray-600 text-white py-12'>
-            <div className='container mx-auto px-6 text-center'>
-                <h1 className='text-3xl font-bold mb-2'>
-                    My Tickets
-                </h1>
-            </div>
-        </section>
-    );
-};
-
-const MyTicketsSection = () => {
     const [tickets, setTickets] = useState([]);
     const [transferTickets, setTransferTickets] = useState(null);
     const [values, setValues] = useState({ 
@@ -49,7 +26,7 @@ const MyTicketsSection = () => {
     const loadTickets = async () => {
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API}/tickets/my`, 
+                `${process.env.REACT_APP_SERVER_URL}/tickets/my`, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -87,7 +64,7 @@ const MyTicketsSection = () => {
         if (confirmTransfer) {
             try {
                 const response = await axios.post(
-                    `${process.env.REACT_APP_API}/tickets/transfer`, 
+                    `${process.env.REACT_APP_SERVER_URL}/tickets/transfer`, 
                     values, 
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -105,11 +82,21 @@ const MyTicketsSection = () => {
             }
         }
     };
-  
+
     return (
-        <section>            
+        <Layout>
+            <ToastContainer />
+            {!isAuth() ? <Navigate to='/signin' /> : null}
+            <div className='bg-gray-500 text-white py-16'>
+                <div className='container mx-auto px-6 text-center'>
+                    <h1 className='text-3xl font-bold'>
+                        My Tickets
+                    </h1>
+                </div>
+            </div>
+            
             {tickets.length === 0 ? (
-                <h1 className='text-xl text-center px-4 py-12'>
+                <h1 className='text-xl text-center px-4 md:px-8 py-16'>
                     No tickets purchased yet.
                 </h1>
             ) : (
@@ -161,8 +148,8 @@ const MyTicketsSection = () => {
                         </form>
                     </div>
                 </div>
-            )}           
-        </section>
+            )}
+        </Layout>
     );
 };
 

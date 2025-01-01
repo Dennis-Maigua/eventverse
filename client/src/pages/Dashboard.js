@@ -49,7 +49,7 @@ const Dashboard = () => {
     const fetchUsers = async () => {
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API}/users/fetch`,
+                `${process.env.REACT_APP_SERVER_URL}/users/fetch`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -64,7 +64,7 @@ const Dashboard = () => {
     const countActive = async () => {
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API}/users/active`,
+                `${process.env.REACT_APP_SERVER_URL}/users/active`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -79,7 +79,7 @@ const Dashboard = () => {
     const fetchUserTrends = async () => {
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API}/users/trends`,
+                `${process.env.REACT_APP_SERVER_URL}/users/trends`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -94,7 +94,7 @@ const Dashboard = () => {
     const fetchContactMessages = async () => {
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API}/messages/fetch`,
+                `${process.env.REACT_APP_SERVER_URL}/messages/fetch`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -110,7 +110,7 @@ const Dashboard = () => {
     const countMessages = async () => {
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API}/messages/count`,
+                `${process.env.REACT_APP_SERVER_URL}/messages/count`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -125,7 +125,7 @@ const Dashboard = () => {
     const fetchMessageTrends = async () => {
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API}/messages/trends`,
+                `${process.env.REACT_APP_SERVER_URL}/messages/trends`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -414,7 +414,7 @@ const UsersContent = ({ list, token, shorten }) => {
 
         try {
             const response = await axios.put(
-                `${process.env.REACT_APP_API}/admin/update`, 
+                `${process.env.REACT_APP_SERVER_URL}/admin/update`, 
                 values,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -435,7 +435,7 @@ const UsersContent = ({ list, token, shorten }) => {
         if (confirmDelete) {
             try {
                 const response = await axios.delete(
-                    `${process.env.REACT_APP_API}/admin/delete/${userId}`,
+                    `${process.env.REACT_APP_SERVER_URL}/admin/delete/${userId}`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
@@ -591,7 +591,7 @@ const MessagesContent = ({ list, token, shorten }) => {
     const handleReadMessage = async (messageId) => {
         try {
             const response = await axios.put(
-                `${process.env.REACT_APP_API}/message/update`, 
+                `${process.env.REACT_APP_SERVER_URL}/message/update`, 
                 { _id: messageId, status: 'Read' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

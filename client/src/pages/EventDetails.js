@@ -22,7 +22,7 @@ const EventDetails = () => {
     const loadDetails = async () => {
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API}/event/details/${id}`
+                `${process.env.REACT_APP_SERVER_URL}/event/details/${id}`
             );
 
             setEvent(response.data);
@@ -39,7 +39,7 @@ const EventDetails = () => {
 
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API}/tickets/buy`, 
+                `${process.env.REACT_APP_SERVER_URL}/tickets/buy`, 
                 { eventId: id, quantity }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -62,7 +62,7 @@ const EventDetails = () => {
     return (
         <Layout>
             <ToastContainer />
-            <div className='bg-gray-600 text-white py-12'>
+            <div className='bg-gray-600 text-white py-16'>
                 <div className='container mx-auto px-6 text-center'>
                     <h1 className='text-3xl font-bold mb-2'>
                         {event.name}

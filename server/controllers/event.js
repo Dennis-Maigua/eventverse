@@ -1,11 +1,11 @@
 const Event = require('../models/event');
 
 exports.createEvent = async (req, res) => {
-    const { name, date, price, ticketCount, description } = req.body;
+    const { name, date, location, description, tiers } = req.body;
     
     try {
         // Ensure all fields are provided
-        if (!name || !date || !price || !ticketCount || !description) {
+        if (!name || !date || !location || !description || !tiers.length) {
             return res.status(400).json({ 
                 error: 'All fields are required!' 
             });
@@ -18,15 +18,31 @@ exports.createEvent = async (req, res) => {
             });
         }
 
+        // Ensure at least one tier is provided
+        if (!Array.isArray(tiers) || tiers.length === 0) {
+            return res.status(400).json({
+                error: 'At least one pricing tier is required!',
+            });
+        }
+
+        // Validate tiers
+        for (const tier of tiers) {
+            if (!tier.type || !tier.price || tier.price <= 0 || tier.ticketCount <= 0) {
+                return res.status(400).json({
+                    error: 'Each tier must have a valid type, price, and ticketCount!',
+                });
+            }
+
+            tier.ticketRemaining = tier.ticketCount;
+        }
+
         const event = new Event({
-            organizer: req.user._id,
+            owner: req.user._id,
             name,
             date: eventDate,
-            price,
-            ticketCount,
-            ticketRemaining: ticketCount,
+            location,
             description,
-            createdAt: Date.now(),
+            tiers
         });
 
         await event.save();
@@ -40,7 +56,7 @@ exports.createEvent = async (req, res) => {
     } 
 
     catch (err) {
-        console.log('ERROR CREATING EVENT: ', err);
+        console.log('ERROR CREATING EVENT: ', err.message, err.stack);
         return res.status(500).json({
             error: 'Error creating event!'
         });
@@ -51,7 +67,7 @@ exports.myEvents = async (req, res) => {
     const userId = req.user._id;
     
     try {
-        const events = await Event.find({ organizer: userId });
+        const events = await Event.find({ owner: userId });
         if (!events) {
             return res.status(404).json({
                 error: 'User events not found!'
@@ -83,8 +99,8 @@ exports.updateEvent = async (req, res) => {
             });
         }
 
-        // Check if the user is the organizer
-        if (event.organizer.toString() !== req.user._id) {
+        // Check if the user is the owner
+        if (event.owner.toString() !== req.user._id) {
             return res.status(403).json({ 
                 error: 'Access denied!' 
             });
@@ -123,7 +139,7 @@ exports.deleteEvent = async (req, res) => {
             });
         }
 
-        if (event.organizer.toString() !== req.user._id) {
+        if (event.owner.toString() !== req.user._id) {
             return res.status(403).json({ 
                 error: 'Access denied!' 
             });
