@@ -1,11 +1,11 @@
 const Event = require('../models/event');
 
 exports.createEvent = async (req, res) => {
-    const { name, date, location, description, tiers } = req.body;
+    const { name, date, venue, description, tiers } = req.body;
     
     try {
         // Ensure all fields are provided
-        if (!name || !date || !location || !description || !tiers.length) {
+        if (!name || !date || !venue.length || !description) {
             return res.status(400).json({ 
                 error: 'All fields are required!' 
             });
@@ -27,9 +27,9 @@ exports.createEvent = async (req, res) => {
 
         // Validate tiers
         for (const tier of tiers) {
-            if (!tier.type || !tier.price || tier.price <= 0 || tier.ticketCount <= 0) {
+            if (!tier.name || !tier.price || tier.price <= 0 || tier.ticketCount <= 0) {
                 return res.status(400).json({
-                    error: 'Each tier must have a valid type, price, and ticketCount!',
+                    error: 'Enter a valid ticket name, price, and quantity!',
                 });
             }
 
@@ -40,7 +40,7 @@ exports.createEvent = async (req, res) => {
             owner: req.user._id,
             name,
             date: eventDate,
-            location,
+            venue,
             description,
             tiers
         });
@@ -56,7 +56,7 @@ exports.createEvent = async (req, res) => {
     } 
 
     catch (err) {
-        console.log('ERROR CREATING EVENT: ', err.message, err.stack);
+        console.log('ERROR CREATING EVENT: ', err);
         return res.status(500).json({
             error: 'Error creating event!'
         });
@@ -87,7 +87,7 @@ exports.myEvents = async (req, res) => {
 };
 
 exports.updateEvent = async (req, res) => {
-    const { name, date, description } = req.body;
+    const { name, date, venue, description } = req.body;
     
     try {
         const event = await Event.findById(req.params.id);
@@ -109,6 +109,7 @@ exports.updateEvent = async (req, res) => {
         // Update the event
         event.name = name || event.name;
         event.date = date || event.date;
+        event.venue = venue || event.venue;
         event.description = description || event.description;
 
         await event.save();

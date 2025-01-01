@@ -14,17 +14,20 @@ const EventSchema = new mongoose.Schema({
         type: Date, 
         required: true 
     },
-    location: {
-        type: String,
-        required: true
-    },
+    venue: [
+        {
+            name: { type: String, required: true },
+            latitude: { type: Number, required: true },
+            longitude: { type: Number, required: true }
+        },
+    ],
     description: {
         type: String,
         required: true
     },
     tiers: [
         {
-            type: { type: String, required: true },
+            name: { type: String, required: true },
             price: { type: Number, required: true },
             ticketCount: { type: Number, required: true },
             ticketRemaining: { type: Number, required: true }

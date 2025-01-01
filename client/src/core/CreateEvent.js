@@ -1,34 +1,37 @@
 import React, { useRef, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { GoogleMap, useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api'
+import axios from 'axios';
+import { useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api';
 
 import Layout from './Layout';
 import { getCookie, isAuth } from '../utils/helpers';
 
 const CreateEvent = () => {
+    const [values, setValues] = useState({
+        name: '',
+        date: '',
+        description: '',
+        buttonText: 'Create'
+    });
     const [tiers, setTiers] = useState([{ 
-        type: '', 
+        name: '', 
         price: '' ,
         ticketCount: '',
         ticketRemaining: ''
     }]);
-    const [values, setValues] = useState({
-        name: '',
-        date: '',
-        location: '',
-        description: '',
-        buttonText: 'Create'
-    });
+    const [venue, setVenue] = useState([{ 
+        name: '', 
+        latitude: '' ,
+        longitude: ''
+    }]);
 
     const navigate = useNavigate();
     const inputRef = useRef(null);
-
     const token = getCookie('token');
 
-    const { name, date, location, description, buttonText } = values;
+    const { name, date, description, buttonText } = values;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -38,17 +41,17 @@ const CreateEvent = () => {
     const { isLoaded } = useJsApiLoader({
       id: 'google-map-script',
       googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-      libraries:["places"]
+      libraries: ["places"]
     });
 
     const handleOnPlacesChanged = () => {
         const place = inputRef.current.getPlaces();
         if (place && place.length > 0) {
             const address = place[0].name;
-            const latitude = place.geometry.location.lat();
-            const longitude = place.geometry.location.lng();
+            const lat = place[0].geometry.location.lat();
+            const long = place[0].geometry.location.lng();
 
-            setValues({ ...values, location: address });
+            setVenue([{ name: address, latitude: lat, longitude: long }]);
         }
     };
 
@@ -74,21 +77,15 @@ const CreateEvent = () => {
         try {
             const response = await axios.post(
                 `${process.env.REACT_APP_SERVER_URL}/event/create`, 
-                { name, date, location, description, tiers }, 
+                { name, date, venue, description, tiers }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             
             toast.success(response.data.message);
 
-            setTiers([{ type: '', price: '', ticketCount: '', ticketRemaining: '' }]);
-            setValues({ 
-                ...values, 
-                name: '', 
-                date: '',
-                location: '',
-                description: '',
-                buttonText: 'Created' 
-            });
+            setVenue([{ name: '', latitude: '', longitude: '' }]);
+            setTiers([{ name: '', price: '', ticketCount: '', ticketRemaining: '' }]);
+            setValues({ ...values, name: '', date: '', description: '', buttonText: 'Created' });
                 
             navigate('/my-events');
         } 
@@ -134,7 +131,7 @@ const CreateEvent = () => {
 
                     {isLoaded && (
                         <StandaloneSearchBox
-                            onLoad={(ref) => inputRef.current = ref}
+                            onLoad={ref => inputRef.current = ref}
                             onPlacesChanged={handleOnPlacesChanged}                       
                         >
                             <input
@@ -159,9 +156,9 @@ const CreateEvent = () => {
                         <div key={index} className='flex flex-row gap-4'>
                             <input
                                 type="text"
-                                placeholder="Ticket Type"
-                                value={tier.type}
-                                onChange={(e) => handleTierChange(index, 'type', e.target.value)}
+                                placeholder="Ticket Name"
+                                value={tier.name}
+                                onChange={(e) => handleTierChange(index, 'name', e.target.value)}
                                 className='w-1/2 p-3 shadow rounded'
                             />
                             <input

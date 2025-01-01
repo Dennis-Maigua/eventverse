@@ -12,7 +12,7 @@ const Signup = () => {
         name: '',
         email: '',
         password: '',
-        buttonText: 'Register'
+        buttonText: 'Create Account'
     });
 
     const [registered, setRegistered] = useState(false);
@@ -25,7 +25,7 @@ const Signup = () => {
 
     const handleSignup = async (e) => {
         e.preventDefault();
-        setValues({ ...values, buttonText: 'Signing up...' });
+        setValues({ ...values, buttonText: 'Creating...' });
 
         try {
             const response = await axios.post(
@@ -38,7 +38,7 @@ const Signup = () => {
         }
 
         catch (err) {
-            setValues({ ...values, buttonText: 'Register' });
+            setValues({ ...values, buttonText: 'Create Account' });
             toast.error(err.response?.data?.error);
         }
     };

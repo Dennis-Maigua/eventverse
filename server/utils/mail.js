@@ -54,7 +54,7 @@ exports.activateAccountTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Activation Pending </h1>
+                <h1> Verification Pending </h1>
                 <p> This link is only valid for 1 hour and will expire after first use. </p>
                 <a href="${url}"> 
                     <button> Activate </button> 
@@ -248,8 +248,8 @@ exports.contactEntryTemplate = (name, email, message) => {
         </head>
         <body>
             <div>
-                <h1> New Contact Message </h1>
-                <span> You have received the following contact message: </span>
+                <h1> New Message </h1>
+                <span> You have received the following message from a user: </span>
                 <div class="container">
                     <p>
                         <strong> Name: </strong> ${name}

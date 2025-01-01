@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
+import { useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api';
 
 import Layout from './Layout';
 import { getCookie, isAuth } from '../utils/helpers';
@@ -13,12 +15,19 @@ const MyEvents = () => {
         id: '',
         name: '',
         date: '',
+        locality: '',
         description: '',
         buttonText: 'Update'
     });
+    const [venue, setVenue] = useState([{ 
+        name: '', 
+        latitude: '' ,
+        longitude: ''
+    }]);
 
+    const inputRef = useRef(null);
     const token = getCookie('token');
-    const { id, name, date, description, buttonText } = values;
+    const { id, name, date, locality, description, buttonText } = values;
 
     useEffect(() => {
         loadMyEvents();
@@ -46,14 +55,34 @@ const MyEvents = () => {
 
     const clickEdit = (event) => {
         const formattedDate = new Date(event.date).toISOString().slice(0, 16);
+
         setEditEvent(event);
         setValues({
             ...values,
             id: event._id,
             name: event.name,
             date: formattedDate,
+            locality: event.venue[0].name,
             description: event.description
         });
+    };
+
+    const { isLoaded } = useJsApiLoader({
+      id: 'google-map-script',
+      googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+      libraries: ["places"]
+    });
+
+    const handleOnPlacesChanged = () => {
+        const place = inputRef.current.getPlaces();
+        if (place && place.length > 0) {
+            const address = place[0].name;
+            const lat = place[0].geometry.location.lat();
+            const long = place[0].geometry.location.lng();
+
+            setVenue([{ name: address, latitude: lat, longitude: long }]);
+            setValues({ ...values, locality: address });
+        }
     };
 
     const handleUpdate = async (e) => {
@@ -63,7 +92,7 @@ const MyEvents = () => {
         try {
             const response = await axios.put(
                 `${process.env.REACT_APP_SERVER_URL}/event/update/${id}`, 
-                {name, date, description},
+                { name, date, venue, description },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -115,17 +144,19 @@ const MyEvents = () => {
                     No events created yet.
                 </h1>
             ) : (
-                <div className='max-w-md md:min-w-full mx-auto bg-white rounded-lg shadow px-4 md:px-8 py-16'>
+                <div className='max-w-2xl md:min-w-full mx-auto bg-white rounded-lg shadow p-4'>
                     <div className='overflow-x-auto'>
                         <table className='min-w-full divide-y divide-gray-200'>
                             <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
                                 <tr>
                                     <th className='p-3'> Name </th>
-                                    <th className='p-3'> Date & Time </th>
-                                    <th className='p-3'> Location </th>
+                                    <th className='p-3'> Date </th>
+                                    <th className='p-3'> Time </th>
+                                    <th className='p-3'> Venue </th>
+                                    <th className='p-3'> Tickets </th>
+                                    <th className='p-3'> Sold </th>
+                                    <th className='p-3'> Revenue </th>
                                     <th className='p-3'> Description </th>
-                                    {/* <th className='p-3'> Tickets Sold </th>
-                                    <th className='p-3'> Revenue </th> */}
                                     <th className='p-3'> Actions </th>
                                 </tr>
                             </thead>
@@ -133,11 +164,41 @@ const MyEvents = () => {
                                 {events.map(event => (
                                     <tr key={event._id}>
                                         <td className='p-3'>{event.name}</td>
-                                        <td className='p-3'>{new Date(event.date).toISOString().slice(0, 16)}</td>
-                                        <td className='p-3'>{event.location}</td>
-                                        <td className='p-3'>{event.description}</td>
-                                        {/* <td className='p-3'>{event.ticketCount - event.ticketRemaining} / {event.ticketCount}</td>
-                                        <td className='p-3'>${event.price * (event.ticketCount - event.ticketRemaining)}</td> */}
+                                        <td className='p-3'>
+                                            {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(event.date))}
+                                        </td>
+                                        <td className='p-3'>
+                                            {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </td>
+                                        <td className='p-3'>
+                                            {event.venue.map((v, index) => (
+                                                <div key={index}>
+                                                    {v.name}
+                                                </div>
+                                            ))}
+                                        </td>
+                                        <td className='p-3'>
+                                            {event.tiers.map((tier, index) => (
+                                                <div key={index}>
+                                                    {tier.name} @ ${tier.price}
+                                                </div>
+                                            ))}
+                                        </td>
+                                        <td className='p-3'>
+                                            {event.tiers.map((tier, index) => (
+                                                <div key={index}>
+                                                    {(tier.ticketCount - tier.ticketRemaining)}/{tier.ticketCount}
+                                                </div>
+                                            ))}
+                                        </td>
+                                        <td className='p-3'>
+                                            {event.tiers.map((tier, index) => (
+                                                <div key={index}>
+                                                    ${tier.price * (tier.ticketCount - tier.ticketRemaining)}
+                                                </div>
+                                            ))}
+                                        </td>
+                                        <td className="p-3">{event.description}</td>
                                         <td className='p-3 font-medium'>
                                             <button className='text-blue-500 hover:opacity-80' onClick={() => clickEdit(event)}> Edit </button>
                                             <button className='text-red-500 hover:opacity-80 ml-3' onClick={() => handleDelete(event._id)}> Delete </button>
@@ -177,9 +238,25 @@ const MyEvents = () => {
                                             className='p-3 shadow rounded'
                                         />
                                     </div>
+                                    
+                                    {isLoaded && (
+                                        <StandaloneSearchBox
+                                            onLoad={ref => inputRef.current = ref}
+                                            onPlacesChanged={handleOnPlacesChanged}                       
+                                        >
+                                            <input
+                                                type="text"
+                                                name="locality"
+                                                value={locality}
+                                                placeholder="Event Location"
+                                                onChange={handleChange}
+                                                className='w-full p-3 shadow rounded'
+                                            />
+                                        </StandaloneSearchBox>
+                                    )}
 
                                     <textarea
-                                        rows='4'
+                                        rows='3'
                                         type='text'
                                         name="description"
                                         value={description}

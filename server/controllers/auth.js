@@ -24,7 +24,7 @@ exports.signup = async (req, res) => {
             mailTransport().sendMail({
                 from: process.env.EMAIL,
                 to: email,
-                subject: 'Activate Your Account',
+                subject: 'Account Activation',
                 html: activateAccountTemplate(`${process.env.CLIENT_URL}/activate-account/${token}`)
             });
 
@@ -153,7 +153,7 @@ exports.forgotPassword = async (req, res) => {
                 mailTransport().sendMail({
                     from: process.env.EMAIL,
                     to: email,
-                    subject: 'Reset Your Password',
+                    subject: 'Password Reset',
                     html: resetPasswordTemplate(`${process.env.CLIENT_URL}/reset-password/${token}`)
                 });;
 
