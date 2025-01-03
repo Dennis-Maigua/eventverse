@@ -9,14 +9,14 @@ import { isAuth } from '../utils/helpers';
 
 const Signup = () => {
     const [values, setValues] = useState({
-        name: '',
+        username: '',
         email: '',
         password: '',
         buttonText: 'Create Account'
     });
 
     const [registered, setRegistered] = useState(false);
-    const { name, email, password, buttonText } = values;
+    const { username, email, password, buttonText } = values;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -30,7 +30,7 @@ const Signup = () => {
         try {
             const response = await axios.post(
                 `${process.env.REACT_APP_SERVER_URL}/account/signup`, 
-                { name, email, password }
+                { username, email, password }
             );
 
             toast.success(response.data.message);
@@ -60,9 +60,9 @@ const Signup = () => {
                     <form onSubmit={handleSignup} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
                         <input
                             type='text'
-                            name='name'
-                            value={name}
-                            placeholder='Name'
+                            name='username'
+                            value={username}
+                            placeholder='Username'
                             onChange={handleChange}
                             className='p-3 shadow rounded'
                         />

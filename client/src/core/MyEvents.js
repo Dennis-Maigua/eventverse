@@ -1,20 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
+import { app } from '../firebase';
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api';
 
 import Layout from './Layout';
 import { getCookie, isAuth } from '../utils/helpers';
 
+const libraries = ["places"]; 
+
 const MyEvents = () => {
     const [events, setEvents] = useState([]);
     const [editEvent, setEditEvent] = useState(null);
     const [values, setValues] = useState({
+        posterUrl: '',
         id: '',
         name: '',
         date: '',
+        category: '',
         locality: '',
         description: '',
         buttonText: 'Update'
@@ -25,9 +31,14 @@ const MyEvents = () => {
         longitude: ''
     }]);
 
-    const inputRef = useRef(null);
+    const fileRef = useRef(null);
+    const inputRef = useRef(null);    
+    const [imageError, setImageError] = useState(false);
+    const [imagePercent, setImagePercent] = useState(0);
+    
     const token = getCookie('token');
-    const { id, name, date, locality, description, buttonText } = values;
+    const { id, posterUrl, name, date, category, locality, description, buttonText } = values;
+    const categories = ["Arts", "Business", "Culture", "Music", "Sports", "Technology"];
 
     useEffect(() => {
         loadMyEvents();
@@ -47,6 +58,35 @@ const MyEvents = () => {
             toast.error(err.response?.data?.error);
         }
     };
+    
+    const handleUpload = async (image) => {
+        if (image.size > 2 * 1024 * 1024) {
+            setImageError(true);
+            return;
+        }
+
+        const storage = getStorage(app);
+        const fileName = new Date().getTime() + image.name;
+        const storageRef = ref(storage, fileName);
+        const uploadTask = uploadBytesResumable(storageRef, image);
+
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setImagePercent(Math.round(progress));
+            },
+            (error) => {
+                setImageError(true);
+                console.log(error);
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    setValues({ ...values, posterUrl: downloadURL });
+                    setImagePercent(100);
+                });
+            }
+        );
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -60,8 +100,10 @@ const MyEvents = () => {
         setValues({
             ...values,
             id: event._id,
+            posterUrl: event.posterUrl,
             name: event.name,
             date: formattedDate,
+            category: event.category,
             locality: event.venue[0].name,
             description: event.description
         });
@@ -70,7 +112,7 @@ const MyEvents = () => {
     const { isLoaded } = useJsApiLoader({
       id: 'google-map-script',
       googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-      libraries: ["places"]
+      libraries
     });
 
     const handleOnPlacesChanged = () => {
@@ -92,7 +134,7 @@ const MyEvents = () => {
         try {
             const response = await axios.put(
                 `${process.env.REACT_APP_SERVER_URL}/event/update/${id}`, 
-                { name, date, venue, description },
+                values,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -133,9 +175,10 @@ const MyEvents = () => {
             {!isAuth() ? <Navigate to='/signin' /> : null}
             <div className='bg-gray-500 text-white py-16'>
                 <div className='container mx-auto px-4 md:px-8 text-center'>
-                    <h1 className='text-3xl font-bold'>
-                        My Events
-                    </h1>
+                    <h1 className='text-3xl font-bold mb-6'> My Events </h1>
+                    <Link to='/create-event' className='px-3 py-2 bg-red-500 text-white font-semibold hover:opacity-80'> 
+                        Create Event 
+                    </Link>
                 </div>
             </div>
             
@@ -144,62 +187,71 @@ const MyEvents = () => {
                     No events created yet.
                 </h1>
             ) : (
-                <div className='max-w-2xl md:min-w-full mx-auto bg-white rounded-lg shadow p-4'>
+                <div className='max-w-3xl md:min-w-full mx-auto bg-white rounded-lg shadow p-4'>
                     <div className='overflow-x-auto'>
                         <table className='min-w-full divide-y divide-gray-200'>
                             <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
                                 <tr>
-                                    <th className='p-3'> Name </th>
-                                    <th className='p-3'> Date </th>
-                                    <th className='p-3'> Time </th>
-                                    <th className='p-3'> Venue </th>
-                                    <th className='p-3'> Tickets </th>
-                                    <th className='p-3'> Sold </th>
-                                    <th className='p-3'> Revenue </th>
-                                    <th className='p-3'> Description </th>
-                                    <th className='p-3'> Actions </th>
+                                    <th className='p-2'> Name </th>
+                                    <th className='p-2'> Poster </th>
+                                    <th className='p-2'> Date </th>
+                                    <th className='p-2'> Time </th>
+                                    <th className='p-2'> Category </th>
+                                    <th className='p-2'> Venue </th>
+                                    <th className='p-2'> Tickets </th>
+                                    <th className='p-2'> Sold </th>
+                                    <th className='p-2'> Revenue </th>
+                                    <th className='p-2'> Actions </th>
                                 </tr>
                             </thead>
                             <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
                                 {events.map(event => (
                                     <tr key={event._id}>
-                                        <td className='p-3'>{event.name}</td>
-                                        <td className='p-3'>
+                                        <td className='p-2 flex items-center'>
+                                            <img
+                                                src={event.posterUrl}
+                                                alt='cover'
+                                                name='posterUrl'
+                                                className='h-10 w-10 self-center border object-cover'
+                                            />
+                                        </td>
+                                        <td className='p-2'>{event.name}</td>
+                                        <td className='p-2'>
                                             {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(event.date))}
                                         </td>
-                                        <td className='p-3'>
+                                        <td className='p-2'>
                                             {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </td>
-                                        <td className='p-3'>
+                                        <td className='p-2'>{event.category}</td>
+                                        <td className='p-2'>
                                             {event.venue.map((v, index) => (
                                                 <div key={index}>
                                                     {v.name}
                                                 </div>
                                             ))}
                                         </td>
-                                        <td className='p-3'>
+                                        <td className='p-2'>
                                             {event.tiers.map((tier, index) => (
                                                 <div key={index}>
                                                     {tier.name} @ ${tier.price}
                                                 </div>
                                             ))}
                                         </td>
-                                        <td className='p-3'>
+                                        <td className='p-2'>
                                             {event.tiers.map((tier, index) => (
                                                 <div key={index}>
                                                     {(tier.ticketCount - tier.ticketRemaining)}/{tier.ticketCount}
                                                 </div>
                                             ))}
                                         </td>
-                                        <td className='p-3'>
+                                        <td className='p-2'>
                                             {event.tiers.map((tier, index) => (
                                                 <div key={index}>
                                                     ${tier.price * (tier.ticketCount - tier.ticketRemaining)}
                                                 </div>
                                             ))}
                                         </td>
-                                        <td className="p-3">{event.description}</td>
-                                        <td className='p-3 font-medium'>
+                                        <td className='p-2 font-medium'>
                                             <button className='text-blue-500 hover:opacity-80' onClick={() => clickEdit(event)}> Edit </button>
                                             <button className='text-red-500 hover:opacity-80 ml-3' onClick={() => handleDelete(event._id)}> Delete </button>
                                         </td>
@@ -212,11 +264,44 @@ const MyEvents = () => {
                     {editEvent && (
                         <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
                             <div className='fixed inset-0 bg-black opacity-50'></div>
-                            <div className='bg-slate-100 rounded-lg shadow-lg p-10 z-10 max-w-2xl w-full'>
-                                <div className='text-center mb-10'>
-                                    <h1 className='text-3xl font-semibold mb-6'> Event </h1>
-                                    <span className='font-semibold'> ID: </span>
-                                    <span className=''> {id} </span>
+                            <div className='max-w-2xl m-auto bg-slate-100 rounded-lg shadow-lg p-10 z-10'>
+                                <div className='flex flex-col items-center text-center mb-10'>
+                                    <input
+                                        type='file'
+                                        ref={fileRef}
+                                        accept='image/*'
+                                        onChange={(e) => {
+                                            const selectedFile = e.target.files[0];
+                                            if (selectedFile) {
+                                                handleUpload(selectedFile);
+                                            }
+                                        }}
+                                        hidden
+                                    />
+                                    <img
+                                        src={posterUrl}
+                                        alt='cover'
+                                        name='posterUrl'
+                                        className='h-24 w-24 rounded-full self-center border object-cover cursor-pointer'
+                                        onClick={() => fileRef.current.click()}
+                                    />
+                                    <div className='text-sm font-medium'>
+                                        {imageError ? (
+                                            <span className='text-red-500'>
+                                                File size must be less than 2 MB!
+                                            </span>
+                                        ) : imagePercent > 0 && imagePercent < 100 ? (
+                                            <span className='text-blue-500'>
+                                                Uploading: {imagePercent} %
+                                            </span>
+                                        ) : imagePercent === 100 ? (
+                                            <span className='text-green-500'>
+                                                Image uploaded successfully!
+                                            </span>
+                                        ) : null}
+                                    </div>
+
+                                    <p className='mt-4 font-semibold'>Event ID: </p> {id}
                                 </div>
 
                                 <form onSubmit={handleUpdate} className='flex flex-col gap-4'>
@@ -224,7 +309,7 @@ const MyEvents = () => {
                                         <input
                                             type="text"
                                             name="name"
-                                            value={name}
+                                            value={name || ''}
                                             placeholder="Event Name"
                                             onChange={handleChange}
                                             className='p-3 shadow rounded'
@@ -232,10 +317,34 @@ const MyEvents = () => {
                                         <input
                                             type="datetime-local"
                                             name="date"
-                                            value={date}
+                                            value={date || ''}
                                             placeholder="Event Date"
                                             onChange={handleChange}
                                             className='p-3 shadow rounded'
+                                        />
+                                    </div>
+
+                                    <div className='flex flex-row gap-4'>
+                                        <select
+                                            name="category"
+                                            value={category || ''}
+                                            onChange={handleChange}
+                                            className='w-3/8 p-3 shadow rounded'
+                                        >
+                                            <option value="">Select Category</option>
+                                            {categories.map((cat) => (
+                                                <option key={cat} value={cat}>
+                                                    {cat}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <input
+                                            type='text'
+                                            name="description"
+                                            value={description}
+                                            placeholder="Event Description"
+                                            onChange={handleChange}
+                                            className='w-full p-3 shadow rounded'
                                         />
                                     </div>
                                     
@@ -247,7 +356,7 @@ const MyEvents = () => {
                                             <input
                                                 type="text"
                                                 name="locality"
-                                                value={locality}
+                                                value={locality || ''}
                                                 placeholder="Event Location"
                                                 onChange={handleChange}
                                                 className='w-full p-3 shadow rounded'
@@ -255,15 +364,6 @@ const MyEvents = () => {
                                         </StandaloneSearchBox>
                                     )}
 
-                                    <textarea
-                                        rows='3'
-                                        type='text'
-                                        name="description"
-                                        value={description}
-                                        placeholder="Event Description"
-                                        onChange={handleChange}
-                                        className='p-3 shadow rounded'
-                                    />
                                     <input
                                         type='submit'
                                         value={buttonText}

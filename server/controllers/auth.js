@@ -6,17 +6,24 @@ const { mailTransport, resetPasswordTemplate, activateAccountTemplate,
     activationSuccessTemplate, resetSuccessTemplate } = require('../utils/mail');
 
 exports.signup = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
 
     try {
-        const user = await User.findOne({ email });
-        if (user) {
+        const userEmail = await User.findOne({ email });
+        if (userEmail) {
             return res.status(400).json({
-                error: 'Email already exists!'
+                error: 'Email is already taken!'
             });
         }
 
-        const token = jwt.sign({ name, email, password }, 
+        const userName = await User.findOne({ username });
+        if (userName) {
+            return res.status(400).json({
+                error: 'Username is already taken!'
+            });
+        }
+
+        const token = jwt.sign({ username, email, password }, 
             process.env.JWT_ACCOUNT_ACTIVATION, 
             { expiresIn: '1h' });
 
@@ -57,7 +64,7 @@ exports.activate = async (req, res) => {
     }
 
     jwt.verify(token, process.env.JWT_ACCOUNT_ACTIVATION, async function (err, decoded) {
-        const { name, email, password } = jwt.decode(token);
+        const { username, email, password } = jwt.decode(token);
 
         const user = await User.findOne({ email });
         if (user) {
@@ -72,13 +79,13 @@ exports.activate = async (req, res) => {
             });
         }
 
-        const newUser = new User({ name, email, password });
+        const newUser = new User({ username, email, password });
         await newUser.save()
             .then(() => {
                 mailTransport().sendMail({
                     from: process.env.EMAIL,
                     to: email,
-                    subject: 'Activation Successful',
+                    subject: 'Activation Complete',
                     html: activationSuccessTemplate(`${process.env.CLIENT_URL}/signin`)
                 });
 
@@ -121,7 +128,7 @@ exports.signin = async (req, res) => {
         user.salt = undefined;
 
         return res.json({
-            message: `Success! Welcome ${user.name}`,
+            message: `Success! Welcome ${user.username}`,
             token,
             user
         });
@@ -145,7 +152,7 @@ exports.forgotPassword = async (req, res) => {
             });
         }
 
-        const token = jwt.sign({ _id: user._id, name: user.name },
+        const token = jwt.sign({ _id: user._id, username: user.username },
             process.env.JWT_PASSWORD_RESET, { expiresIn: '1h' });
 
         return await user.updateOne({ resetPasswordLink: token })
@@ -220,7 +227,7 @@ exports.resetPassword = async (req, res) => {
                         mailTransport().sendMail({
                             from: process.env.EMAIL,
                             to: email,
-                            subject: 'Reset Successful',
+                            subject: 'Reset Complete',
                             html: resetSuccessTemplate(`${process.env.CLIENT_URL}/signin`)
                         });
 

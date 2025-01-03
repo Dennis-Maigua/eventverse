@@ -1,11 +1,11 @@
 const Event = require('../models/event');
 
 exports.createEvent = async (req, res) => {
-    const { name, date, venue, description, tiers } = req.body;
+    const { posterUrl, name, date, category, description, venue, tiers } = req.body;
     
     try {
         // Ensure all fields are provided
-        if (!name || !date || !venue.length || !description) {
+        if (!posterUrl || !name || !date || !category || !description || !venue.length) {
             return res.status(400).json({ 
                 error: 'All fields are required!' 
             });
@@ -38,10 +38,12 @@ exports.createEvent = async (req, res) => {
 
         const event = new Event({
             owner: req.user._id,
+            posterUrl,
             name,
             date: eventDate,
-            venue,
+            category,
             description,
+            venue,
             tiers
         });
 
@@ -87,30 +89,29 @@ exports.myEvents = async (req, res) => {
 };
 
 exports.updateEvent = async (req, res) => {
-    const { name, date, venue, description } = req.body;
+    const { posterUrl, name, date, category, description, venue } = req.body;
     
     try {
         const event = await Event.findById(req.params.id);
 
-        // Fetch the event
         if (!event) {
             return res.status(404).json({ 
                 error: 'Event not found!' 
             });
         }
 
-        // Check if the user is the owner
         if (event.owner.toString() !== req.user._id) {
             return res.status(403).json({ 
                 error: 'Access denied!' 
             });
         }
 
-        // Update the event
+        event.posterUrl = posterUrl || event.posterUrl;
         event.name = name || event.name;
         event.date = date || event.date;
-        event.venue = venue || event.venue;
+        event.category = category || event.category;
         event.description = description || event.description;
+        event.venue = venue || event.venue;
 
         await event.save();
         console.log('UPDATE EVENT SUCCESSFUL:', event)

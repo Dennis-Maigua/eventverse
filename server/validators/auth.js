@@ -1,11 +1,11 @@
 const { check } = require('express-validator');
 
 exports.signupValidator = [
-    check('name')
+    check('username')
         .isLength({ min: 3 })
-        .withMessage('Name must be at least 3 characters long!')
+        .withMessage('Username must be at least 3 characters long!')
         .matches(/^[A-Za-z\s]+$/)
-        .withMessage('Name can only contain alphabetic characters and spaces!'),
+        .withMessage('Username can only contain alphabetic characters and spaces!'),
     check('email')
         .isEmail()
         .withMessage('A valid email is required!')
@@ -57,17 +57,17 @@ exports.resetValidator = [
         .withMessage('Password must contain at least a lowercase letter, uppercase letter, digit, and special character!')
 ];
 
-exports.updateValidator = [
+exports.profileValidator = [
     check('role')
         .optional()
         .isIn(['user', 'admin'])
         .withMessage('Role must be either user or admin!'),
-    check('name')
+    check('username')
         .optional()
         .isLength({ min: 3 })
-        .withMessage('Name must be at least 3 characters long!')
+        .withMessage('Username must be at least 3 characters long!')
         .matches(/^[A-Za-z\s]+$/)
-        .withMessage('Name can only contain alphabetic characters and spaces!'),
+        .withMessage('Username can only contain alphabetic characters and spaces!'),
     check('email')
         .optional()
         .isEmail()
@@ -97,20 +97,18 @@ exports.updateValidator = [
 ];
 
 exports.contactValidator = [
-    check('name')
-        .optional()
+    check('subject')
         .isLength({ min: 3 })
-        .withMessage('Name must be at least 3 characters long!')
+        .withMessage('Subject must be at least 3 characters long!')
         .matches(/^[A-Za-z\s]+$/)
-        .withMessage('Name can only contain alphabetic characters and spaces!'),
+        .withMessage('Subject can only contain alphabetic characters and spaces!'),
     check('email')
-        .optional()
         .isEmail()
         .withMessage('A valid email is required!')
         .normalizeEmail()
         .withMessage('A valid email is required!'),
     check('message')
         .optional()
-        .isLength({ min: 100 })
-        .withMessage('Message must be at least 100 characters long!')
+        .isLength({ min: 50 })
+        .withMessage('Message must be at least 50 characters long!')
 ];

@@ -3,8 +3,8 @@ import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 
+import Layout from './Layout';
 import { getCookie, isAuth } from '../utils/helpers';
-import Layout from '../core/Layout';
 import Avatar from '../assets/avatar.png';
 
 // import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -208,7 +208,7 @@ const Header = ({ headerName, isActive, setActiveComponent }) => {
     const [dropdown, setDropdown] = useState(false);
 
     return (
-        <header className='flex justify-between items-center py-4 px-5 bg-white border-b-4 border-red-500'>
+        <header className='flex justify-between items-center px-4 py-3 bg-white border-b-4 border-red-500'>
             <div>
                 <h2 className='text-xl font-semibold text-gray-800'>{headerName}</h2>
             </div>
@@ -225,7 +225,7 @@ const Header = ({ headerName, isActive, setActiveComponent }) => {
             </div>
 
             {dropdown ? (
-                <div className='md:hidden static absolute bg-slate-100 right-6 top-40 w-40 round shadow'>
+                <div className='md:hidden static absolute bg-slate-300 right-4 top-36 w-40 round shadow'>
                     <ul className='flex flex-col gap-6 p-6'>
                         <li>
                             <span onClick={() => setActiveComponent({ name: 'Dashboard', header: 'Dashboard' })} className={isActive('Dashboard')}> Dashboard </span>
@@ -247,32 +247,32 @@ const Header = ({ headerName, isActive, setActiveComponent }) => {
 const DashContent = ({ activeUsers, inactiveUsers, totalUsers, unreadMessages, readMessages, totalMessages }) => {
     return (
         <section className='grid grid-cols-2 lg:grid-cols-3 gap-4'>
-            <div className='py-4 bg-white rounded-lg shadow text-center'>
+            <div className='py-3 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {activeUsers} </h3>
                 <p className='text-gray-500 text-sm'> Active Users </p>
             </div>
 
-            <div className='py-4 bg-white rounded-lg shadow text-center'>
+            <div className='py-3 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {inactiveUsers} </h3>
                 <p className='text-gray-500 text-sm'> Inactive Users </p>
             </div>
 
-            <div className='py-4 bg-white rounded-lg shadow text-center'>
+            <div className='py-3 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {totalUsers.length} </h3>
                 <p className='text-gray-500 text-sm'> Total Users </p>
             </div>
 
-            <div className='py-4 bg-white rounded-lg shadow text-center'>
+            <div className='py-3 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {unreadMessages} </h3>
                 <p className='text-gray-500 text-sm'> Unread Messages </p>
             </div>
 
-            <div className='py-4 bg-white rounded-lg shadow text-center'>
+            <div className='py-3 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {readMessages} </h3>
                 <p className='text-gray-500 text-sm'> Read Messages </p>
             </div>
 
-            <div className='py-4 bg-white rounded-lg shadow text-center'>
+            <div className='py-3 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {totalMessages.length} </h3>
                 <p className='text-gray-500 text-sm'> Total Messages </p>
             </div>
@@ -387,7 +387,7 @@ const UsersContent = ({ list, token, shorten }) => {
         buttonText: 'Update'
     });
 
-    const { id, role, profileUrl, name, email, phone, address, buttonText } = values;
+    const { id, role, profileUrl, username, email, phone, address, buttonText } = values;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -401,7 +401,7 @@ const UsersContent = ({ list, token, shorten }) => {
             id: user._id,
             role: user.role,
             profileUrl: user.profileUrl,
-            name: user.name,
+            username: user.username,
             email: user.email,
             phone: user.phone,
             address: user.address
@@ -455,20 +455,20 @@ const UsersContent = ({ list, token, shorten }) => {
                 <table className='min-w-full divide-y divide-gray-200'>
                     <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
                         <tr>
-                            <th className='px-5 py-3'> ID </th>
-                            <th className='px-5 py-3'> Role </th>
-                            <th className='px-5 py-3'> Profile </th>
-                            <th className='px-5 py-3'> Name </th>
-                            <th className='px-5 py-3'> Email </th>
-                            <th className='px-5 py-3'> Phone </th>
-                            <th className='px-5 py-3'> Address </th>
-                            <th className='px-5 py-3'> Actions </th>
+                            <th className='px-4 py-3'> ID </th>
+                            <th className='px-4 py-3'> Role </th>
+                            <th className='px-4 py-3'> Profile </th>
+                            <th className='px-4 py-3'> Username </th>
+                            <th className='px-4 py-3'> Email </th>
+                            <th className='px-4 py-3'> Phone </th>
+                            <th className='px-4 py-3'> Address </th>
+                            <th className='px-4 py-3'> Actions </th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
                         {list.map(user => (
                             <tr key={user._id}>
-                                <td className='px-5 py-3'>
+                                <td className='px-4 py-3'>
                                     <div className='flex items-center'>
                                         <span>{shorten(user._id)}</span>
                                         {/* <CopyToClipboard text={user._id}>
@@ -479,17 +479,17 @@ const UsersContent = ({ list, token, shorten }) => {
                                     </div>
                                 </td>
 
-                                <td className='px-5 py-3'>{user.role}</td>
-                                <td className='px-5 py-3'>
+                                <td className='px-4 py-3'>{user.role}</td>
+                                <td className='px-4 py-3'>
                                     <div className='flex items-center'>
                                         <img src={user.profileUrl || Avatar} alt='Profile' className='w-10 h-10 rounded-full' />
                                     </div>
                                 </td>
-                                <td className='px-5 py-3'>{user.name}</td>
-                                <td className='px-5 py-3'>{user.email}</td>
-                                <td className='px-5 py-3'>{user.phone}</td>
-                                <td className='px-5 py-3'>{user.address}</td>
-                                <td className='px-5 py-3 font-medium'>
+                                <td className='px-4 py-3'>{user.username}</td>
+                                <td className='px-4 py-3'>{user.email}</td>
+                                <td className='px-4 py-3'>{user.phone}</td>
+                                <td className='px-4 py-3'>{user.address}</td>
+                                <td className='px-4 py-3 font-medium'>
                                     <button className='text-blue-500 hover:opacity-80' onClick={() => clickEdit(user)}> Edit </button>
                                     <button className='text-red-500 hover:opacity-80 ml-3' onClick={() => handleDelete(user._id)}> Delete </button>
                                 </td>
@@ -536,9 +536,9 @@ const UsersContent = ({ list, token, shorten }) => {
                             <div className='grid grid-cols-2 gap-4'>
                                 <input
                                     type='text'
-                                    name='name'
-                                    value={name}
-                                    placeholder='Name'
+                                    name='username'
+                                    value={username}
+                                    placeholder='Username'
                                     onChange={handleChange}
                                     className='p-3 shadow rounded'
                                 />
@@ -591,7 +591,7 @@ const MessagesContent = ({ list, token, shorten }) => {
     const handleReadMessage = async (messageId) => {
         try {
             const response = await axios.put(
-                `${process.env.REACT_APP_SERVER_URL}/message/update`, 
+                `${process.env.REACT_APP_SERVER_URL}/message/read`, 
                 { _id: messageId, status: 'Read' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -610,25 +610,25 @@ const MessagesContent = ({ list, token, shorten }) => {
                 <table className='min-w-max divide-y divide-gray-200'>
                     <thead className='bg-gray-50 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
                         <tr>
-                            <th className='px-5 py-3'> Actions </th>
-                            <th className='px-5 py-3'> Status </th>
-                            <th className='px-5 py-3'> ID </th>
-                            <th className='px-5 py-3'> Name </th>
-                            <th className='px-5 py-3'> Email </th>
-                            <th className='px-5 py-3'> Message </th>
+                            <th className='px-4 py-3'> Actions </th>
+                            <th className='px-4 py-3'> Status </th>
+                            <th className='px-4 py-3'> ID </th>
+                            <th className='px-4 py-3'> Subject </th>
+                            <th className='px-4 py-3'> Email </th>
+                            <th className='px-4 py-3'> Message </th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
                         {list.map((contact) => (
                             <tr key={contact._id}>
                                 {contact.status === 'Unread' ? (
-                                    <td className='px-6 py-4'>
+                                    <td className='px-4 py-3'>
                                         <button className='text-blue-500 hover:opacity-80 font-medium' onClick={() => handleReadMessage(contact._id)}>
                                             Mark as Read
                                         </button>
                                     </td>
                                 ) : (
-                                    <td className='px-6 py-4'>
+                                    <td className='px-4 py-3'>
                                         <button disabled className='text-gray-300 font-medium'>
                                             None
                                         </button>
@@ -636,12 +636,12 @@ const MessagesContent = ({ list, token, shorten }) => {
                                 )}
 
                                 {contact.status === 'Unread' ? (
-                                    <td className='px-5 py-3 text-red-500 font-medium'>{contact.status}</td>
+                                    <td className='px-4 py-3 text-red-500 font-medium'>{contact.status}</td>
                                 ) : (
-                                    <td className='px-5 py-3 text-green-500 font-medium'>{contact.status}</td>
+                                    <td className='px-4 py-3 text-green-500 font-medium'>{contact.status}</td>
                                 )}
 
-                                <td className='px-5 py-3'>
+                                <td className='px-4 py-3'>
                                     <div className='flex items-center'>
                                         <span>{shorten(contact._id)}</span>
                                         {/* <CopyToClipboard text={contact._id}>
@@ -652,9 +652,9 @@ const MessagesContent = ({ list, token, shorten }) => {
                                     </div>
                                 </td>
 
-                                <td className='px-5 py-3'>{contact.name}</td>
-                                <td className='px-5 py-3'>{contact.email}</td>
-                                <td className='px-5 py-3'>{contact.message}</td>
+                                <td className='px-4 py-3'>{contact.subject}</td>
+                                <td className='px-4 py-3'>{contact.email}</td>
+                                <td className='px-4 py-3'>{contact.message}</td>
                             </tr>
                         ))}
                     </tbody>

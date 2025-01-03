@@ -6,6 +6,10 @@ const EventSchema = new mongoose.Schema({
         ref: 'User', 
         required: true 
     },
+    posterUrl: {
+        type: String,
+        required: true,
+    },
     name: { 
         type: String, 
         required: true 
@@ -14,6 +18,14 @@ const EventSchema = new mongoose.Schema({
         type: Date, 
         required: true 
     },
+    category: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
     venue: [
         {
             name: { type: String, required: true },
@@ -21,10 +33,6 @@ const EventSchema = new mongoose.Schema({
             longitude: { type: Number, required: true }
         },
     ],
-    description: {
-        type: String,
-        required: true
-    },
     tiers: [
         {
             name: { type: String, required: true },

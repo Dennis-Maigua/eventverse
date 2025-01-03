@@ -17,9 +17,7 @@ const Layout = ({ children }) => {
     }
 
     const handleLogout = async () => {
-        signout(() => {
-            navigate('/signin');
-        });
+        signout(() => navigate('/signin'));
     };
 
     return (
@@ -66,8 +64,8 @@ const Layout = ({ children }) => {
                         {isAuth() && (
                             <div>
                                 <div className='flex items-center gap-2 cursor-pointer' onClick={() => { setDropdown(!dropdown) }}>
-                                    <img src={isAuth().profile || Avatar} alt='avatar' className='h-8 w-8 rounded-full object-cover border' />
-                                    <span className=''> {isAuth().name} </span>
+                                    <img src={isAuth().profileUrl || Avatar} alt='avatar' className='h-8 w-8 rounded-full object-cover border' />
+                                    <span className=''> {isAuth().username} </span>
                                 </div>
 
 
@@ -117,7 +115,7 @@ const Layout = ({ children }) => {
 
             <footer className="bg-gray-900 text-white p-4 bottom-0">
                 <div className="container mx-auto text-center">
-                    <p className="text-sm">&copy; 2024 EventVerse. All rights reserved.</p>
+                    <p className="text-sm">&copy; 2025 EventVerse. All rights reserved.</p>
                 </div>
             </footer>
         </div >

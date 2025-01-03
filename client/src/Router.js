@@ -6,17 +6,17 @@ import Signin from './auth/Signin';
 import Activate from './auth/Activate';
 import Forgot from './auth/Forgot';
 import Reset from './auth/Reset';
+import Profile from './auth/Profile';
 
 import UserRoute from './utils/UserRoute';
 import AdminRoute from './utils/AdminRoute';
 
-import Profile from './core/Profile';
+import Dashboard from './core/Dashboard';
 import CreateEvent from './core/CreateEvent';
 import MyEvents from './core/MyEvents';
 import MyTickets from './core/MyTickets';
 
 import Home from './pages/Home';
-import Dashboard from './pages/Dashboard';
 import Events from './pages/Events';
 import EventDetails from './pages/EventDetails';
 import About from './pages/About';

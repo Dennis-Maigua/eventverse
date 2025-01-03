@@ -5,7 +5,7 @@ const contactSchema = new mongoose.Schema({
         type: String,
         default: 'Unread',
     },
-    name: String,
+    subject: String,
     email: String,
     message: String
 }, { 

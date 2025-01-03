@@ -23,24 +23,20 @@ exports.loadProfile = async (req, res) => {
 };
 
 exports.updateProfile = async (req, res) => {
-    const { role, profileUrl, name, email, password, phone, address } = req.body;
+    const { password, ...rest } = req.body;
 
     try {
-        const updateFields = {};
-
-        if (role) updateFields.role = role.trim();
-        if (profileUrl) updateFields.profileUrl = profileUrl.trim();
-        if (name) updateFields.name = name.trim();
-        if (email) updateFields.email = email.trim();
-        if (phone) updateFields.phone = phone.trim();
-        if (address) updateFields.address = address.trim();
-
         const user = await User.findById(req.user._id);
         if (!user) {
             return res.status(404).json({
                 error: 'User not found!'
             });
         }
+
+        const updateFields = Object.fromEntries(
+            Object.entries(rest).filter(([_, value]) => 
+                value?.trim()).map(([key, value]) => [key, value.trim()])
+        );
 
         if (password) {
             user.password = password.trim();
@@ -54,13 +50,14 @@ exports.updateProfile = async (req, res) => {
             { new: true, runValidators: true }
         );
 
-        updatedUser.hashed_password = undefined;
-        updatedUser.salt = undefined;
-
         res.json({
             success: true,
             message: `Profile updated successfuly!`,
-            updatedUser
+            updatedUser: {
+                ...updatedUser.toObject(),
+                hashed_password: undefined,
+                salt: undefined,
+            }
         });
     }
 
@@ -129,20 +126,13 @@ exports.activeUsers = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-    const { id, role, profileUrl, name, email, phone, address } = req.body;
-
     try {
-        const updateFields = {};
-
-        if (role) updateFields.role = role.trim();
-        if (profileUrl) updateFields.profileUrl = profileUrl.trim();
-        if (name) updateFields.name = name.trim();
-        if (email) updateFields.email = email.trim();
-        if (phone) updateFields.phone = phone.trim();
-        if (address) updateFields.address = address.trim();
+        const updateFields = Object.fromEntries(
+            Object.entries(req.body).filter(([key, value]) => value?.trim())
+        );
 
         const user = await User.findByIdAndUpdate(
-            id,
+            req.body.id,
             { $set: updateFields },
             { new: true, runValidators: true }
         );
@@ -153,13 +143,14 @@ exports.updateUser = async (req, res) => {
             });
         }
 
-        user.hashed_password = undefined;
-        user.salt = undefined;
-
         res.json({
             success: true,
             message: `User updated successfuly!`,
-            user
+            user: { 
+                ...user.toObject(), 
+                hashed_password: undefined, 
+                salt: undefined 
+            }
         });
     }
 

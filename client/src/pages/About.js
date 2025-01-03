@@ -37,7 +37,7 @@ const About = () => {
             </div>
             
             <div className="py-16 text-center">
-                <h3 className="text-xl font-bold mb-10">Meet the Team</h3>
+                <h3 className="text-xl font-bold mb-8">Our Team</h3>
 
                 <div className="flex flex-wrap px-4 md:px-8">
                     <div className="w-full md:w-1/4 px-4 mb-4">

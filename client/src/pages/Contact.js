@@ -5,13 +5,13 @@ import axios from 'axios';
 
 const Contact = () => {
     const [values, setValues] = useState({
-        name: '',
+        subject: '',
         email: '',
         message: '',
         buttonText: 'Send Message'
     });
 
-    const { name, email, message, buttonText } = values;
+    const { subject, email, message, buttonText } = values;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,11 +25,11 @@ const Contact = () => {
         try {
             const response = await axios.post(
                 `${process.env.REACT_APP_SERVER_URL}/message/send`, 
-                { name, email, message }
+                { subject, email, message }
             );
 
             toast.success(response.data.message);
-            setValues({ ...values, name: '', email: '', message: '', buttonText: 'Sent' });
+            setValues({ ...values, subject: '', email: '', message: '', buttonText: 'Sent' });
         }
 
         catch (err) {
@@ -55,9 +55,9 @@ const Contact = () => {
                     <form onSubmit={handleSubmit} className='flex flex-col bg-slate-100 rounded shadow p-10 gap-4'>
                         <input
                             type='text'
-                            name='name'
-                            value={name}
-                            placeholder='Your Name'
+                            name='subject'
+                            value={subject}
+                            placeholder='Subject'
                             onChange={handleChange}
                             className='p-3 shadow rounded'
                         />
@@ -65,7 +65,7 @@ const Contact = () => {
                             type='email'
                             name='email'
                             value={email}
-                            placeholder='Your Email'
+                            placeholder='Email'
                             onChange={handleChange}
                             className='p-3 shadow rounded'
                         />
@@ -74,7 +74,7 @@ const Contact = () => {
                             type='text'
                             name='message'
                             value={message}
-                            placeholder='Your Message'
+                            placeholder='Message'
                             onChange={handleChange}
                             className='p-3 shadow rounded'
                         />

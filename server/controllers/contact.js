@@ -3,18 +3,18 @@ const Contact = require('../models/contact');
 const { contactEntryTemplate, mailTransport } = require('../utils/mail');
 
 exports.sendMessage = async (req, res) => {
-    const { name, email, message } = req.body;
+    const { subject, email, message } = req.body;
 
     try {
-        const contactMessage = new Contact({ name, email, message });
+        const contactMessage = new Contact({ subject, email, message });
 
         await contactMessage.save()
             .then(() => {
                 mailTransport().sendMail({
                     from: email,
                     to: process.env.APP_EMAIL,
-                    subject: 'Contact Form Message',
-                    html: contactEntryTemplate(name, email, message)
+                    subject: 'Contact Form Entry',
+                    html: contactEntryTemplate(subject, email, message)
                 });
 
                 return res.json({
@@ -36,7 +36,7 @@ exports.sendMessage = async (req, res) => {
     }
 };
 
-exports.update = async (req, res) => {
+exports.markRead = async (req, res) => {
     const { _id, status } = req.body;
 
     try {

@@ -19,8 +19,8 @@ const Activate = () => {
 
     useEffect(() => {
         if (token) {
-            const { name } = jwtDecode(token);
-            setValues({ ...values, name });
+            const { username } = jwtDecode(token);
+            setValues({ ...values, name: username });
         }
     }, [token]);
 

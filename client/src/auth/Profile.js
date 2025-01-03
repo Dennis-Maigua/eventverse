@@ -13,7 +13,7 @@ import Avatar from '../assets/avatar.png';
 const Profile = () => {
     const [values, setValues] = useState({
         role: '',
-        name: '',
+        username: '',
         email: '',
         password: '',
         profileUrl: '',
@@ -22,22 +22,17 @@ const Profile = () => {
         buttonText: 'Update'
     });
 
+    const navigate = useNavigate();
     const fileRef = useRef(null);
-    const [image, setImage] = useState(null);
     const [imageError, setImageError] = useState(false);
     const [imagePercent, setImagePercent] = useState(0);
 
     useEffect(() => {
         loadProfile();
-
-        if (image) {
-            handleUpload(image);
-        }
-    }, [image]);
+    }, []);
 
     const token = getCookie('token');
-    const navigate = useNavigate();
-    const { role, profileUrl, name, email, password, phone, address, buttonText } = values;
+    const { role, profileUrl, username, email, password, phone, address, buttonText } = values;
 
     const handleUpload = async (image) => {
         if (image.size > 2 * 1024 * 1024) {
@@ -57,6 +52,7 @@ const Profile = () => {
             },
             (error) => {
                 setImageError(true);
+                console.log(error);
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -74,17 +70,15 @@ const Profile = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            const { role, profileUrl, name, email, phone, address } = response.data;
-            setValues({ ...values, role, profileUrl, name, email, phone, address });
+            const { role, profileUrl, username, email, phone, address } = response.data;
+            setValues({ ...values, role, profileUrl, username, email, phone, address });
         }
 
         catch (err) {
             toast.error(err.response?.data?.error);
 
             if (err.response.status === 401) {
-                signout(() => {
-                    navigate('/signin')
-                });
+                signout(() => navigate('/signin'));
             }
         }
     };
@@ -97,10 +91,6 @@ const Profile = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
         setValues({ ...values, buttonText: 'Updating' });
-
-        if (image) {
-            await handleUpload(image);
-        }
 
         try {
             const response = await axios.put(
@@ -133,9 +123,7 @@ const Profile = () => {
 
                 toast.success(response.data.message);
 
-                signout(() => {
-                    navigate('/signin');
-                });
+                signout(() => navigate('/signin'));
             }
 
             catch (err) {
@@ -160,40 +148,41 @@ const Profile = () => {
                         type='file'
                         ref={fileRef}
                         accept='image/*'
-                        onChange={(e) => setImage(e.target.files[0])}
+                        onChange={(e) => {
+                            const selectedFile = e.target.files[0];
+                            if (selectedFile) {
+                                handleUpload(selectedFile);
+                            }
+                        }}
                         hidden
                     />
                     <img
-                        src={profileUrl || values.profileUrl || Avatar}
+                        src={profileUrl || Avatar}
                         alt='avatar'
                         name='profileUrl'
                         className='h-24 w-24 rounded-full self-center border object-cover cursor-pointer'
                         onClick={() => fileRef.current.click()}
                     />
-                    <div className='text-sm text-center font-medium'>
+                    <div className='text-sm font-medium'>
                         {imageError ? (
                             <span className='text-red-500'>
-                                Error! File size must be less than 2 MB.
+                                File size must be less than 2 MB!
                             </span>
-                        )
-                            : imagePercent > 0 && imagePercent < 100 ? (
-                                <span className='text-slate-500'>
-                                    Uploading: {imagePercent} %
-                                </span>
-                            )
-                                : imagePercent === 100 ? (
-                                    <span className='text-green-500'>
-                                        Image uploaded successfully!
-                                    </span>
-                                )
-                                    : null
-                        }
+                        ) : imagePercent > 0 && imagePercent < 100 ? (
+                            <span className='text-blue-500'>
+                                Uploading: {imagePercent} %
+                            </span>
+                        ) : imagePercent === 100 ? (
+                            <span className='text-green-500'>
+                                Image uploaded successfully!
+                            </span>
+                        ) : null}
                     </div>
 
                     <div className='grid grid-cols-2 gap-4'>
                         <select
                             name='role'
-                            value={role}
+                            value={role || ''}
                             onChange={handleChange}
                             className={`p-3 shadow rounded ${isAuth().role === 'user' ? 'bg-gray-100' : ''}`}
                             disabled={isAuth().role === 'user'}
@@ -202,11 +191,10 @@ const Profile = () => {
                             <option value='user'> user </option>
                             <option value='admin'> admin </option>
                         </select>
-
                         <input
                             type='email'
                             name='email'
-                            value={email}
+                            value={email || ''}
                             placeholder='Email'
                             onChange={handleChange}
                             className='p-3 shadow rounded'
@@ -217,16 +205,16 @@ const Profile = () => {
                     <div className='grid grid-cols-2 gap-4'>
                         <input
                             type='text'
-                            name='name'
-                            value={name}
-                            placeholder='Name'
+                            name='username'
+                            value={username || ''}
+                            placeholder='Username'
                             onChange={handleChange}
                             className='p-3 shadow rounded'
                         />
                         <input
                             type='password'
                             name='password'
-                            value={password}
+                            value={password || ''}
                             placeholder='Password'
                             onChange={handleChange}
                             className='p-3 shadow rounded'
@@ -237,7 +225,7 @@ const Profile = () => {
                         <input
                             type='phone'
                             name='phone'
-                            value={phone}
+                            value={phone || ''}
                             placeholder='Phone'
                             onChange={handleChange}
                             className='p-3 shadow rounded'
@@ -245,12 +233,13 @@ const Profile = () => {
                         <input
                             type='text'
                             name='address'
-                            value={address}
+                            value={address || ''}
                             placeholder='Address'
                             onChange={handleChange}
                             className='p-3 shadow rounded'
                         />
                     </div>
+                    
                     <input
                         type='submit'
                         value={buttonText}

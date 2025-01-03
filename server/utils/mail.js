@@ -54,7 +54,7 @@ exports.activateAccountTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Verification Pending </h1>
+                <h1> Pending </h1>
                 <p> This link is only valid for 1 hour and will expire after first use. </p>
                 <a href="${url}"> 
                     <button> Activate </button> 
@@ -101,7 +101,7 @@ exports.activationSuccessTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Sign Up Complete </h1>
+                <h1> Success </h1>
                 <p> Your account has been activated successfully! </p>
                 <a href="${url}"> 
                     <button> Sign In </button> 
@@ -148,7 +148,7 @@ exports.resetPasswordTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Reset Pending </h1>
+                <h1> Pending </h1>
                 <p> This link is only valid for 1 hour and will expire after use. </p>
                 <a href="${url}"> 
                     <button> Reset </button> 
@@ -195,7 +195,7 @@ exports.resetSuccessTemplate = url => {
         </head>
         <body>
             <div>
-                <h1> Reset Complete </h1>
+                <h1> Complete </h1>
                 <p> Your password has been reset successfully! </p>
                 <a href="${url}"> 
                     <button> Sign In </button> 
@@ -208,7 +208,7 @@ exports.resetSuccessTemplate = url => {
     `;
 };
 
-exports.contactEntryTemplate = (name, email, message) => {
+exports.contactEntryTemplate = (subject, email, message) => {
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -252,7 +252,7 @@ exports.contactEntryTemplate = (name, email, message) => {
                 <span> You have received the following message from a user: </span>
                 <div class="container">
                     <p>
-                        <strong> Name: </strong> ${name}
+                        <strong> Subject: </strong> ${subject}
                     </p>
                     <p>
                         <strong> Email: </strong> ${email}
