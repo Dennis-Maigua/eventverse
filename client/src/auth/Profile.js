@@ -143,7 +143,7 @@ const Profile = () => {
             </div>
 
             <div className='max-w-2xl m-auto text-center flex flex-col gap-4 px-4 md:px-8 py-16'>
-                <form onSubmit={handleUpdate} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
+                <form onSubmit={handleUpdate} className='p-10 flex flex-col border shadow-lg rounded-lg gap-4 bg-slate-100'>
                     <input
                         type='file'
                         ref={fileRef}
@@ -160,7 +160,7 @@ const Profile = () => {
                         src={profileUrl || Avatar}
                         alt='avatar'
                         name='profileUrl'
-                        className='h-24 w-24 rounded-full self-center border object-cover cursor-pointer'
+                        className='h-24 w-24 rounded-full self-center border shadow-lg object-cover cursor-pointer'
                         onClick={() => fileRef.current.click()}
                     />
                     <div className='text-sm font-medium'>

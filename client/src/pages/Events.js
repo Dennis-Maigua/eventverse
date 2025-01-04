@@ -26,6 +26,13 @@ const Events = () => {
         }
     };
 
+    const getLowestPrice = (tiers) => {
+        if (tiers && tiers.length > 0) {
+            return Math.min(...tiers.map(tier => tier.price));
+        }
+        return 0; // Default if no tiers are available
+    };
+
     return (
         <Layout>
             <ToastContainer />
@@ -42,20 +49,34 @@ const Events = () => {
                     No events created yet.
                 </h1>
             ) : (
-                <ul>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-16 px-8 md:px-16 py-16">
                     {events.map(event => (
-                        <li key={event._id}>
-                            <h2>{event.name}</h2>
-                            <p>{event.description}</p>
-                            <p>Date: {new Date(event.date).toLocaleDateString()}</p>
-                            <p>Price: {event.price}</p>
-                            <p>Tickets Remaining: {event.ticketRemaining}</p>
-                            <Link to={`/event/${event._id}`}>
-                                View Details
-                            </Link>
-                        </li>
+                        <Link
+                            to={`/event/${event._id}`}
+                            key={event._id}
+                            className="block bg-white border shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-200"
+                        >
+                            <img
+                                src={event.posterUrl}
+                                alt={event.name}
+                                className="h-60 w-60 object-cover"
+                            />
+                            <div className="p-4 flex flex-col gap-2">
+                                <h2 className="text-lg font-semibold text-gray-800 truncate">{event.name}</h2>
+                                <p className="text-sm text-gray-600">
+                                    {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(event.date))}
+                                    {" - " + new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </p>
+                                <p className="text-sm text-gray-600 font-semibold truncate">
+                                    {event.venue[0].name}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    Starting from <span className="text-red-500 font-bold"> ${getLowestPrice(event.tiers)} </span>
+                                </p>
+                            </div>
+                        </Link>
                     ))}
-                </ul>    
+                </div>    
             )}
         </Layout>
     );

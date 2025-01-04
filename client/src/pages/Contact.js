@@ -52,7 +52,7 @@ const Contact = () => {
             <div className="flex flex-wrap py-16 px-4 md:px-8">
                 <div className="w-full md:w-1/2 px-8 mb-16 md:mb-0">
                     <h3 className='text-xl font-bold mb-8'> Get in Touch </h3>
-                    <form onSubmit={handleSubmit} className='flex flex-col bg-slate-100 rounded shadow p-10 gap-4'>
+                    <form onSubmit={handleSubmit} className='flex flex-col bg-slate-100 rounded-lg border shadow-lg p-10 gap-4'>
                         <input
                             type='text'
                             name='subject'

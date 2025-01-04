@@ -64,10 +64,9 @@ const Layout = ({ children }) => {
                         {isAuth() && (
                             <div>
                                 <div className='flex items-center gap-2 cursor-pointer' onClick={() => { setDropdown(!dropdown) }}>
-                                    <img src={isAuth().profileUrl || Avatar} alt='avatar' className='h-8 w-8 rounded-full object-cover border' />
-                                    <span className=''> {isAuth().username} </span>
+                                    <img src={isAuth()?.profileUrl || Avatar} alt='avatar' className='h-8 w-8 rounded-full object-cover border' />
+                                    <span className=''> {isAuth()?.username} </span>
                                 </div>
-
 
                                 {dropdown ? (
                                     <div className='bg-gray-800 absolute right-4 md:right-0 top-16 w-40 round shadow'>

@@ -41,7 +41,7 @@ const CreateEvent = () => {
 
     const token = getCookie('token');
     const { posterUrl, name, date, category, description, buttonText } = values;
-    const categories = ["Arts", "Business", "Culture", "Music", "Sports", "Technology"];
+    const categories = ["Arts", "Business", "Entertainment", "Socio-Cultural", "Sports", "Technology"];
 
     const { isLoaded } = useJsApiLoader({
       id: 'google-map-script',
@@ -156,7 +156,7 @@ const CreateEvent = () => {
             </div>
             
             <div className='max-w-2xl m-auto text-center px-4 md:px-8 py-16'>
-                <form onSubmit={handleCreate} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
+                <form onSubmit={handleCreate} className='p-10 flex flex-col border shadow-lg rounded-lg gap-4 bg-slate-100'>
                     <input
                         type='file'
                         ref={fileRef}
@@ -173,7 +173,7 @@ const CreateEvent = () => {
                         src={posterUrl || Cover}
                         alt='cover'
                         name='posterUrl'
-                        className='h-40 w-40 self-center border object-cover cursor-pointer'
+                        className='h-40 w-40 self-center border shadow-lg object-cover cursor-pointer'
                         onClick={() => fileRef.current.click()}
                     />
                     <div className='text-sm text-center font-medium'>

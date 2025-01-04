@@ -27,7 +27,7 @@ exports.createEvent = async (req, res) => {
 
         // Validate tiers
         for (const tier of tiers) {
-            if (!tier.name || !tier.price || tier.price <= 0 || tier.ticketCount <= 0) {
+            if (!tier.name || !tier.price || tier.ticketCount <= 0) {
                 return res.status(400).json({
                     error: 'Enter a valid ticket name, price, and quantity!',
                 });
@@ -88,9 +88,7 @@ exports.myEvents = async (req, res) => {
     }
 };
 
-exports.updateEvent = async (req, res) => {
-    const { posterUrl, name, date, category, description, venue } = req.body;
-    
+exports.updateEvent = async (req, res) => {    
     try {
         const event = await Event.findById(req.params.id);
 
@@ -106,16 +104,11 @@ exports.updateEvent = async (req, res) => {
             });
         }
 
-        event.posterUrl = posterUrl || event.posterUrl;
-        event.name = name || event.name;
-        event.date = date || event.date;
-        event.category = category || event.category;
-        event.description = description || event.description;
-        event.venue = venue || event.venue;
+        Object.assign(event, { ...req.body });
 
         await event.save();
-        console.log('UPDATE EVENT SUCCESSFUL:', event)
 
+        console.log('UPDATE EVENT SUCCESSFUL:', event)
         res.json({ 
             success: true,
             message: 'Event updated successfully!', 

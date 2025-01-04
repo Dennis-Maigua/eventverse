@@ -502,7 +502,7 @@ const UsersContent = ({ list, token, shorten }) => {
             {editUser && (
                 <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
                     <div className='fixed inset-0 bg-black opacity-50'></div>
-                    <div className='bg-white rounded-lg shadow-lg p-10 z-10 max-w-2xl w-full'>
+                    <div className='bg-white rounded-lg border shadow-lg p-10 z-10 max-w-2xl w-full'>
                         <div className='text-center mb-10'>
                             <h1 className='text-3xl font-semibold mb-6'> Edit User </h1>
                             <span className='font-semibold'> ID: </span>

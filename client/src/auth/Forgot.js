@@ -55,7 +55,7 @@ const Forgot = () => {
 
             {!requested && (
                 <div className='max-w-lg m-auto text-center flex flex-col gap-4 px-4 md:px-8 py-16'>
-                    <form onSubmit={clickSubmit} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
+                    <form onSubmit={clickSubmit} className='p-10 flex flex-col border shadow-lg rounded-lg gap-4 bg-slate-100'>
                         <input
                             type='email'
                             name='email'

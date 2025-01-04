@@ -21,8 +21,8 @@ const MyEvents = () => {
         name: '',
         date: '',
         category: '',
-        locality: '',
         description: '',
+        locality: '',
         buttonText: 'Update'
     });
     const [venue, setVenue] = useState([{ 
@@ -37,8 +37,8 @@ const MyEvents = () => {
     const [imagePercent, setImagePercent] = useState(0);
     
     const token = getCookie('token');
-    const { id, posterUrl, name, date, category, locality, description, buttonText } = values;
-    const categories = ["Arts", "Business", "Culture", "Music", "Sports", "Technology"];
+    const { id, posterUrl, name, date, category, description, locality, buttonText } = values;
+    const categories = ["Arts", "Business", "Entertainment", "Socio-Cultural", "Sports", "Technology"];
 
     useEffect(() => {
         loadMyEvents();
@@ -123,7 +123,7 @@ const MyEvents = () => {
             const long = place[0].geometry.location.lng();
 
             setVenue([{ name: address, latitude: lat, longitude: long }]);
-            setValues({ ...values, locality: address });
+            setValues((prevValues) => ({ ...prevValues, locality: address }));
         }
     };
 
@@ -134,7 +134,7 @@ const MyEvents = () => {
         try {
             const response = await axios.put(
                 `${process.env.REACT_APP_SERVER_URL}/event/update/${id}`, 
-                values,
+                { ...values, venue },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -192,8 +192,8 @@ const MyEvents = () => {
                         <table className='min-w-full divide-y divide-gray-200'>
                             <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
                                 <tr>
-                                    <th className='p-2'> Name </th>
                                     <th className='p-2'> Poster </th>
+                                    <th className='p-2'> Name </th>
                                     <th className='p-2'> Date </th>
                                     <th className='p-2'> Time </th>
                                     <th className='p-2'> Category </th>
@@ -215,7 +215,7 @@ const MyEvents = () => {
                                                 className='h-10 w-10 self-center border object-cover'
                                             />
                                         </td>
-                                        <td className='p-2'>{event.name}</td>
+                                        <td className='p-2 truncate'>{event.name}</td>
                                         <td className='p-2'>
                                             {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(event.date))}
                                         </td>
@@ -223,7 +223,7 @@ const MyEvents = () => {
                                             {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </td>
                                         <td className='p-2'>{event.category}</td>
-                                        <td className='p-2'>
+                                        <td className='p-2 truncate'>
                                             {event.venue.map((v, index) => (
                                                 <div key={index}>
                                                     {v.name}
@@ -264,7 +264,7 @@ const MyEvents = () => {
                     {editEvent && (
                         <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
                             <div className='fixed inset-0 bg-black opacity-50'></div>
-                            <div className='max-w-2xl m-auto bg-slate-100 rounded-lg shadow-lg p-10 z-10'>
+                            <div className='max-w-2xl m-auto bg-slate-100 rounded-lg border shadow-lg p-10 z-10'>
                                 <div className='flex flex-col items-center text-center mb-10'>
                                     <input
                                         type='file'
@@ -280,9 +280,9 @@ const MyEvents = () => {
                                     />
                                     <img
                                         src={posterUrl}
-                                        alt='cover'
+                                        alt={name}
                                         name='posterUrl'
-                                        className='h-24 w-24 rounded-full self-center border object-cover cursor-pointer'
+                                        className='h-24 w-24 self-center border shadow-lg object-cover cursor-pointer'
                                         onClick={() => fileRef.current.click()}
                                     />
                                     <div className='text-sm font-medium'>
@@ -301,7 +301,9 @@ const MyEvents = () => {
                                         ) : null}
                                     </div>
 
-                                    <p className='mt-4 font-semibold'>Event ID: </p> {id}
+                                    <p className='mt-4 text-red-500'>
+                                        Event ID: <span className='text-gray-600 font-semibold'> {id} </span>
+                                    </p>
                                 </div>
 
                                 <form onSubmit={handleUpdate} className='flex flex-col gap-4'>
@@ -309,7 +311,7 @@ const MyEvents = () => {
                                         <input
                                             type="text"
                                             name="name"
-                                            value={name || ''}
+                                            value={name}
                                             placeholder="Event Name"
                                             onChange={handleChange}
                                             className='p-3 shadow rounded'
@@ -317,7 +319,7 @@ const MyEvents = () => {
                                         <input
                                             type="datetime-local"
                                             name="date"
-                                            value={date || ''}
+                                            value={date}
                                             placeholder="Event Date"
                                             onChange={handleChange}
                                             className='p-3 shadow rounded'
@@ -327,7 +329,7 @@ const MyEvents = () => {
                                     <div className='flex flex-row gap-4'>
                                         <select
                                             name="category"
-                                            value={category || ''}
+                                            value={category}
                                             onChange={handleChange}
                                             className='w-3/8 p-3 shadow rounded'
                                         >
@@ -350,13 +352,13 @@ const MyEvents = () => {
                                     
                                     {isLoaded && (
                                         <StandaloneSearchBox
-                                            onLoad={ref => inputRef.current = ref}
+                                            onLoad={(ref) => inputRef.current = ref}
                                             onPlacesChanged={handleOnPlacesChanged}                       
                                         >
                                             <input
                                                 type="text"
                                                 name="locality"
-                                                value={locality || ''}
+                                                value={locality}
                                                 placeholder="Event Location"
                                                 onChange={handleChange}
                                                 className='w-full p-3 shadow rounded'

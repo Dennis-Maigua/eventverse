@@ -67,14 +67,14 @@ const HowItWorksSection = () => {
                 <div className="w-1/3 lg:w-1/6 px-2 mb-4">
                     <div className="flex flex-col items-center bg-white rounded-lg shadow py-4">
                         <img src={Logo} className='h-12' alt='logo' />
-                        <h3> Culture </h3>
+                        <h3> Entertainment </h3>
                     </div>
                 </div>
 
                 <div className="w-1/3 lg:w-1/6 px-2">
                     <div className="flex flex-col items-center bg-white rounded-lg shadow py-4">
                         <img src={Logo} className='h-12' alt='logo' />
-                        <h3> Music </h3>
+                        <h3> Socio-Cultural </h3>
                     </div>
                 </div>
 
