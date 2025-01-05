@@ -1,4 +1,5 @@
 const Event = require('../models/event');
+const Ticket = require('../models/ticket');
 
 exports.createEvent = async (req, res) => {
     const { posterUrl, name, date, category, description, venue, tiers } = req.body;
@@ -27,7 +28,7 @@ exports.createEvent = async (req, res) => {
 
         // Validate tiers
         for (const tier of tiers) {
-            if (!tier.name || !tier.price || tier.ticketCount <= 0) {
+            if (!tier.name || !tier.price || !tier.price <= 0 || tier.ticketCount <= 0) {
                 return res.status(400).json({
                     error: 'Enter a valid ticket name, price, and quantity!',
                 });
@@ -76,14 +77,14 @@ exports.myEvents = async (req, res) => {
             });
         }
 
-        console.log('LOAD MY EVENTS SUCCESSFUL: ', events)
+        console.log('LOAD USER EVENTS SUCCESSFUL: ', events);
         return res.json(events);
     } 
     
     catch (err) {
-        console.log('ERROR LOADING MY EVENTS: ', err);
+        console.log('ERROR LOADING USER EVENTS: ', err);
         return res.status(500).json({
-            error: 'Error loading my events!'
+            error: 'Error loading user events!'
         });
     }
 };
@@ -190,6 +191,93 @@ exports.loadDetails = async (req, res) => {
         console.log('ERROR LOADING EVENT DETAILS: ', err);
         return res.status(500).json({
             error: 'Error loading event details!'
+        });
+    }
+};
+
+exports.buyTickets = async (req, res) => {
+    const { eventId, tickets } = req.body; // Array of { tierId, quantity }
+    const userId = req.user._id;
+
+    try {
+        const event = await Event.findById(eventId);
+
+        if (!event) {
+            return res.status(404).json({ 
+                error: 'Event not found!' 
+            });
+        }
+
+        let validationError = null;
+        tickets.forEach(ticket => {
+            const tier = event.tiers.id(ticket.tierId);
+            if (!tier || tier.ticketRemaining < ticket.quantity) {
+                validationError = `Not enough ${tier ? tier.name : 'selected'} tickets available!`;
+            }
+        });
+        
+        // If there was a validation error, return the response and skip saving
+        if (validationError) {
+            return res.status(400).json({ 
+                error: validationError 
+            });
+        }
+        
+        // Update the tiers only if validation passed
+        tickets.forEach(ticket => {
+            const tier = event.tiers.id(ticket.tierId);
+            tier.ticketRemaining -= ticket.quantity;
+        });
+
+        await event.save();
+
+        const userTickets = new Ticket({
+            eventId,
+            userId,
+            tiers: tickets.map(ticket => {
+                const tier = event.tiers.id(ticket.tierId); // Not making sense
+                return {
+                    name: tier.name,
+                    price: tier.price,
+                    quantity: ticket.quantity,
+                };
+            }),
+        });
+
+        await userTickets.save();
+
+        console.log('TICKETS PURCHASE SUCCESSFUL: ', userTickets);
+        return res.json({ 
+            success: true,
+            message: 'Tickets purchased successfully!', 
+            userTickets
+        });
+    }
+    
+    catch (err) {
+        console.log('ERROR PURCHASING TICKETS: ', err);
+        return res.status(500).json({
+            error: 'Error purchasing tickets!'
+        });
+    }
+};
+
+exports.myTickets = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        // Fetch tickets purchased by the user
+        const tickets = await Ticket.find({ userId })
+            .populate('eventId', 'name date venue');
+
+        console.log('LOAD USER TICKETS SUCCESSFUL: ', tickets);
+        return res.json(tickets);
+    } 
+    
+    catch (err) {
+        console.log('ERROR LOADING USER TICKETS: ', err);
+        return res.status(500).json({
+            error: 'Error loading user tickets!'
         });
     }
 };

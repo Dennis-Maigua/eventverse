@@ -49,7 +49,7 @@ const Events = () => {
                     No events created yet.
                 </h1>
             ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-16 px-8 md:px-16 py-16">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8 px-8 md:px-16 py-16">
                     {events.map(event => (
                         <Link
                             to={`/event/${event._id}`}
@@ -62,16 +62,16 @@ const Events = () => {
                                 className="h-60 w-60 object-cover"
                             />
                             <div className="p-4 flex flex-col gap-2">
-                                <h2 className="text-lg font-semibold text-gray-800 truncate">{event.name}</h2>
-                                <p className="text-sm text-gray-600">
+                                <h2 className="text-lg font-semibold text-gray-600 truncate">{event.name}</h2>
+                                <p className="text-sm text-slate-400">
                                     {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(event.date))}
-                                    {" - " + new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    {" " + new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </p>
-                                <p className="text-sm text-gray-600 font-semibold truncate">
+                                <p className="text-sm italic text-gray-600 truncate">
                                     {event.venue[0].name}
                                 </p>
-                                <p className="text-sm text-gray-600">
-                                    Starting from <span className="text-red-500 font-bold"> ${getLowestPrice(event.tiers)} </span>
+                                <p className="text-red-400 font-semibold">
+                                    From ${getLowestPrice(event.tiers)}
                                 </p>
                             </div>
                         </Link>

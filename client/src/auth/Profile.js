@@ -12,11 +12,10 @@ import Avatar from '../assets/avatar.png';
 
 const Profile = () => {
     const [values, setValues] = useState({
-        role: '',
+        profileUrl: '',
         username: '',
         email: '',
         password: '',
-        profileUrl: '',
         phone: '',
         address: '',
         buttonText: 'Update'
@@ -32,7 +31,7 @@ const Profile = () => {
     }, []);
 
     const token = getCookie('token');
-    const { role, profileUrl, username, email, password, phone, address, buttonText } = values;
+    const { profileUrl, username, email, password, phone, address, buttonText } = values;
 
     const handleUpload = async (image) => {
         if (image.size > 2 * 1024 * 1024) {
@@ -70,8 +69,8 @@ const Profile = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            const { role, profileUrl, username, email, phone, address } = response.data;
-            setValues({ ...values, role, profileUrl, username, email, phone, address });
+            const { profileUrl, username, email, phone, address } = response.data;
+            setValues({ ...values, profileUrl, username, email, phone, address });
         }
 
         catch (err) {
@@ -179,28 +178,7 @@ const Profile = () => {
                         ) : null}
                     </div>
 
-                    <div className='grid grid-cols-2 gap-4'>
-                        <select
-                            name='role'
-                            value={role || ''}
-                            onChange={handleChange}
-                            className={`p-3 shadow rounded ${isAuth().role === 'user' ? 'bg-gray-100' : ''}`}
-                            disabled={isAuth().role === 'user'}
-                        >
-                            <option value='' disabled> Select Role </option>
-                            <option value='user'> user </option>
-                            <option value='admin'> admin </option>
-                        </select>
-                        <input
-                            type='email'
-                            name='email'
-                            value={email || ''}
-                            placeholder='Email'
-                            onChange={handleChange}
-                            className='p-3 shadow rounded'
-                            disabled={isAuth().role === 'user'}
-                        />
-                    </div>
+                    <p className='mb-4 text-red-500 font-semibold'> {email} </p>
 
                     <div className='grid grid-cols-2 gap-4'>
                         <input

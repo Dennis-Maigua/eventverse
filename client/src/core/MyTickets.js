@@ -8,16 +8,7 @@ import { getCookie, isAuth } from '../utils/helpers';
 
 const MyTickets = () => {
     const [tickets, setTickets] = useState([]);
-    const [transferTickets, setTransferTickets] = useState(null);
-    const [values, setValues] = useState({ 
-        eventId: '', 
-        quantity: 0, 
-        recipient: '',
-        buttonText: 'Send'
-    });
-
     const token = getCookie('token');
-    const { eventId, quantity, recipient, buttonText } = values;
 
     useEffect(() => {
         loadTickets();
@@ -40,49 +31,6 @@ const MyTickets = () => {
         }
     };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setValues({ ...values, [name]: value });
-    };
-
-    const clickTransfer = (ticket) => {
-        setTransferTickets(ticket);
-        setValues({
-            ...values,
-            eventId: ticket.eventId,
-            quantity: ticket.quantity,
-            recipient: ''
-        });
-    };
-
-    const handleTransfer = async (e) => {
-        e.preventDefault();
-        setValues({ ...values, buttonText: 'Sending...' });
-
-        const confirmTransfer = window.confirm('Are you sure you want to transfer your tickets?');
-
-        if (confirmTransfer) {
-            try {
-                const response = await axios.post(
-                    `${process.env.REACT_APP_SERVER_URL}/tickets/transfer`, 
-                    values, 
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-                
-                setTransferTickets(null);
-                console.log('TICKET TRANSFER SUCCESSFUL: ', response);
-                toast.success(response.data.message);
-                window.location.reload();
-            } 
-            
-            catch (err) {
-                setValues({ ...values, buttonText: 'Send' });
-                console.log('ERROR TRANSFERRING TICKET: ', err);
-                toast.error(err.response?.data?.error);
-            }
-        }
-    };
-
     return (
         <Layout>
             <ToastContainer />
@@ -100,52 +48,62 @@ const MyTickets = () => {
                     No tickets purchased yet.
                 </h1>
             ) : (
-                <ul>
-                    {tickets.map(ticket => (
-                        <li key={ticket._id}>
-                            <h2>{ticket.eventId.name}</h2>
-                            <p>Quantity: {ticket.quantity}</p>
-                            <p>Purchased On: {new Date(ticket.purchaseDate).toLocaleDateString()}</p>
-                            <button className='text-blue-500 hover:opacity-80' onClick={() => clickTransfer(ticket)}> Transfer </button>
-                        </li>
-                    ))}
-                </ul>
-            )}
-
-            {transferTickets && (
-                <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
-                    <div className='fixed inset-0 bg-black opacity-50'></div>
-                    <div className='bg-white rounded-lg border shadow-lg p-10 z-10 max-w-2xl w-full'>
-                        <div className='text-center mb-10'>
-                            <h1 className='text-3xl font-semibold mb-6'> Transfer Tickets </h1>
-                            <span className='font-semibold'> Event ID: </span>
-                            <span className=''> {eventId} </span>
-                        </div>
-
-                        <form onSubmit={handleTransfer} className='flex flex-col gap-4'>
-                            <div className='grid grid-cols-2 gap-4'>
-                                <input
-                                    type="number"
-                                    name="quantity"
-                                    placeholder="Quantity"
-                                    value={quantity}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    type="text"
-                                    name="recipient"
-                                    placeholder="Recipient Email"
-                                    value={recipient}
-                                    onChange={handleChange}
-                                />
-                            </div>
-
-                            <input
-                                type='submit'
-                                value={buttonText}
-                            />
-                            <button type='button' onClick={() => setTransferTickets(null)}> Cancel </button>
-                        </form>
+                <div className='max-w-3xl md:min-w-full mx-auto bg-white rounded-lg shadow p-4'>
+                    <div className='overflow-x-auto'>
+                        <table className='min-w-full divide-y divide-gray-200'>
+                            <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
+                                <tr>
+                                    <th className='p-2'> Event </th>
+                                    <th className='p-2'> Date </th>
+                                    <th className='p-2'> Time </th>
+                                    <th className='p-2'> Venue </th>
+                                    <th className='p-2'> Tier </th>
+                                    <th className='p-2'> Quantity </th>
+                                    <th className='p-2'> Total </th>
+                                </tr>
+                            </thead>
+                            <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
+                                {tickets.map(ticket => (
+                                    <tr key={ticket._id}>
+                                        <td className='p-2 truncate'>{ticket.eventId.name}</td>
+                                        <td className='p-2'>
+                                            {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(ticket.eventId.date))}
+                                        </td>
+                                        <td className='p-2'>
+                                            {new Date(ticket.eventId.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </td>
+                                        <td className='p-2 truncate'>
+                                            {ticket.eventId.venue.map((v, index) => (
+                                                <div key={index}>
+                                                    {v.name}
+                                                </div>
+                                            ))}
+                                        </td>
+                                        <td className='p-2'>
+                                            {ticket.tiers.map((tier, index) => (
+                                                <div key={index}>
+                                                    {tier.name} @ ${tier.price}
+                                                </div>
+                                            ))}
+                                        </td>
+                                        <td className='p-2'>
+                                            {ticket.tiers.map((tier, index) => (
+                                                <div key={index}>
+                                                    {tier.quantity}
+                                                </div>
+                                            ))}
+                                        </td>
+                                        <td className='p-2'>
+                                            {ticket.tiers.map((tier, index) => (
+                                                <div key={index}>
+                                                    ${tier.price * tier.quantity}
+                                                </div>
+                                            ))}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             )}

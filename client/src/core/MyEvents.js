@@ -301,8 +301,8 @@ const MyEvents = () => {
                                         ) : null}
                                     </div>
 
-                                    <p className='mt-4 text-red-500'>
-                                        Event ID: <span className='text-gray-600 font-semibold'> {id} </span>
+                                    <p className='mt-4 text-gray-600'>
+                                        Event ID: <span className='text-red-600 font-semibold'> {id} </span>
                                     </p>
                                 </div>
 

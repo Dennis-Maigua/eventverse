@@ -11,14 +11,14 @@ const TicketSchema = new mongoose.Schema({
         ref: 'User', 
         required: true 
     },
-    quantity: { 
-        type: Number, 
-        required: true 
-    },
-    purchaseDate: { 
-        type: Date, 
-        default: Date.now 
-    },
+    tiers: [
+        {
+            name: { type: String, required: true },
+            price: { type: Number, required: true },
+            quantity: { type: Number, required: true }
+        },
+    ],
+    purchaseDate: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('Ticket', TicketSchema);

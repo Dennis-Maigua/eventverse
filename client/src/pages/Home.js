@@ -11,7 +11,7 @@ const Home = () => {
         <Layout>
             <ToastContainer />
             <HeroSection />
-            <HowItWorksSection />
+            <CategoriesSection />
             <TestimonialsSection />
         </Layout>
     );
@@ -44,10 +44,10 @@ const HeroSection = () => {
     );
 };
 
-const HowItWorksSection = () => {
+const CategoriesSection = () => {
     return (
         <section className="py-16 text-center bg-slate-100 font-bold">
-            <h2 className="text-2xl mb-12"> Categories </h2>
+            <h2 className="text-2xl mb-12"> Event Categories </h2>
 
             <div className="flex flex-wrap px-4 md:px-8">
                 <div className="w-1/3 lg:w-1/6 px-2 mb-4">
@@ -78,7 +78,7 @@ const HowItWorksSection = () => {
                     </div>
                 </div>
 
-                <div className="w-1/3 lg:w-1/6 px-2">
+                <div className="w-1/3 lg:w-1/6 px-3">
                     <div className="flex flex-col items-center bg-white rounded-lg shadow py-4">
                         <img src={Logo} className='h-12' alt='logo' />
                         <h3> Sports </h3>
