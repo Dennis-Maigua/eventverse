@@ -41,7 +41,7 @@ const Contact = () => {
     return (
         <Layout>
             <ToastContainer />
-            <div className='bg-gray-500 text-white py-16'>
+            <div className='bg-gray-500 text-white py-12'>
                 <div className='container mx-auto px-4 md:px-8 text-center'>
                     <h1 className='text-3xl font-bold mb-2'>
                         Contact Us
@@ -49,9 +49,9 @@ const Contact = () => {
                 </div>
             </div>
             
-            <div className="flex flex-wrap py-16 px-4 md:px-8">
+            <div className="flex flex-wrap px-4 md:px-8 py-12">
                 <div className="w-full md:w-1/2 px-8 mb-16 md:mb-0">
-                    <h3 className='text-xl font-bold mb-8'> Get in Touch </h3>
+                    <h3 className='text-xl font-bold mb-4'> Get in Touch </h3>
                     <form onSubmit={handleSubmit} className='flex flex-col bg-slate-100 rounded-lg border shadow-lg p-10 gap-4'>
                         <input
                             type='text'
@@ -87,7 +87,7 @@ const Contact = () => {
                 </div>
 
                 <div className="w-full md:w-1/2 px-8">
-                    <h3 className='text-xl font-bold mb-4'> Contact Information </h3>
+                    <h3 className='text-xl font-bold'> Contact Information </h3>
 
                     <div className='py-6 gap-4 flex flex-col'>
                         <span>

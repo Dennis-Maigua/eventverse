@@ -46,8 +46,8 @@ const HeroSection = () => {
 
 const CategoriesSection = () => {
     return (
-        <section className="py-16 text-center bg-slate-100 font-bold">
-            <h2 className="text-2xl mb-12"> Event Categories </h2>
+        <section className="py-12 text-center bg-slate-100 font-bold">
+            <h2 className="text-2xl mb-8"> Event Categories </h2>
 
             <div className="flex flex-wrap px-4 md:px-8">
                 <div className="w-1/3 lg:w-1/6 px-2 mb-4">
@@ -98,7 +98,7 @@ const CategoriesSection = () => {
 
 const TestimonialsSection = () => {
     return (
-        <section className="py-16 text-center">
+        <section className="py-12 text-center">
             <h2 className="text-2xl font-bold mb-12"> Testimonials </h2>
 
             <div className="flex flex-wrap px-4 md:px-8">

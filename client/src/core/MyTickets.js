@@ -35,7 +35,7 @@ const MyTickets = () => {
         <Layout>
             <ToastContainer />
             {!isAuth() ? <Navigate to='/signin' /> : null}
-            <div className='bg-gray-500 text-white py-16'>
+            <div className='bg-gray-500 text-white py-12'>
                 <div className='container mx-auto px-6 text-center'>
                     <h1 className='text-3xl font-bold'>
                         My Tickets
@@ -44,7 +44,7 @@ const MyTickets = () => {
             </div>
             
             {tickets.length === 0 ? (
-                <h1 className='text-xl text-center px-4 md:px-8 py-16'>
+                <h1 className='text-xl text-center px-4 md:px-8 py-12'>
                     No tickets purchased yet.
                 </h1>
             ) : (

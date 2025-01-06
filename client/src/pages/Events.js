@@ -35,21 +35,13 @@ const Events = () => {
 
     return (
         <Layout>
-            <ToastContainer />
-            <div className='bg-gray-600 text-white py-16'>
-                <div className='container mx-auto px-4 md:px-8 text-center'>
-                    <h1 className='text-3xl font-bold'>
-                        All Events
-                    </h1>
-                </div>
-            </div>
-            
+            <ToastContainer />            
             {events.length === 0 ? (
-                <h1 className='text-xl text-center px-4 md:px-8 py-16'>
+                <h1 className='text-xl text-center px-4 md:px-8 py-12'>
                     No events created yet.
                 </h1>
             ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8 px-8 md:px-16 py-16">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-16 px-8 md:px-16 py-12">
                     {events.map(event => (
                         <Link
                             to={`/event/${event._id}`}
@@ -61,7 +53,7 @@ const Events = () => {
                                 alt={event.name}
                                 className="h-60 w-60 object-cover"
                             />
-                            <div className="p-4 flex flex-col gap-2">
+                            <div className="p-4 flex flex-col gap-1">
                                 <h2 className="text-lg font-semibold text-gray-600 truncate">{event.name}</h2>
                                 <p className="text-sm text-slate-400">
                                     {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(event.date))}

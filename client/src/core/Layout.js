@@ -23,8 +23,8 @@ const Layout = ({ children }) => {
     return (
         <div>
             <nav className='bg-gray-900 text-white'>
-                <div className='mx-auto p-4 md:px-8 flex items-center justify-between'>
-                    <NavLink to='/' className='flex gap-2'>
+                <div className='mx-auto py-4 px-4 md:px-8 flex items-center justify-between'>
+                    <NavLink to='/' className='flex gap-1'>
                         <img src={Logo} className='h-7' alt='logo' />
                         <span className='text-xl font-bold'> EventVerse </span>
                     </NavLink>
@@ -35,16 +35,9 @@ const Layout = ({ children }) => {
                             <li>
                                 <NavLink to='/' className={`${isActive('/')}`}> Home </NavLink>
                             </li>
-
-                            {!isAuth() ? (
-                                <li>
-                                    <NavLink to='/signin' className={`${isActive('/sign-in')}`}> Events </NavLink>
-                                </li>
-                            ) : (
-                                <li>
-                                    <NavLink to='/events' className={`${isActive('/events')}`}> Events </NavLink>
-                                </li>
-                            )}
+                            <li>
+                                <NavLink to='/events' className={`${isActive('/events')}`}> Events </NavLink>
+                            </li>
                             <li>
                                 <NavLink to='/about-us' className={`${isActive('/about-us')}`}> About </NavLink>
                             </li>

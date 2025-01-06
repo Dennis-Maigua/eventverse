@@ -47,7 +47,7 @@ const Signup = () => {
         <Layout>
             <ToastContainer />
             {isAuth() ? <Navigate to='/' /> : null}
-            <div className="bg-gray-500 text-white py-16">
+            <div className="bg-gray-500 text-white py-12">
                 <div className="container mx-auto px-4 md:px-8 text-center">
                     <h1 className="text-3xl font-bold">
                         Sign Up
@@ -56,7 +56,7 @@ const Signup = () => {
             </div>
 
             {!registered && (
-                <div className='max-w-lg m-auto text-center flex flex-col gap-4 px-4 md:px-8 py-16'>
+                <div className='max-w-lg m-auto text-center flex flex-col gap-4 px-4 md:px-8 py-12'>
                     <form onSubmit={handleSignup} className='p-10 flex flex-col border shadow-lg rounded-lg gap-4 bg-slate-100'>
                         <input
                             type='text'
@@ -97,7 +97,7 @@ const Signup = () => {
             )}
 
             {registered && (
-                <div className='max-w-lg m-auto text-center px-4 md:px-8 py-16'>
+                <div className='max-w-lg m-auto text-center px-4 md:px-8 py-12'>
                     <h1 className='text-xl'>
                         Success! Please check your email for more instructions.
                     </h1>

@@ -173,9 +173,9 @@ const MyEvents = () => {
         <Layout>
             <ToastContainer />
             {!isAuth() ? <Navigate to='/signin' /> : null}
-            <div className='bg-gray-500 text-white py-16'>
+            <div className='bg-gray-500 text-white py-12'>
                 <div className='container mx-auto px-4 md:px-8 text-center'>
-                    <h1 className='text-3xl font-bold mb-6'> My Events </h1>
+                    <h1 className='text-3xl font-bold mb-4'> My Events </h1>
                     <Link to='/create-event' className='px-3 py-2 bg-red-500 text-white font-semibold hover:opacity-80'> 
                         Create Event 
                     </Link>
@@ -183,7 +183,7 @@ const MyEvents = () => {
             </div>
             
             {events.length === 0 ? (
-                <h1 className='text-xl text-center px-4 md:px-8 py-16'>
+                <h1 className='text-xl text-center px-4 md:px-8 py-12'>
                     No events created yet.
                 </h1>
             ) : (
@@ -253,7 +253,7 @@ const MyEvents = () => {
                                         </td>
                                         <td className='p-2 font-medium'>
                                             <button className='text-blue-500 hover:opacity-80' onClick={() => clickEdit(event)}> Edit </button>
-                                            <button className='text-red-500 hover:opacity-80 ml-3' onClick={() => handleDelete(event._id)}> Delete </button>
+                                            <button className='text-red-500 hover:opacity-80 ml-3' onClick={() => handleDelete(event._id)}> Cancel </button>
                                         </td>
                                     </tr>
                                 ))}

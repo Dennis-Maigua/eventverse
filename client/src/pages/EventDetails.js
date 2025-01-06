@@ -44,7 +44,7 @@ const EventDetails = () => {
     const handleQuantityChange = (tierId, quantity) => {
         setTicketQuantities(prev => ({
             ...prev,
-            [tierId]: quantity < 0 ? 0 : quantity, // Ensure quantity is non-negative
+            [tierId]: Math.max(0, quantity) // Ensure quantity is non-negative
         }));
     };
 
@@ -95,7 +95,7 @@ const EventDetails = () => {
     return (
         <Layout>
             <ToastContainer />
-            <div className="flex flex-wrap py-16 px-4 md:px-8">
+            <div className="flex flex-wrap py-12 px-4 md:px-8">
                 <div className="w-full md:w-1/2 px-8 lg:px-16 mb-8 lg:mb-0">
                     <img 
                         src={event.posterUrl} 
@@ -122,7 +122,7 @@ const EventDetails = () => {
                         <p className="">{event.description}</p>
                     </div>
 
-                    <h2 className="text-xl font-semibold mt-16">Get your tickets:</h2>
+                    <h2 className="text-lg font-semibold mt-12">Get your tickets:</h2>
                     <div className="flex flex-col my-4">
                         {event.tiers && event.tiers.length > 0 ? (
                             event.tiers.map(tier => (
@@ -154,7 +154,7 @@ const EventDetails = () => {
                                 </div>
                             ))
                         ) : (
-                            <h2 className='text-xl text-center px-4 md:px-8 py-16'>
+                            <h2 className='text-xl text-center px-4 md:px-8 py-12'>
                                 No ticket tiers available.
                             </h2>
                         )}

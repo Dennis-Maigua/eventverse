@@ -8,7 +8,7 @@ const About = () => {
     return (
         <Layout>
             <ToastContainer />
-            <div className="bg-gray-500 text-white py-16">
+            <div className="bg-gray-500 text-white py-12">
                 <div className="container mx-auto px-4 md:px-8 text-center">
                     <h1 className="text-3xl font-bold mb-2">
                         About Us
@@ -16,7 +16,7 @@ const About = () => {
                 </div>
             </div>
 
-            <div className="flex flex-wrap py-16 px-4 md:px-8 bg-slate-100">
+            <div className="flex flex-wrap py-12 px-4 md:px-8 bg-slate-100">
                 <div className="w-full md:w-1/2 px-8 mb-16 md:mb-0">
                     <h3 className="text-xl font-bold mb-4">Our Story</h3>
                     <p className="text-md">
@@ -36,7 +36,7 @@ const About = () => {
                 </div>
             </div>
             
-            <div className="py-16 text-center">
+            <div className="py-12 text-center">
                 <h3 className="text-xl font-bold mb-8">Our Team</h3>
 
                 <div className="flex flex-wrap px-4 md:px-8">

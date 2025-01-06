@@ -28,7 +28,7 @@ exports.createEvent = async (req, res) => {
 
         // Validate tiers
         for (const tier of tiers) {
-            if (!tier.name || !tier.price || !tier.price <= 0 || tier.ticketCount <= 0) {
+            if (!tier.name || !tier.price || tier.price <= 0 || tier.ticketCount <= 0) {
                 return res.status(400).json({
                     error: 'Enter a valid ticket name, price, and quantity!',
                 });
