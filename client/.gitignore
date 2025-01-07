@@ -10,7 +10,7 @@
 
 # production
 /build
-/truffle_abis
+/test
 
 # misc
 .DS_Store

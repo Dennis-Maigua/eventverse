@@ -9,17 +9,14 @@ contract Migrations {
         owner = msg.sender;
     }
 
-    modifier restricted() {
-        require(msg.sender == owner, "This function is restricted to the contract's owner");
-        _;
-    }
-
-    function setCompleted(uint completed) public restricted {
+    function setCompleted(uint completed) public {
+        require(msg.sender == owner, "Only the owner can set the migration.");
         last_completed_migration = completed;
     }
 
-    function upgrade(address newAddress) public restricted {
-        Migrations upgraded = Migrations(newAddress);
+    function upgrade(address new_address) public {
+        require(msg.sender == owner, "Only the owner can upgrade.");
+        Migrations upgraded = Migrations(new_address);
         upgraded.setCompleted(last_completed_migration);
     }
 }

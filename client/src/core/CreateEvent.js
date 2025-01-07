@@ -303,6 +303,6 @@ const CreateEvent = () => {
             </div>
         </Layout>
     );
-}
+};
 
 export default CreateEvent;
