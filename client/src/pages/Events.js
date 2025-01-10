@@ -56,8 +56,15 @@ const Events = () => {
                             <div className="p-4 flex flex-col gap-1">
                                 <h2 className="text-lg font-semibold text-gray-600 truncate">{event.name}</h2>
                                 <p className="text-sm text-slate-400">
-                                    {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(event.date))}
-                                    {" " + new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    {new Date(event.date).toLocaleString('en-US', {
+                                        weekday: 'short',
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: 'numeric',
+                                        minute: 'numeric',
+                                        hour12: true,
+                                    })}
                                 </p>
                                 <p className="text-sm italic text-gray-600 truncate">
                                     {event.venue[0].name}

@@ -18,14 +18,6 @@ const EventSchema = new mongoose.Schema({
         type: Date, 
         required: true 
     },
-    category: {
-        type: String,
-        required: true
-    },
-    description: {
-        type: String,
-        required: true
-    },
     venue: [
         {
             name: { type: String, required: true },

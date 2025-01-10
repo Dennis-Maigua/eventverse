@@ -2,11 +2,11 @@ const Event = require('../models/event');
 const Ticket = require('../models/ticket');
 
 exports.createEvent = async (req, res) => {
-    const { posterUrl, name, date, category, description, venue, tiers } = req.body;
+    const { posterUrl, name, date, venue, tiers } = req.body;
     
     try {
         // Ensure all fields are provided
-        if (!posterUrl || !name || !date || !category || !description || !venue.length) {
+        if (!posterUrl || !name || !date || !venue.length) {
             return res.status(400).json({ 
                 error: 'All fields are required!' 
             });
@@ -42,8 +42,6 @@ exports.createEvent = async (req, res) => {
             posterUrl,
             name,
             date: eventDate,
-            category,
-            description,
             venue,
             tiers
         });

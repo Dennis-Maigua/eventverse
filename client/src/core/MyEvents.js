@@ -20,8 +20,6 @@ const MyEvents = () => {
         id: '',
         name: '',
         date: '',
-        category: '',
-        description: '',
         locality: '',
         buttonText: 'Update'
     });
@@ -37,8 +35,7 @@ const MyEvents = () => {
     const [imagePercent, setImagePercent] = useState(0);
     
     const token = getCookie('token');
-    const { id, posterUrl, name, date, category, description, locality, buttonText } = values;
-    const categories = ["Arts", "Business", "Entertainment", "Socio-Cultural", "Sports", "Technology"];
+    const { id, posterUrl, name, date, locality, buttonText } = values;
 
     useEffect(() => {
         loadMyEvents();
@@ -103,9 +100,7 @@ const MyEvents = () => {
             posterUrl: event.posterUrl,
             name: event.name,
             date: formattedDate,
-            category: event.category,
-            locality: event.venue[0].name,
-            description: event.description
+            locality: event.venue[0].name
         });
     };
 
@@ -194,9 +189,7 @@ const MyEvents = () => {
                                 <tr>
                                     <th className='p-2'> Poster </th>
                                     <th className='p-2'> Name </th>
-                                    <th className='p-2'> Date </th>
-                                    <th className='p-2'> Time </th>
-                                    <th className='p-2'> Category </th>
+                                    <th className='p-2'> Date Time </th>
                                     <th className='p-2'> Venue </th>
                                     <th className='p-2'> Tickets </th>
                                     <th className='p-2'> Sold </th>
@@ -217,12 +210,16 @@ const MyEvents = () => {
                                         </td>
                                         <td className='p-2 truncate'>{event.name}</td>
                                         <td className='p-2'>
-                                            {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(event.date))}
+                                            {new Date(event.date).toLocaleString('en-US', {
+                                                weekday: 'short',
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                hour: 'numeric',
+                                                minute: 'numeric',
+                                                hour12: true,
+                                            })}
                                         </td>
-                                        <td className='p-2'>
-                                            {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </td>
-                                        <td className='p-2'>{event.category}</td>
                                         <td className='p-2 truncate'>
                                             {event.venue.map((v, index) => (
                                                 <div key={index}>
@@ -301,8 +298,8 @@ const MyEvents = () => {
                                         ) : null}
                                     </div>
 
-                                    <p className='mt-4 text-gray-600'>
-                                        Event ID: <span className='text-red-600 font-semibold'> {id} </span>
+                                    <p className='mt-4 text-slate-400'>
+                                        Event ID: <span className='text-red-500'> {id} </span>
                                     </p>
                                 </div>
 
@@ -323,30 +320,6 @@ const MyEvents = () => {
                                             placeholder="Event Date"
                                             onChange={handleChange}
                                             className='p-3 shadow rounded'
-                                        />
-                                    </div>
-
-                                    <div className='flex flex-row gap-4'>
-                                        <select
-                                            name="category"
-                                            value={category}
-                                            onChange={handleChange}
-                                            className='w-3/8 p-3 shadow rounded'
-                                        >
-                                            <option value="">Select Category</option>
-                                            {categories.map((cat) => (
-                                                <option key={cat} value={cat}>
-                                                    {cat}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <input
-                                            type='text'
-                                            name="description"
-                                            value={description}
-                                            placeholder="Event Description"
-                                            onChange={handleChange}
-                                            className='w-full p-3 shadow rounded'
                                         />
                                     </div>
                                     

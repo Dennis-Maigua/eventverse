@@ -6,20 +6,20 @@ import axios from 'axios';
 import { app } from '../firebase';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api';
+import Web3 from 'web3';
+import EventContract from "../abis/EventContract.json";
 
 import Layout from './Layout';
 import { getCookie, isAuth } from '../utils/helpers';
 import Cover from '../assets/cover.jpg';
 
-const libraries = ["places"]; 
+const libraries = ["places"];
 
 const CreateEvent = () => {
     const [values, setValues] = useState({
         posterUrl: '',
         name: '',
         date: '',
-        category: '',
-        description: '',
         buttonText: 'Submit'
     });
     const [tiers, setTiers] = useState([{ 
@@ -35,18 +35,19 @@ const CreateEvent = () => {
 
     const navigate = useNavigate();
     const fileRef = useRef(null);
-    const inputRef = useRef(null);    
+    const inputRef = useRef(null);
+    const [account, setAccount] = useState(null);
     const [imageError, setImageError] = useState(false);
     const [imagePercent, setImagePercent] = useState(0);
 
+    const web3 = new Web3(window.ethereum);
     const token = getCookie('token');
-    const { posterUrl, name, date, category, description, buttonText } = values;
-    const categories = ["Arts", "Business", "Entertainment", "Socio-Cultural", "Sports", "Technology"];
+    const { posterUrl, name, date, buttonText } = values;
 
     const { isLoaded } = useJsApiLoader({
       id: 'google-map-script',
       googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-      libraries
+      libraries,
     });
 
     const handleUpload = async (image) => {
@@ -95,7 +96,7 @@ const CreateEvent = () => {
     };
 
     const handleAddTier = () => {
-        setTiers([...tiers, { type: '', price: '', ticketCount: '' }]);
+        setTiers([...tiers, { name: '', price: '', ticketCount: '' }]);
     };
 
     const handleRemoveTier = (index) => {
@@ -109,37 +110,84 @@ const CreateEvent = () => {
         setTiers(newTiers);
     };
 
+    const connectWallet = async () => {
+        if (web3) {
+            try {
+                await window.ethereum.request({ method: "eth_requestAccounts" });
+                const accounts = await web3.eth.getAccounts();
+                setAccount(accounts[0]);
+            } 
+            catch (err) {
+                console.error("MetaMask connection failed:", err);
+            }
+        } 
+        else {
+            toast.error("MetaMask not found! Please install it.");
+        }
+    };
+
     const handleCreate = async (e) => {
         e.preventDefault();
         setValues({ ...values, buttonText: 'Submittting...' });
 
-        try {
-            const response = await axios.post(
-                `${process.env.REACT_APP_SERVER_URL}/event/create`, 
-                { posterUrl, name, date, category, description, venue, tiers }, 
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            
-            toast.success(response.data.message);
+        if (!account) {
+            setValues({ ...values, buttonText: 'Submit' });
+            toast.error("Please connect MetaMask first!");
+            return;
+        }
 
-            setVenue([{ name: '', latitude: '', longitude: '' }]);
-            setTiers([{ name: '', price: '', ticketCount: '' }]);
-            setValues({ 
-                ...values, 
-                posterUrl: '', 
-                name: '', 
-                date: '', 
-                category: '',
-                description: '', 
-                buttonText: 'Submitted' 
-            });
+        try {
+            const tierNames = tiers.map(tier => tier.name);
+            const tierPrices = tiers.map(tier => web3.utils.toWei(tier.price, "ether"));
+            const tierTicketCounts = tiers.map(tier => parseInt(tier.ticketCount));
+            
+            // Deploy Contract
+            const deployedContract = await new web3.eth.Contract(EventContract.abi)
+                .deploy({ data: EventContract.bytecode })
+                .send({ from: account });
+        
+            console.log("Contract deployed at:", deployedContract.options.address);
+
+            // Then call create event function
+            await deployedContract.methods.createEvent(
+                new Date(date).toISOString(),
+                tierNames,
+                tierPrices,
+                tierTicketCounts
+            )
+            .send({ from: account });
+
+            console.log("Event created on blockchain successfully!");
                 
-            navigate('/my-events');
+            await axios.post(
+                `${process.env.REACT_APP_SERVER_URL}/event/create`, 
+                { posterUrl, name, date, venue, tiers }, 
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            .then((response) => {
+                toast.success(response.data.message);
+
+                setVenue([{ name: '', latitude: '', longitude: '' }]);
+                setTiers([{ name: '', price: '', ticketCount: '' }]);
+                setValues({ 
+                    ...values, 
+                    posterUrl: '', 
+                    name: '', 
+                    date: '',
+                    buttonText: 'Submitted' 
+                });
+                    
+                navigate('/my-events');
+            })
+            .catch((err) => {
+                setValues({ ...values, buttonText: 'Submit' });
+                toast.error(err.response?.data?.error);
+            });
         } 
         
         catch (err) {
             setValues({ ...values, buttonText: 'Submit' });
-            toast.error(err.response?.data?.error);
+            console.log('SAVE EVENT IN BLOCKCHAIN FAILED:', err);
         }
     };
 
@@ -152,6 +200,21 @@ const CreateEvent = () => {
                     <h1 className="text-3xl font-bold">
                         Create Event
                     </h1>
+                    
+                    {!account ? (
+                        <button
+                        onClick={connectWallet}
+                        className="px-3 py-2 bg-blue-500 text-white shadow rounded hover:opacity-80 mt-2"
+                        >
+                        Connect MetaMask
+                        </button>
+                    ) : (
+                        <div>
+                            <p className="text-red-300 mt-4">
+                                Wallet Account: <span className="text-blue-300 mt-4">{account}</span>
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
             
@@ -211,30 +274,6 @@ const CreateEvent = () => {
                         />
                     </div>
 
-                    <div className='flex flex-row gap-4'>
-                        <select
-                            name="category"
-                            value={category}
-                            onChange={handleChange}
-                            className='w-3/8 p-3 shadow rounded'
-                        >
-                            <option value="">Select Category</option>
-                            {categories.map((cat) => (
-                                <option key={cat} value={cat}>
-                                    {cat}
-                                </option>
-                            ))}
-                        </select>
-                        <input
-                            type='text'
-                            name="description"
-                            value={description}
-                            placeholder="Event Description"
-                            onChange={handleChange}
-                            className='w-full p-3 shadow rounded'
-                        />
-                    </div>
-
                     {isLoaded && (
                         <StandaloneSearchBox
                             onLoad={ref => inputRef.current = ref}
@@ -259,7 +298,7 @@ const CreateEvent = () => {
                             />
                             <input
                                 type="number"
-                                placeholder="Price ($)"
+                                placeholder="Price (ETH)"
                                 value={tier.price}
                                 onChange={(e) => handleTierChange(index, 'price', e.target.value)}
                                 className='w-1/4 p-3 shadow rounded'

@@ -43,7 +43,7 @@ const EventDetails = () => {
 
     const handleQuantityChange = (tierId, quantity) => {
         setTicketQuantities(prev => ({
-            ...prev,
+            ...prev, 
             [tierId]: Math.max(0, quantity) // Ensure quantity is non-negative
         }));
     };
@@ -68,7 +68,7 @@ const EventDetails = () => {
             );
 
             // Update ticketRemaining for each tier
-            setEvent(prev => ({
+            setEvent(prev => ({ 
                 ...prev,
                 tiers: prev.tiers.map(tier => {
                     const selectedTier = selectedTickets.find(ticket => ticket.tierId === tier._id);
@@ -109,17 +109,15 @@ const EventDetails = () => {
                         <h1 className="text-2xl font-semibold">{event.name}</h1>
                         <p className="text-sm text-gray-600">
                             {new Date(event.date).toLocaleString('en-US', {
-                                weekday: 'long', // Options: 'narrow', 'short', 'long'
+                                weekday: 'long',
                                 year: 'numeric',
-                                month: 'long', // Options: 'narrow', 'short', 'long'
+                                month: 'long',
                                 day: 'numeric',
                                 hour: 'numeric',
                                 minute: 'numeric',
-                                hour12: true, // Use 12-hour format
+                                hour12: true,
                             })}
                         </p>
-                        <p className="text-sm italic text-slate-400 font-semibold">{event.category}</p>
-                        <p className="">{event.description}</p>
                     </div>
 
                     <h2 className="text-lg font-semibold mt-12">Get your tickets:</h2>
@@ -128,7 +126,7 @@ const EventDetails = () => {
                             event.tiers.map(tier => (
                                 <div key={tier._id} className="grid grid-cols-4 border-b py-2">
                                     <p className="">{tier.name}</p>
-                                    <p className="text-red-500 font-semibold">${tier.price}</p>
+                                    <p className="text-red-500 font-semibold">ETH {tier.price}</p>
                                     <p className="text-sm text-slate-400">(Rem: {tier.ticketRemaining})</p>
 
                                     <div>
@@ -162,13 +160,11 @@ const EventDetails = () => {
 
                     <div className="flex flex-col gap-4 mt-8">
                         <p className="font-semibold text-lg text-right">
-                            Total: $
-                            {event.tiers
-                                ? event.tiers.reduce((total, tier) => {
-                                    const quantity = ticketQuantities[tier._id] || 0;
-                                    return total + quantity * tier.price;
-                                }, 0)
-                                : 0}
+                            Total: ETH {event.tiers ? event.tiers.reduce((total, tier) => {
+                                const quantity = ticketQuantities[tier._id] || 0;
+                                return total + quantity * tier.price;
+                            }, 0)
+                            : 0}
                         </p>
                         <button
                             className="px-4 py-2 right-0 text-white font-semibold bg-red-500 rounded shadow hover:opacity-80"
