@@ -2,18 +2,28 @@
 pragma solidity ^0.8.0;
 
 contract EventContract {
+    struct Event {
+        address owner;
+        string contractAddress;
+        string posterUrl;
+        string name;
+        string date;
+        Venue venue;
+        Ticket[] tiers;
+        bool isActive;
+    }
+
+    struct Venue {
+        string name;
+        string latitude;
+        string longitude;
+    }
+
     struct Ticket {
         string name;
         uint256 price; // in Wei
         uint256 totalTickets;
         uint256 ticketsSold;
-    }
-
-    struct Event {
-        address owner;
-        string date;
-        Ticket[] tiers;
-        bool isActive;
     }
 
     mapping(uint256 => Event) public events;
@@ -28,7 +38,13 @@ contract EventContract {
     }
 
     function createEvent(
+        string memory _contractAddress,
+        string memory _posterUrl,
+        string memory _name,
         string memory _date,
+        string memory _venueName,
+        string memory _latitude,
+        string memory _longitude,
         string[] memory _tierNames,
         uint256[] memory _prices,
         uint256[] memory _ticketCounts
@@ -38,7 +54,11 @@ contract EventContract {
 
         Event storage newEvent = events[eventCount];
         newEvent.owner = msg.sender;
+        newEvent.contractAddress = _contractAddress;
+        newEvent.posterUrl = _posterUrl;
+        newEvent.name = _name;
         newEvent.date = _date;
+        newEvent.venue = Venue(_venueName, _latitude, _longitude);
         newEvent.isActive = true;
 
         for (uint256 i = 0; i < _tierNames.length; i++) {

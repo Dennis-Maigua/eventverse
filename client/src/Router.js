@@ -11,10 +11,10 @@ import Profile from './auth/Profile';
 import UserRoute from './utils/UserRoute';
 import AdminRoute from './utils/AdminRoute';
 
-import Dashboard from './core/Dashboard';
-import CreateEvent from './core/CreateEvent';
-import MyEvents from './core/MyEvents';
-import MyTickets from './core/MyTickets';
+import Dashboard from './components/Dashboard';
+import CreateEvent from './components/CreateEvent';
+import MyEvents from './components/MyEvents';
+import MyTickets from './components/MyTickets';
 
 import Home from './pages/Home';
 import Events from './pages/Events';

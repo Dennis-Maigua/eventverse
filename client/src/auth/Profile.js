@@ -6,7 +6,7 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Layout from '../core/Layout';
+import Layout from '../components/Layout';
 import { getCookie, isAuth, signout, updateUser } from '../utils/AuthHelpers';
 import Avatar from '../assets/avatar.png';
 

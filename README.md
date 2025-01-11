@@ -81,11 +81,7 @@ Go back to `Terminal 2` above, and run the commands below:
 
 ```bash
     $ truffle compile
-    $ truffle migrate --network development
-
-    # in case of contracts/migrations file changes. if not, skip this commands
-    $ truffle compile
-    $ truffle migrate --reset
+    $ truffle migrate --reset --network development
 ```
 
 >**Note**: If you close or exit Ganache, repeat the above steps 3 and 4 only before restarting the project.

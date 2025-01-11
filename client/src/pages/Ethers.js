@@ -3,13 +3,13 @@ import { toast, ToastContainer } from 'react-toastify';
 import Web3 from 'web3';
 import EventContract from "../abis/EventContract.json";
 
-import Layout from '../core/Layout';
+import Layout from '../components/Layout';
 
 const Ethers = () => {
     const [events, setEvents] = useState([]);
 
-    const web3 = new Web3(window.ethereum); // Replace with your Ganache RPC URL
-    const contractAddress = "0xDC35EB0d27463a4e21167Af93689d587D5586332"; // Replace with the deployed contract address
+    const web3 = new Web3(window.ethereum);
+    const contractAddress = "0x340cC692B6C534D6A003f58a40A072AD887609C1"; // Replace with the deployed contract address
     const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
     
     useEffect(() => {
@@ -60,8 +60,17 @@ const Ethers = () => {
                     <div key={i} className="p-4 border shadow rounded">
                         <h3>Event {i}</h3>
                         <p>Owner: {event.owner}</p>
+                        <p>Contract Address: {event.contractAddress}</p>
+                        <br/>
+                        <p>Poster URL: {event.posterUrl}</p>
+                        <p>Name: {event.name}</p>
                         <p>Date: {event.date}</p>
                         <p>Active: {event.isActive ? "Yes" : "No"}</p>
+                        <br/>
+                        <h4>Venue:</h4>
+                        <p>Name: {event.venue.name}</p>
+                        <p>Latitude: {parseFloat(event.venue.latitude)}</p>
+                        <p>Longitude: {parseFloat(event.venue.longitude)}</p>
                         <br/>
                         <h4>Tiers:</h4>
                         <ul>

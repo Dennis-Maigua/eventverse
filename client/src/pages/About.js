@@ -1,7 +1,7 @@
 import React from 'react';
 import { ToastContainer } from 'react-toastify';
 
-import Layout from '../core/Layout';
+import Layout from '../components/Layout';
 import Avatar from '../assets/avatar.png';
 
 const About = () => {

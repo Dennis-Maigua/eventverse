@@ -1,5 +1,5 @@
 import React from 'react';
-import Layout from '../core/Layout';
+import Layout from '../components/Layout';
 import { ToastContainer } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { isAuth } from '../utils/AuthHelpers';

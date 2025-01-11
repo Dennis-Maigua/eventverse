@@ -145,13 +145,25 @@ const CreateEvent = () => {
             const contractAddress = deployedContract.options.address;
             console.log("Contract deployed at:", contractAddress);
 
+            // Access venue details
+            const loc = venue[0].name;
+            const lat = (venue[0].latitude).toString();
+            const long = (venue[0].longitude).toString();
+
+            // Access tier details
             const tierNames = tiers.map(tier => tier.name);
             const tierPrices = tiers.map(tier => web3.utils.toWei(tier.price, "ether"));
             const tierTicketCounts = tiers.map(tier => parseInt(tier.ticketCount));
 
-            // Then, call create event function
+            // Then, call createEvent function
             await deployedContract.methods.createEvent(
+                contractAddress,
+                posterUrl,
+                name,
                 new Date(date).toISOString(),
+                loc,
+                lat,
+                long,
                 tierNames,
                 tierPrices,
                 tierTicketCounts
@@ -188,7 +200,7 @@ const CreateEvent = () => {
         
         catch (err) {
             setValues({ ...values, buttonText: 'Submit' });
-            console.log('SAVE EVENT IN BLOCKCHAIN FAILED:', err);
+            console.log('ERROR SAVING EVENT IN BLOCKCHAIN:', err);
         }
     };
 

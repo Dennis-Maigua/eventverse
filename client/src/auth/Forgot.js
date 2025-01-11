@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Layout from '../core/Layout';
+import Layout from '../components/Layout';
 import { isAuth } from '../utils/AuthHelpers';
 
 const Forgot = () => {

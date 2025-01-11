@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
 
-import Layout from '../core/Layout';
+import Layout from '../components/Layout';
 import { getCookie } from '../utils/AuthHelpers';
 
 const EventDetails = () => {
