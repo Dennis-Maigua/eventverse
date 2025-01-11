@@ -8,7 +8,7 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 import { useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api';
 
 import Layout from './Layout';
-import { getCookie, isAuth } from '../utils/helpers';
+import { getCookie, isAuth } from '../utils/AuthHelpers';
 
 const libraries = ["places"]; 
 
@@ -171,7 +171,7 @@ const MyEvents = () => {
             <div className='bg-gray-500 text-white py-12'>
                 <div className='container mx-auto px-4 md:px-8 text-center'>
                     <h1 className='text-3xl font-bold mb-4'> My Events </h1>
-                    <Link to='/create-event' className='px-3 py-2 bg-red-500 text-white font-semibold hover:opacity-80'> 
+                    <Link to='/create-event' className='px-3 py-2 bg-red-500 text-white font-semibold shadow rounded hover:opacity-80'> 
                         Create Event 
                     </Link>
                 </div>

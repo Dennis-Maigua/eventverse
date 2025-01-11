@@ -10,13 +10,14 @@ import Web3 from 'web3';
 import EventContract from "../abis/EventContract.json";
 
 import Layout from './Layout';
-import { getCookie, isAuth } from '../utils/helpers';
+import { getCookie, isAuth } from '../utils/AuthHelpers';
 import Cover from '../assets/cover.jpg';
 
 const libraries = ["places"];
 
 const CreateEvent = () => {
     const [values, setValues] = useState({
+        account: '',
         posterUrl: '',
         name: '',
         date: '',
@@ -32,17 +33,16 @@ const CreateEvent = () => {
         latitude: '' ,
         longitude: ''
     }]);
+    const [imageError, setImageError] = useState(false);
+    const [imagePercent, setImagePercent] = useState(0);
 
     const navigate = useNavigate();
     const fileRef = useRef(null);
     const inputRef = useRef(null);
-    const [account, setAccount] = useState(null);
-    const [imageError, setImageError] = useState(false);
-    const [imagePercent, setImagePercent] = useState(0);
 
     const web3 = new Web3(window.ethereum);
     const token = getCookie('token');
-    const { posterUrl, name, date, buttonText } = values;
+    const { account, posterUrl, name, date, buttonText } = values;
 
     const { isLoaded } = useJsApiLoader({
       id: 'google-map-script',
@@ -115,7 +115,7 @@ const CreateEvent = () => {
             try {
                 await window.ethereum.request({ method: "eth_requestAccounts" });
                 const accounts = await web3.eth.getAccounts();
-                setAccount(accounts[0]);
+                setValues({ ...values, account: accounts[0] });
             } 
             catch (err) {
                 console.error("MetaMask connection failed:", err);
@@ -128,7 +128,7 @@ const CreateEvent = () => {
 
     const handleCreate = async (e) => {
         e.preventDefault();
-        setValues({ ...values, buttonText: 'Submittting...' });
+        setValues({ ...values, buttonText: 'Submitting...' });
 
         if (!account) {
             setValues({ ...values, buttonText: 'Submit' });
@@ -136,19 +136,20 @@ const CreateEvent = () => {
             return;
         }
 
-        try {
-            const tierNames = tiers.map(tier => tier.name);
-            const tierPrices = tiers.map(tier => web3.utils.toWei(tier.price, "ether"));
-            const tierTicketCounts = tiers.map(tier => parseInt(tier.ticketCount));
-            
-            // Deploy Contract
+        try {            
+            // First, deploy contract
             const deployedContract = await new web3.eth.Contract(EventContract.abi)
                 .deploy({ data: EventContract.bytecode })
                 .send({ from: account });
-        
-            console.log("Contract deployed at:", deployedContract.options.address);
 
-            // Then call create event function
+            const contractAddress = deployedContract.options.address;
+            console.log("Contract deployed at:", contractAddress);
+
+            const tierNames = tiers.map(tier => tier.name);
+            const tierPrices = tiers.map(tier => web3.utils.toWei(tier.price, "ether"));
+            const tierTicketCounts = tiers.map(tier => parseInt(tier.ticketCount));
+
+            // Then, call create event function
             await deployedContract.methods.createEvent(
                 new Date(date).toISOString(),
                 tierNames,
@@ -161,7 +162,7 @@ const CreateEvent = () => {
                 
             await axios.post(
                 `${process.env.REACT_APP_SERVER_URL}/event/create`, 
-                { posterUrl, name, date, venue, tiers }, 
+                { contractAddress, posterUrl, name, date, venue, tiers }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             )
             .then((response) => {
@@ -204,7 +205,7 @@ const CreateEvent = () => {
                     {!account ? (
                         <button
                         onClick={connectWallet}
-                        className="px-3 py-2 bg-blue-500 text-white shadow rounded hover:opacity-80 mt-2"
+                        className="px-3 py-2 bg-blue-500 text-white font-semibold shadow rounded hover:opacity-80 mt-2"
                         >
                         Connect MetaMask
                         </button>

@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import Layout from '../core/Layout';
-import { getCookie, isAuth, signout, updateUser } from '../utils/helpers';
+import { getCookie, isAuth, signout, updateUser } from '../utils/AuthHelpers';
 import Avatar from '../assets/avatar.png';
 
 const Profile = () => {

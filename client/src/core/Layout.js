@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
-import { isAuth, signout } from '../utils/helpers';
+import { isAuth, signout } from '../utils/AuthHelpers';
 import Logo from '../assets/logo.png';
 import Avatar from '../assets/avatar.png';
 

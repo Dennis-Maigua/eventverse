@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 
 import Layout from './Layout';
-import { getCookie, isAuth } from '../utils/helpers';
+import { getCookie, isAuth } from '../utils/AuthHelpers';
 import Avatar from '../assets/avatar.png';
 
 // import { CopyToClipboard } from 'react-copy-to-clipboard';

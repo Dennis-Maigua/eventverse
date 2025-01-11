@@ -6,6 +6,10 @@ const EventSchema = new mongoose.Schema({
         ref: 'User', 
         required: true 
     },
+    contractAddress: {
+        type: String,
+        required: true,
+    },
     posterUrl: {
         type: String,
         required: true,

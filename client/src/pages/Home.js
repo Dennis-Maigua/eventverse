@@ -2,7 +2,7 @@ import React from 'react';
 import Layout from '../core/Layout';
 import { ToastContainer } from 'react-toastify';
 import { Link } from 'react-router-dom';
-import { isAuth } from '../utils/helpers';
+import { isAuth } from '../utils/AuthHelpers';
 
 import Logo from '../assets/logo.png';
 

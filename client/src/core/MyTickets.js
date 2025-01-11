@@ -4,7 +4,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
 
 import Layout from './Layout';
-import { getCookie, isAuth } from '../utils/helpers';
+import { getCookie, isAuth } from '../utils/AuthHelpers';
 
 const MyTickets = () => {
     const [tickets, setTickets] = useState([]);

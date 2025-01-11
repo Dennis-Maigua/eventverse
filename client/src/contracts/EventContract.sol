@@ -32,7 +32,8 @@ contract EventContract {
         string[] memory _tierNames,
         uint256[] memory _prices,
         uint256[] memory _ticketCounts
-    ) public {
+    ) 
+    public {
         require(_tierNames.length == _prices.length && _prices.length == _ticketCounts.length, "Tier data mismatch");
 
         Event storage newEvent = events[eventCount];
@@ -53,7 +54,39 @@ contract EventContract {
         eventCount++;
     }
 
-    function buyTickets(uint256 _eventId, uint256 _tierIndex, uint256 _quantity) public payable {
+    function getEventTiers(uint256 _eventId) 
+    public 
+    view 
+    returns (
+        string[] memory names,
+        uint256[] memory prices,
+        uint256[] memory totalTickets,
+        uint256[] memory ticketsSold
+    ) {
+        Event storage _event = events[_eventId];
+        uint256 tierCount = _event.tiers.length;
+
+        names = new string[](tierCount);
+        prices = new uint256[](tierCount);
+        totalTickets = new uint256[](tierCount);
+        ticketsSold = new uint256[](tierCount);
+
+        for (uint256 i = 0; i < tierCount; i++) {
+            names[i] = _event.tiers[i].name;
+            prices[i] = _event.tiers[i].price;
+            totalTickets[i] = _event.tiers[i].totalTickets;
+            ticketsSold[i] = _event.tiers[i].ticketsSold;
+        }
+
+        return (names, prices, totalTickets, ticketsSold);
+    }
+
+    function buyTickets(
+        uint256 _eventId, 
+        uint256 _tierIndex, 
+        uint256 _quantity
+    ) 
+    public payable {
         Event storage _event = events[_eventId];
         require(_event.isActive, "Event is not active");
         require(_tierIndex < _event.tiers.length, "Invalid tier index");
@@ -67,11 +100,13 @@ contract EventContract {
         emit TicketPurchased(_eventId, _tierIndex, _quantity, msg.sender);
     }
 
-    function deactivateEvent(uint256 _eventId) public onlyOwner(_eventId) {
+    function deactivateEvent(uint256 _eventId) 
+    public onlyOwner(_eventId) {
         events[_eventId].isActive = false;
     }
 
-    function withdrawFunds(uint eventId) public onlyOwner(eventId) {
+    function withdrawFunds(uint eventId) 
+    public onlyOwner(eventId) {
         uint balance = address(this).balance;
         payable(msg.sender).transfer(balance);
     }

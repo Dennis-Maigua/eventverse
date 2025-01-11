@@ -5,7 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import Layout from '../core/Layout';
-import { isAuth } from '../utils/helpers';
+import { isAuth } from '../utils/AuthHelpers';
 
 const Signup = () => {
     const [values, setValues] = useState({

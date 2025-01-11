@@ -4,12 +4,12 @@ import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
 
 import Layout from '../core/Layout';
-import { getCookie } from '../utils/helpers';
+import { getCookie } from '../utils/AuthHelpers';
 
 const EventDetails = () => {
     const [event, setEvent] = useState({});
     const [ticketQuantities, setTicketQuantities] = useState({});
-    const [buttonText, setButtonText] = useState('Buy Now');
+    const [buttonText, setButtonText] = useState('Checkout');
     
     const { id } = useParams();
     const navigate = useNavigate();
@@ -56,8 +56,8 @@ const EventDetails = () => {
             .map(([tierId, quantity]) => ({ tierId, quantity }));
 
         if (selectedTickets.length === 0) {
-            setButtonText('Buy Now');
-            return toast.error('Select at least one ticket to buy!');
+            setButtonText('Checkout');
+            return toast.error('Select and add a ticket to purchase!');
         }
 
         try {
@@ -87,7 +87,7 @@ const EventDetails = () => {
         }
 
         catch (err) {
-            setButtonText('Buy Now');
+            setButtonText('Checkout');
             toast.error(err.response?.data?.error);
         }
     };
@@ -126,7 +126,7 @@ const EventDetails = () => {
                             event.tiers.map(tier => (
                                 <div key={tier._id} className="grid grid-cols-4 border-b py-2">
                                     <p className="">{tier.name}</p>
-                                    <p className="text-red-500 font-semibold">ETH {tier.price}</p>
+                                    <p className="text-red-500 font-semibold">{tier.price} ETH</p>
                                     <p className="text-sm text-slate-400">(Rem: {tier.ticketRemaining})</p>
 
                                     <div>
@@ -160,11 +160,11 @@ const EventDetails = () => {
 
                     <div className="flex flex-col gap-4 mt-8">
                         <p className="font-semibold text-lg text-right">
-                            Total: ETH {event.tiers ? event.tiers.reduce((total, tier) => {
+                            Total: {event.tiers ? event.tiers.reduce((total, tier) => {
                                 const quantity = ticketQuantities[tier._id] || 0;
                                 return total + quantity * tier.price;
                             }, 0)
-                            : 0}
+                            : 0} ETH
                         </p>
                         <button
                             className="px-4 py-2 right-0 text-white font-semibold bg-red-500 rounded shadow hover:opacity-80"

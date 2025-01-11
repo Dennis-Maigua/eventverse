@@ -37,9 +37,14 @@ const Events = () => {
         <Layout>
             <ToastContainer />            
             {events.length === 0 ? (
-                <h1 className='text-xl text-center px-4 md:px-8 py-12'>
-                    No events created yet.
-                </h1>
+                <div className='container mx-auto px-4 md:px-8 text-center py-12'>
+                    <h1 className='text-xl mb-4'>
+                        No events created yet.
+                    </h1>                    
+                    <Link to='/create-event' className='px-3 py-2 bg-red-500 text-white font-semibold shadow rounded hover:opacity-80'> 
+                        Create Event 
+                    </Link>
+                </div>
             ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-16 px-8 md:px-16 py-12">
                     {events.map(event => (
@@ -70,7 +75,7 @@ const Events = () => {
                                     {event.venue[0].name}
                                 </p>
                                 <p className="text-red-400 font-semibold">
-                                    From ${getLowestPrice(event.tiers)}
+                                    From {getLowestPrice(event.tiers)} ETH
                                 </p>
                             </div>
                         </Link>
