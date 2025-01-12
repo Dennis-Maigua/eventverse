@@ -2,16 +2,16 @@ const Event = require('../models/event');
 const Ticket = require('../models/ticket');
 
 exports.createEvent = async (req, res) => {
-    const { contractAddress, posterUrl, name, date, venue, tiers } = req.body;
-    
+    const { eventId, posterUrl, name, date, venue, tiers } = req.body;
+
     try {
         // Ensure all fields are provided
-        if (!contractAddress) {
+        if (!eventId) {
             return res.status(400).json({ 
-                error: 'Contract Address not found!' 
+                error: 'Event ID not found!' 
             });
         }
-        
+
         if (!posterUrl || !name || !date || !venue.length) {
             return res.status(400).json({ 
                 error: 'All fields are required!' 
@@ -45,7 +45,7 @@ exports.createEvent = async (req, res) => {
 
         const event = new Event({
             owner: req.user._id,
-            contractAddress,
+            eventId,
             posterUrl,
             name,
             date: eventDate,
@@ -61,7 +61,7 @@ exports.createEvent = async (req, res) => {
             message: 'Event created successfully!', 
             event 
         });
-    } 
+    }
 
     catch (err) {
         console.log('ERROR CREATING EVENT: ', err);

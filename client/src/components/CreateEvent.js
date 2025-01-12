@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,7 +7,7 @@ import { app } from '../firebase';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api';
 import Web3 from 'web3';
-import EventContract from "../abis/EventContract.json";
+import EventContract from "../build/contracts/EventContract.json";
 
 import Layout from './Layout';
 import { getCookie, isAuth } from '../utils/AuthHelpers';
@@ -40,9 +40,16 @@ const CreateEvent = () => {
     const fileRef = useRef(null);
     const inputRef = useRef(null);
 
-    const web3 = new Web3(window.ethereum);
     const token = getCookie('token');
     const { account, posterUrl, name, date, buttonText } = values;
+
+    const web3 = new Web3(window.ethereum);
+    const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
+    const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
+    
+    useEffect(() => {
+        connectWallet();
+    }, []);
 
     const { isLoaded } = useJsApiLoader({
       id: 'google-map-script',
@@ -68,7 +75,7 @@ const CreateEvent = () => {
             },
             (error) => {
                 setImageError(true);
-                console.log(error);
+                console.error(error);
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -118,11 +125,11 @@ const CreateEvent = () => {
                 setValues({ ...values, account: accounts[0] });
             } 
             catch (err) {
-                console.error("MetaMask connection failed:", err);
+                console.error("MetaMask connection failed: ", err);
             }
         } 
         else {
-            toast.error("MetaMask not found! Please install it.");
+            toast.error("Please install MetaMask!");
         }
     };
 
@@ -132,19 +139,11 @@ const CreateEvent = () => {
 
         if (!account) {
             setValues({ ...values, buttonText: 'Submit' });
-            toast.error("Please connect MetaMask first!");
+            toast.error("Please connect MetaMask!");
             return;
         }
 
-        try {            
-            // First, deploy contract
-            const deployedContract = await new web3.eth.Contract(EventContract.abi)
-                .deploy({ data: EventContract.bytecode })
-                .send({ from: account });
-
-            const contractAddress = deployedContract.options.address;
-            console.log("Contract deployed at:", contractAddress);
-
+        try {
             // Access venue details
             const loc = venue[0].name;
             const lat = (venue[0].latitude).toString();
@@ -156,8 +155,7 @@ const CreateEvent = () => {
             const tierTicketCounts = tiers.map(tier => parseInt(tier.ticketCount));
 
             // Then, call createEvent function
-            await deployedContract.methods.createEvent(
-                contractAddress,
+            const receipt = await contract.methods.createEvent(
                 posterUrl,
                 name,
                 new Date(date).toISOString(),
@@ -171,10 +169,14 @@ const CreateEvent = () => {
             .send({ from: account });
 
             console.log("Event created on blockchain successfully!");
-                
+
+            // Get the `eventId` from the emitted EventCreated event
+            const eventId = Number(receipt.events.EventCreated.returnValues.eventId);
+            console.log("Event ID from contract:", eventId);
+
             await axios.post(
                 `${process.env.REACT_APP_SERVER_URL}/event/create`, 
-                { contractAddress, posterUrl, name, date, venue, tiers }, 
+                { eventId, posterUrl, name, date, venue, tiers }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             )
             .then((response) => {
@@ -189,7 +191,7 @@ const CreateEvent = () => {
                     date: '',
                     buttonText: 'Submitted' 
                 });
-                    
+
                 navigate('/my-events');
             })
             .catch((err) => {
@@ -200,7 +202,7 @@ const CreateEvent = () => {
         
         catch (err) {
             setValues({ ...values, buttonText: 'Submit' });
-            console.log('ERROR SAVING EVENT IN BLOCKCHAIN:', err);
+            console.error('Error saving event in blockchain: ', err);
         }
     };
 
@@ -224,7 +226,7 @@ const CreateEvent = () => {
                     ) : (
                         <div>
                             <p className="text-red-300 mt-4">
-                                Wallet Account: <span className="text-blue-300 mt-4">{account}</span>
+                                My Account: <span className="text-blue-300 mt-4">{account}</span>
                             </p>
                         </div>
                     )}

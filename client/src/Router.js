@@ -21,7 +21,7 @@ import Events from './pages/Events';
 import EventDetails from './pages/EventDetails';
 import About from './pages/About';
 import Contact from './pages/Contact';
-import Ethers from './pages/Ethers';
+import Web3 from './pages/Web3';
 
 const Router = () => {
     return (
@@ -46,7 +46,7 @@ const Router = () => {
                 <Route path='/event/:id' element={<EventDetails />} />
                 <Route path='/about-us' element={<About />} />
                 <Route path='/contact-us' element={<Contact />} />
-                <Route path='/ethers' element={<Ethers />} />
+                <Route path='/web3' element={<Web3 />} />
             </Routes>
         </BrowserRouter>
     );

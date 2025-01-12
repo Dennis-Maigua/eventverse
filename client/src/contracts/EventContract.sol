@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 contract EventContract {
     struct Event {
         address owner;
-        string contractAddress;
         string posterUrl;
         string name;
         string date;
@@ -38,7 +37,6 @@ contract EventContract {
     }
 
     function createEvent(
-        string memory _contractAddress,
         string memory _posterUrl,
         string memory _name,
         string memory _date,
@@ -54,7 +52,6 @@ contract EventContract {
 
         Event storage newEvent = events[eventCount];
         newEvent.owner = msg.sender;
-        newEvent.contractAddress = _contractAddress;
         newEvent.posterUrl = _posterUrl;
         newEvent.name = _name;
         newEvent.date = _date;
@@ -102,21 +99,34 @@ contract EventContract {
     }
 
     function buyTickets(
-        uint256 _eventId, 
-        uint256 _tierIndex, 
-        uint256 _quantity
+    uint256 _eventId, 
+    uint256 _tierIndex, 
+    uint256 _quantity
     ) 
-    public payable {
+        public 
+        payable 
+    {
+        // Ensure the event exists and is active
+        require(_eventId < eventCount, "Event does not exist");
         Event storage _event = events[_eventId];
         require(_event.isActive, "Event is not active");
+
+        // Validate the tier index
         require(_tierIndex < _event.tiers.length, "Invalid tier index");
 
+        // Validate ticket tier and availability
         Ticket storage tier = _event.tiers[_tierIndex];
+        require(_quantity > 0, "Quantity must be greater than zero");
         require(tier.ticketsSold + _quantity <= tier.totalTickets, "Not enough tickets available");
-        require(msg.value == tier.price * _quantity, "Incorrect ETH sent");
 
+        // Calculate the total cost and validate payment
+        uint256 totalCost = tier.price * _quantity;
+        require(msg.value == totalCost, "Incorrect ETH sent");
+
+        // Update the number of tickets sold
         tier.ticketsSold += _quantity;
 
+        // Emit an event for the ticket purchase
         emit TicketPurchased(_eventId, _tierIndex, _quantity, msg.sender);
     }
 

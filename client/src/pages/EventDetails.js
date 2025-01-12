@@ -1,22 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
+import Web3 from 'web3';
+import EventContract from "../build/contracts/EventContract.json";
 
 import Layout from '../components/Layout';
-import { getCookie } from '../utils/AuthHelpers';
+import { getCookie, isAuth } from '../utils/AuthHelpers';
 
 const EventDetails = () => {
     const [event, setEvent] = useState({});
-    const [ticketQuantities, setTicketQuantities] = useState({});
+    const [quantities, setQuantities] = useState({});
+    const [account, setAccount] = useState(null);
+    const [eventId, setEventId] = useState(null);
     const [buttonText, setButtonText] = useState('Checkout');
     
     const { id } = useParams();
     const navigate = useNavigate();
+    
     const token = getCookie('token');
+
+    const web3 = new Web3(window.ethereum);
+    const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
+    const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
 
     useEffect(() => {
         loadDetails();
+        connectWallet();
     }, [id]);
 
     const loadDetails = async () => {
@@ -26,6 +36,7 @@ const EventDetails = () => {
             );
 
             setEvent(response.data);
+            setEventId(response.data.eventId);
 
             // Initialize ticket quantities with 0 for all tiers
             const initialQuantities = {};
@@ -33,7 +44,7 @@ const EventDetails = () => {
                 initialQuantities[tier._id] = 0;
             });
 
-            setTicketQuantities(initialQuantities);
+            setQuantities(initialQuantities);
         }
 
         catch (err) {
@@ -41,54 +52,128 @@ const EventDetails = () => {
         }
     };
 
-    const handleQuantityChange = (tierId, quantity) => {
-        setTicketQuantities(prev => ({
+    const handleChange = (tierId, quantity) => {
+        setQuantities(prev => ({
             ...prev, 
             [tierId]: Math.max(0, quantity) // Ensure quantity is non-negative
         }));
     };
 
-    const handlePurchase = async () => {
-        setButtonText('Buying...');
+    const totalPrice = useMemo(() => {
+        if (!event.tiers) return 0;
+        
+        const total = event.tiers.reduce((total, tier) => {
+            const quantity = quantities[tier._id] || 0;
+            return total + quantity * tier.price;
+        }, 0);
 
-        const selectedTickets = Object.entries(ticketQuantities)
+        return parseFloat(total.toFixed(6)); // Round to 6 decimal places and ensure it's a number
+    }, [event.tiers, quantities]);
+    
+    const connectWallet = async () => {
+        if (web3) {
+            try {
+                await window.ethereum.request({ method: "eth_requestAccounts" });
+                const accounts = await web3.eth.getAccounts();
+                setAccount(accounts[0]);
+            } 
+            catch (err) {
+                console.error("MetaMask connection failed: ", err);
+            }
+        } 
+        else {
+            toast.error("Please install MetaMask!");
+        }
+    };
+
+    const handlePurchase = async () => {
+        setButtonText('Processing...');
+        
+        // Redirect to sign-in if the user is not authenticated
+        if (!isAuth()) {
+            setButtonText('Checkout');
+            toast.error("Please sign in first!");
+            return;
+        }
+        
+        if (!account) {
+            setButtonText('Checkout');
+            toast.error("Please connect MetaMask!");
+            return;
+        }
+
+        const selectedTickets = Object.entries(quantities)
             .filter(([_, quantity]) => quantity > 0)
             .map(([tierId, quantity]) => ({ tierId, quantity }));
 
         if (selectedTickets.length === 0) {
             setButtonText('Checkout');
-            return toast.error('Select and add a ticket to purchase!');
+            return toast.error('Please select and add a ticket!');
         }
 
         try {
-            const response = await axios.post(
+            // Calculate total cost for the selected ticket tiers
+            const { tierId, quantity } = selectedTickets[0];
+            const tierIndex = event.tiers.findIndex(tier => tier._id === tierId);
+            const tier = event.tiers[tierIndex];
+            const totalCost = web3.utils.toWei((tier.price * quantity).toString(), 'ether');
+
+            if (!tier) console.error('Tier not found!');
+
+            console.log("Tier Index:", tierIndex);
+            console.log("Quantity:", quantity);
+
+            const gasEstimate = await contract.methods.buyTickets(eventId, tierIndex, quantity).estimateGas({
+                from: account,
+                value: totalCost,
+            });
+            console.log("Gas estimate:", gasEstimate);
+
+            // Call the buyTickets function
+            await contract.methods.buyTickets(eventId, tierIndex, quantity).send({
+                from: account,
+                value: totalCost,
+                gas: gasEstimate,
+            });
+
+            await axios.post(
                 `${process.env.REACT_APP_SERVER_URL}/tickets/buy`,
                 { eventId: event._id, tickets: selectedTickets },
                 { headers: { Authorization: `Bearer ${token}` } }
-            );
+            )
+            .then((response) => {
+                // Update the UI after successful purchase
+                setEvent(prev => ({
+                    ...prev,
+                    tiers: prev.tiers.map((tier, idx) =>
+                        idx === tierIndex
+                            ? { ...tier, ticketRemaining: tier.ticketRemaining - quantity }
+                            : tier
+                    ),
+                }));
 
-            // Update ticketRemaining for each tier
-            setEvent(prev => ({ 
-                ...prev,
-                tiers: prev.tiers.map(tier => {
-                    const selectedTier = selectedTickets.find(ticket => ticket.tierId === tier._id);
-                    if (selectedTier) {
-                        return {
-                            ...tier,
-                            ticketRemaining: tier.ticketRemaining - selectedTier.quantity,
-                        };
-                    }
-                    return tier;
-                })
-            }));
-
-            toast.success(response.data.message);
-            navigate('/my-tickets');
+                toast.success(response.data.message);
+                navigate('/my-tickets');
+            })
+            .catch((err) => {
+                setButtonText('Checkout');
+                toast.error(err.response?.data?.error);
+            });
         }
 
         catch (err) {
             setButtonText('Checkout');
-            toast.error(err.response?.data?.error);
+            console.error('Transaction failed: ', err);
+
+            if (err.message.includes("revert")) {
+                toast.error("Transaction reverted. Check input data or contract logic.");
+            } 
+            else if (err.code === -32603) {
+                toast.error("Internal JSON-RPC error. Check contract deployment and network.");
+            } 
+            else {
+                toast.error("Unexpected error occurred.");
+            }
         }
     };
 
@@ -132,19 +217,19 @@ const EventDetails = () => {
                                     <div>
                                         <button
                                             className="px-2 bg-slate-200 rounded-l"
-                                            onClick={() => handleQuantityChange(tier._id, ticketQuantities[tier._id] - 1)}
+                                            onClick={() => handleChange(tier._id, quantities[tier._id] - 1)}
                                         >
                                             -
                                         </button>
                                         <input
                                             type="number"
-                                            value={ticketQuantities[tier._id]}
-                                            onChange={(e) => handleQuantityChange(tier._id, parseInt(e.target.value) || 0)}
+                                            value={quantities[tier._id]}
+                                            onChange={(e) => handleChange(tier._id, parseInt(e.target.value) || 0)}
                                             className="w-12 text-center border"
                                         />
                                         <button
                                             className="px-2 bg-slate-200 rounded-r"
-                                            onClick={() => handleQuantityChange(tier._id, ticketQuantities[tier._id] + 1)}
+                                            onClick={() => handleChange(tier._id, quantities[tier._id] + 1)}
                                         >
                                             +
                                         </button>
@@ -158,14 +243,26 @@ const EventDetails = () => {
                         )}
                     </div>
 
-                    <div className="flex flex-col gap-4 mt-8">
+                    <div className="flex flex-col gap-2 mt-8">
                         <p className="font-semibold text-lg text-right">
-                            Total: {event.tiers ? event.tiers.reduce((total, tier) => {
-                                const quantity = ticketQuantities[tier._id] || 0;
-                                return total + quantity * tier.price;
-                            }, 0)
-                            : 0} ETH
-                        </p>
+                            Total: {totalPrice} ETH
+                        </p>                        
+                    
+                        {!account ? (
+                            <button
+                            onClick={connectWallet}
+                            className="py-2 bg-blue-500 text-white font-semibold shadow rounded hover:opacity-80"
+                            >
+                            Connect MetaMask
+                            </button>
+                        ) : (
+                            <div>
+                                <p className="text-center text-slate-400">
+                                    My Account: <span className="text-green-500 mt-4">{account}</span>
+                                </p>
+                            </div>
+                        )}
+
                         <button
                             className="px-4 py-2 right-0 text-white font-semibold bg-red-500 rounded shadow hover:opacity-80"
                             onClick={handlePurchase}

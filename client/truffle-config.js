@@ -58,7 +58,7 @@ module.exports = {
      */
 
     contracts_directory: './src/contracts/',
-    contracts_build_directory: './src/abis',
+    contracts_build_directory: './src/build/contracts/',
 
     networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
