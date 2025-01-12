@@ -64,7 +64,7 @@ const Reset = () => {
         <Layout>
             <ToastContainer />
             {isAuth() ? <Navigate to='/' /> : null}
-            <div className="bg-gray-500 text-white py-12">
+            <div className="bg-gray-500 text-white py-20">
                 <div className="container mx-auto px-4 md:px-8 text-center">
                     <h1 className="text-3xl font-bold">
                         Reset Password
@@ -73,7 +73,7 @@ const Reset = () => {
             </div>
 
             {!reset && (
-                <div className='max-w-lg m-auto text-center px-4 md:px-8 py-12'>
+                <div className='max-w-lg m-auto text-center px-4 md:px-8 py-8'>
                     <form onSubmit={clickSubmit} className='p-10 flex flex-col shadow rounded gap-4 bg-slate-100'>
                         <input
                             type='password'

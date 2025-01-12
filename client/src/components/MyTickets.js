@@ -35,7 +35,7 @@ const MyTickets = () => {
         <Layout>
             <ToastContainer />
             {!isAuth() ? <Navigate to='/signin' /> : null}
-            <div className='bg-gray-500 text-white py-12'>
+            <div className='bg-gray-500 text-white py-20'>
                 <div className='container mx-auto px-6 text-center'>
                     <h1 className='text-3xl font-bold'>
                         My Tickets

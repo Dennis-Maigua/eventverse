@@ -7,7 +7,7 @@ const EventSchema = new mongoose.Schema({
         required: true 
     },
     eventId: {
-        type: Number,
+        type: String,
         required: true,
     },
     posterUrl: {

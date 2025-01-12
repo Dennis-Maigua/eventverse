@@ -39,15 +39,12 @@ const Events = () => {
             <ToastContainer />            
             {events.length === 0 ? (
                 <div className='container mx-auto px-4 md:px-8 text-center py-12'>
-                    <h1 className='text-xl mb-4'>
+                    <h1 className='text-xl'>
                         No events created yet.
-                    </h1>                    
-                    <Link to='/create-event' className='px-3 py-2 bg-red-500 text-white font-semibold shadow rounded hover:opacity-80'> 
-                        Create Event 
-                    </Link>
+                    </h1>
                 </div>
             ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-16 px-8 md:px-16 py-12">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-16 px-8 md:px-16 py-8">
                     {events.map(event => (
                         <Link
                             to={`/event/${event._id}`}

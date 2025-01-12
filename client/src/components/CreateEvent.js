@@ -171,7 +171,7 @@ const CreateEvent = () => {
             console.log("Event created on blockchain successfully!");
 
             // Get the `eventId` from the emitted EventCreated event
-            const eventId = Number(receipt.events.EventCreated.returnValues.eventId);
+            const eventId = (Number(receipt.events.EventCreated.returnValues.eventId)).toString();
             console.log("Event ID from contract:", eventId);
 
             await axios.post(
@@ -210,7 +210,7 @@ const CreateEvent = () => {
         <Layout>
             <ToastContainer />
             {!isAuth() ? <Navigate to='/signin' /> : null}
-            <div className="bg-gray-500 text-white py-12">
+            <div className="bg-gray-500 text-white py-20">
                 <div className="container mx-auto px-4 md:px-8 text-center">
                     <h1 className="text-3xl font-bold">
                         Create Event
@@ -233,7 +233,7 @@ const CreateEvent = () => {
                 </div>
             </div>
             
-            <div className='max-w-2xl m-auto text-center px-4 md:px-8 py-12'>
+            <div className='max-w-2xl m-auto text-center px-4 md:px-8 py-8'>
                 <form onSubmit={handleCreate} className='p-10 flex flex-col border shadow-lg rounded-lg gap-4 bg-slate-100'>
                     <input
                         type='file'

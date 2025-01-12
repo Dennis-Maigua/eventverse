@@ -17,7 +17,7 @@ import MyEvents from './components/MyEvents';
 import MyTickets from './components/MyTickets';
 
 import Home from './pages/Home';
-import Events from './pages/Events';
+import AllEvents from './pages/AllEvents';
 import EventDetails from './pages/EventDetails';
 import About from './pages/About';
 import Contact from './pages/Contact';
@@ -42,7 +42,7 @@ const Router = () => {
                 <Route element={<AdminRoute />}>
                     <Route path='/admin/dashboard' element={<Dashboard />} />
                 </Route>
-                <Route path='/events' element={<Events />} />
+                <Route path='/events' element={<AllEvents />} />
                 <Route path='/event/:id' element={<EventDetails />} />
                 <Route path='/about-us' element={<About />} />
                 <Route path='/contact-us' element={<Contact />} />

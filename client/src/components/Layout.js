@@ -22,7 +22,7 @@ const Layout = ({ children }) => {
 
     return (
         <div>
-            <nav className='bg-gray-900 text-white'>
+            <nav className='bg-gray-800 text-white'>
                 <div className='mx-auto py-4 px-4 md:px-8 flex items-center justify-between'>
                     <NavLink to='/' className='flex gap-1'>
                         <img src={Logo} className='h-7' alt='logo' />
@@ -48,13 +48,11 @@ const Layout = ({ children }) => {
                     </div>
 
                     <div className='flex gap-4 font-semibold'>
-                        {!isAuth() && (
+                        {!isAuth() ? (
                             <div className='flex gap-4'>
                                 <NavLink to='/signin' className='py-1.5 px-3 text-sm text-black bg-white hover:text-red-500 shadow rounded'> Sign In </NavLink>
                             </div>
-                        )}
-
-                        {isAuth() && (
+                        ) : (
                             <div>
                                 <div className='flex items-center gap-2 cursor-pointer' onClick={() => { setDropdown(!dropdown) }}>
                                     <img src={isAuth()?.profileUrl || Avatar} alt='avatar' className='h-8 w-8 rounded-full object-cover border' />
@@ -71,6 +69,9 @@ const Layout = ({ children }) => {
                                             )}
                                             <li>
                                                 <NavLink to='/profile' className={`${isActive('/profile')}`}> Profile </NavLink>
+                                            </li>
+                                            <li>
+                                                <NavLink to='/create-event' className={`${isActive('/create-event')}`}> Create Event </NavLink>
                                             </li>
                                             <li>
                                                 <NavLink to='/my-events' className={`${isActive('/my-events')}`}> My Events </NavLink>
@@ -105,7 +106,7 @@ const Layout = ({ children }) => {
                 {children}
             </div>
 
-            <footer className="bg-gray-900 text-white p-4 bottom-0">
+            <footer className="bg-gray-800 text-white px-4 py-2 bottom-0">
                 <div className="container mx-auto text-center">
                     <p className="text-sm">&copy; 2025 EventVerse. All rights reserved.</p>
                 </div>

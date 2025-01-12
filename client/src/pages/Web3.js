@@ -81,9 +81,8 @@ const Ethers = () => {
             <ToastContainer />
             <div className="flex flex-wrap py-12 px-4 md:px-8">
                 {events.map((event, i) => (
-                    <div key={i} className="p-4 border shadow rounded">
+                    <div key={i} className="p-4 w-full md:w-1/2 lg:w-1/3">
                         <h3><strong>Event {i}</strong></h3>
-                        <p><u>ID:</u>{event.eventId}</p>
                         <p><u>Owner:</u> {event.owner}</p>
                         <br/>
                         <p><u>Poster URL:</u> {event.posterUrl}</p>

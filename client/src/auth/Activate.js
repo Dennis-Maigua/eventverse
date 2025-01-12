@@ -50,7 +50,7 @@ const Activate = () => {
         <Layout>
             <ToastContainer />
             {isAuth() ? <Navigate to='/' /> : null}
-            <div className="bg-gray-500 text-white py-12">
+            <div className="bg-gray-500 text-white py-20">
                 <div className="container mx-auto px-4 md:px-8 text-center">
                     <h1 className="text-3xl font-bold">
                         Activate Account

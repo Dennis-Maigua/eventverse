@@ -36,7 +36,7 @@ const EventDetails = () => {
             );
 
             setEvent(response.data);
-            setEventId(response.data.eventId);
+            setEventId(parseInt(response.data.eventId));
 
             // Initialize ticket quantities with 0 for all tiers
             const initialQuantities = {};
@@ -112,7 +112,7 @@ const EventDetails = () => {
         }
 
         try {
-            // Calculate total cost for the selected ticket tiers
+            // Calculate total cost for all the selected ticket tiers
             const { tierId, quantity } = selectedTickets[0];
             const tierIndex = event.tiers.findIndex(tier => tier._id === tierId);
             const tier = event.tiers[tierIndex];
@@ -123,17 +123,10 @@ const EventDetails = () => {
             console.log("Tier Index:", tierIndex);
             console.log("Quantity:", quantity);
 
-            const gasEstimate = await contract.methods.buyTickets(eventId, tierIndex, quantity).estimateGas({
-                from: account,
-                value: totalCost,
-            });
-            console.log("Gas estimate:", gasEstimate);
-
             // Call the buyTickets function
             await contract.methods.buyTickets(eventId, tierIndex, quantity).send({
                 from: account,
-                value: totalCost,
-                gas: gasEstimate,
+                value: totalCost
             });
 
             await axios.post(
