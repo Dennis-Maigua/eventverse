@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
@@ -25,8 +25,6 @@ const EventDetails = () => {
     const { eventId, contractAddress, account, buttonText } = values;
 
     const web3 = new Web3(window.ethereum);
-    // const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
-    // const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
 
     useEffect(() => {
         loadDetails();
@@ -75,6 +73,7 @@ const EventDetails = () => {
             try {
                 await window.ethereum.request({ method: "eth_requestAccounts" });
                 const accounts = await web3.eth.getAccounts();
+
                 setValues({ ...values, account: accounts[0] });
             } 
             catch (err) {
@@ -84,6 +83,10 @@ const EventDetails = () => {
         else {
             toast.error("Please install MetaMask!");
         }
+    };
+
+    const shorten = (content) => {
+        return `${content.slice(0, 4)}...${content.slice(-4)}`;
     };
 
     const calculateTotalCost = () => {
@@ -133,19 +136,22 @@ const EventDetails = () => {
             });
 
             const addedQuantities = selectedTickets.map(([_, quantity]) => quantity);
-
+            const totalPrice = calculateTotalCost();
             const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
 
             // Call the buyTickets function
-            await contract.methods.buyTickets(
+            const receipt = await contract.methods.buyTickets(
                 eventId,
                 tierIndexes, 
                 addedQuantities
             ).send({
                 from: account,
-                value: web3.utils.toWei(calculateTotalCost().toString(), "ether")
+                value: web3.utils.toWei(totalPrice.toString(), "ether")
             });
 
+            // Extract transaction details
+            const txnHash = receipt.transactionHash;
+            
             console.log("Ticket(s) bought via blockchain successfully!");
 
             const mappedTickets = Object.entries(quantities)
@@ -155,10 +161,10 @@ const EventDetails = () => {
             await axios.post(
                 `${process.env.REACT_APP_SERVER_URL}/tickets/buy`, { 
                     eventId: id,
-                    contractAddress,
+                    txnHash,
                     account,
                     tickets: mappedTickets, 
-                    totalCost: calculateTotalCost() 
+                    totalCost: totalPrice 
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             )
@@ -175,16 +181,6 @@ const EventDetails = () => {
         catch (err) {
             setValues({ ...values, buttonText: 'Checkout' });
             console.error('Error buying tickets: ', err);
-
-            if (err.message.includes("revert")) {
-                toast.error("Transaction reverted. Check input data or contract logic.");
-            } 
-            else if (err.code === -32603) {
-                toast.error("Internal JSON-RPC error. Check contract deployment and network.");
-            } 
-            else {
-                toast.error("Unexpected error occurred.");
-            }
         }
     };
 
@@ -269,7 +265,7 @@ const EventDetails = () => {
                         ) : (
                             <div>
                                 <p className="text-center text-slate-400">
-                                    My Account: <span className="text-green-500 mt-4">{account}</span>
+                                    My Account: <span className="text-green-500 mt-4">{shorten(account)}</span>
                                 </p>
                             </div>
                         )}

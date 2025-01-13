@@ -251,27 +251,36 @@ const DashContent = ({ activeUsers, inactiveUsers, totalUsers, unreadMessages, r
                 <h3 className='text-lg font-semibold text-gray-700'> {activeUsers} </h3>
                 <p className='text-gray-500 text-sm'> Active Users </p>
             </div>
-
             <div className='py-3 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {inactiveUsers} </h3>
                 <p className='text-gray-500 text-sm'> Inactive Users </p>
             </div>
-
             <div className='py-3 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {totalUsers.length} </h3>
                 <p className='text-gray-500 text-sm'> Total Users </p>
+            </div>
+            
+            <div className='py-3 bg-white rounded-lg shadow text-center'>
+                <h3 className='text-lg font-semibold text-gray-700'> - </h3>
+                <p className='text-gray-500 text-sm'> Active Events </p>
+            </div>
+            <div className='py-3 bg-white rounded-lg shadow text-center'>
+                <h3 className='text-lg font-semibold text-gray-700'> - </h3>
+                <p className='text-gray-500 text-sm'> Cancelled Events </p>
+            </div>
+            <div className='py-3 bg-white rounded-lg shadow text-center'>
+                <h3 className='text-lg font-semibold text-gray-700'> - </h3>
+                <p className='text-gray-500 text-sm'> Total Events </p>
             </div>
 
             <div className='py-3 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {unreadMessages} </h3>
                 <p className='text-gray-500 text-sm'> Unread Messages </p>
             </div>
-
             <div className='py-3 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {readMessages} </h3>
                 <p className='text-gray-500 text-sm'> Read Messages </p>
             </div>
-
             <div className='py-3 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {totalMessages.length} </h3>
                 <p className='text-gray-500 text-sm'> Total Messages </p>

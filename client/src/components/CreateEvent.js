@@ -120,7 +120,9 @@ const CreateEvent = () => {
             try {
                 await window.ethereum.request({ method: "eth_requestAccounts" });
                 const accounts = await web3.eth.getAccounts();
+
                 setValues({ ...values, account: accounts[0] });
+                console.log("My Account from Metamask:", account);
             } 
             catch (err) {
                 console.error("MetaMask connection failed: ", err);
@@ -129,6 +131,10 @@ const CreateEvent = () => {
         else {
             toast.error("Please install MetaMask!");
         }
+    };
+
+    const shorten = (content) => {
+        return `${content.slice(0, 4)}...${content.slice(-4)}`;
     };
 
     const handleCreate = async (e) => {
@@ -142,7 +148,7 @@ const CreateEvent = () => {
         }
 
         const confirmCreate = window.confirm(
-            'This action cannot be undone! Are you sure you want to create this event?'
+            'This cannot be undone! Are you sure you want to create this event?'
         );
 
         if (!confirmCreate) {
@@ -227,7 +233,7 @@ const CreateEvent = () => {
                     ) : (
                         <div>
                             <p className="text-red-300 mt-4">
-                                My Account: <span className="text-blue-300 mt-4">{account}</span>
+                                My Account: <span className="text-blue-300 mt-4">{shorten(account)}</span>
                             </p>
                         </div>
                     )}

@@ -111,7 +111,7 @@ const Profile = () => {
     };
 
     const handleDelete = async () => {
-        const confirmDelete = window.confirm('This action cannot be undone! Are you sure you want to delete your account?');
+        const confirmDelete = window.confirm('This cannot be undone! Are you sure you want to delete your account?');
 
         if (!confirmDelete) {
             return;

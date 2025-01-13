@@ -201,7 +201,7 @@ exports.loadDetails = async (req, res) => {
 };
 
 exports.buyTickets = async (req, res) => {
-    const { eventId, contractAddress, account, tickets, totalCost } = req.body; // Array of { tierId, quantity }
+    const { eventId, txnHash, account, tickets, totalCost } = req.body; // Array of { tierId, quantity }
     const userId = req.user._id;
 
     try {
@@ -213,9 +213,9 @@ exports.buyTickets = async (req, res) => {
             });
         }
 
-        if (!contractAddress || !account || !totalCost) {
+        if (!txnHash || !account || !totalCost) {
             return res.status(400).json({ 
-                error: 'Input data is missing!' 
+                error: 'Blockchain data is missing!' 
             });
         }
 
@@ -244,7 +244,7 @@ exports.buyTickets = async (req, res) => {
         const userTickets = new Ticket({
             eventId,
             userId,
-            contractAddress, 
+            txnHash, 
             account,
             tiers: tickets.map(ticket => {
                 const tier = event.tiers.id(ticket.tierId);

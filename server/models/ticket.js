@@ -11,7 +11,7 @@ const TicketSchema = new mongoose.Schema({
         ref: 'User', 
         required: true 
     },
-    contractAddress: { type: String, required: true },
+    txnHash: { type: String, required: true },
     account: { type: String, required: true },
     tiers: [
         {
