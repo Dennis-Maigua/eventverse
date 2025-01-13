@@ -191,7 +191,7 @@ const MyEvents = () => {
                                     <th className='p-2'> Venue </th>
                                     <th className='p-2'> Tickets </th>
                                     <th className='p-2'> Sold </th>
-                                    <th className='p-2'> Revenue </th>
+                                    <th className='p-2'> Total </th>
                                     <th className='p-2'> Actions </th>
                                 </tr>
                             </thead>
@@ -229,7 +229,7 @@ const MyEvents = () => {
                                         <td className='p-2'>
                                             {event.tiers.map((tier, index) => (
                                                 <div key={index}>
-                                                    {tier.name} @ ${tier.price}
+                                                    {tier.name} @ {tier.price} ETH
                                                 </div>
                                             ))}
                                         </td>
@@ -243,12 +243,12 @@ const MyEvents = () => {
                                         <td className='p-2'>
                                             {event.tiers.map((tier, index) => (
                                                 <div key={index}>
-                                                    ${tier.price * (tier.ticketCount - tier.ticketRemaining)}
+                                                    {tier.price * (tier.ticketCount - tier.ticketRemaining)} ETH
                                                 </div>
                                             ))}
                                         </td>
                                         <td className='p-2 font-medium'>
-                                            <button className='text-blue-500 hover:opacity-80' onClick={() => clickEdit(event)}> Edit </button>
+                                            <button className='text-blue-500 hover:opacity-80' onClick={() => clickEdit(event)}> Withdraw </button>
                                             <button className='text-red-500 hover:opacity-80 ml-3' onClick={() => handleDelete(event._id)}> Cancel </button>
                                         </td>
                                     </tr>

@@ -57,7 +57,7 @@ const MyTickets = () => {
                                     <th className='p-2'> Date </th>
                                     <th className='p-2'> Time </th>
                                     <th className='p-2'> Venue </th>
-                                    <th className='p-2'> Tier </th>
+                                    <th className='p-2'> Tickets </th>
                                     <th className='p-2'> Quantity </th>
                                     <th className='p-2'> Total </th>
                                 </tr>
@@ -82,7 +82,7 @@ const MyTickets = () => {
                                         <td className='p-2'>
                                             {ticket.tiers.map((tier, index) => (
                                                 <div key={index}>
-                                                    {tier.name} @ ${tier.price}
+                                                    {tier.name} @ {tier.price} ETH
                                                 </div>
                                             ))}
                                         </td>

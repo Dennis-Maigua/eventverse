@@ -131,7 +131,7 @@ const EventDetails = () => {
 
             await axios.post(
                 `${process.env.REACT_APP_SERVER_URL}/tickets/buy`,
-                { eventId: event._id, tickets: selectedTickets },
+                { eventId: id, tickets: selectedTickets },
                 { headers: { Authorization: `Bearer ${token}` } }
             )
             .then((response) => {
