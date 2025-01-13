@@ -55,6 +55,16 @@ const MyEvents = () => {
             toast.error(err.response?.data?.error);
         }
     };
+
+    const { isLoaded } = useJsApiLoader({
+      id: 'google-map-script',
+      googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+      libraries
+    });
+
+    const shorten = (content) => {
+        return `${content.slice(0, 4)}...${content.slice(-4)}`;
+    };
     
     const handleUpload = async (image) => {
         if (image.size > 2 * 1024 * 1024) {
@@ -103,12 +113,6 @@ const MyEvents = () => {
             locality: event.venue[0].name
         });
     };
-
-    const { isLoaded } = useJsApiLoader({
-      id: 'google-map-script',
-      googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-      libraries
-    });
 
     const handleOnPlacesChanged = () => {
         const place = inputRef.current.getPlaces();
@@ -184,66 +188,61 @@ const MyEvents = () => {
                         <table className='min-w-full divide-y divide-gray-200'>
                             <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
                                 <tr>
-                                    <th className='p-2'> ID </th>
-                                    <th className='p-2'> Poster </th>
-                                    <th className='p-2'> Name </th>
-                                    <th className='p-2'> Date Time </th>
-                                    <th className='p-2'> Venue </th>
-                                    <th className='p-2'> Tickets </th>
+                                    <th className='p-2'> Contract </th>
+                                    <th className='p-2'> Account </th>
+                                    <th className='p-2'> Event Name </th>
+                                    <th className='p-2'> Event Date </th>
+                                    <th className='p-2'> Event Venue </th>
+                                    <th className='p-2'> Ticket Tiers </th>
                                     <th className='p-2'> Sold </th>
-                                    <th className='p-2'> Total </th>
-                                    <th className='p-2'> Actions </th>
+                                    <th className='p-2'> Revenue </th>
+                                    <th className='p-2'> </th>
                                 </tr>
                             </thead>
                             <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
                                 {events.map(event => (
                                     <tr key={event._id}>
-                                        <td className='p-2 truncate'>{event.eventId}</td>
-                                        <td className='p-2 flex items-center'>
-                                            <img
-                                                src={event.posterUrl}
-                                                alt='cover'
-                                                name='posterUrl'
-                                                className='h-10 w-10 self-center border object-cover'
-                                            />
-                                        </td>
-                                        <td className='p-2 truncate'>{event.name}</td>
+                                        <td className='p-2'>{shorten(event.contractAddress)}</td>
+                                        <td className='p-2'>{shorten(event.account)}</td>
                                         <td className='p-2'>
-                                            {new Date(event.date).toLocaleString('en-US', {
-                                                weekday: 'short',
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric',
-                                                hour: 'numeric',
-                                                minute: 'numeric',
-                                                hour12: true,
-                                            })}
+                                            <div className='flex flew-row gap-1 items-center p-2'>
+                                                <img
+                                                    src={event.posterUrl}
+                                                    alt='cover'
+                                                    name='posterUrl'
+                                                    className='h-10 w-10 self-center border object-cover'
+                                                />
+                                                {event.name}
+                                            </div>
+                                        </td>
+                                        <td className='p-2'>
+                                            {new Date(event.date).toLocaleString('en-US')}
                                         </td>
                                         <td className='p-2 truncate'>
-                                            {event.venue.map((v, index) => (
-                                                <div key={index}>
-                                                    {v.name}
+                                            {event.venue.map((location, i) => (
+                                                <div key={i}>
+                                                    {location.name}
                                                 </div>
                                             ))}
                                         </td>
                                         <td className='p-2'>
-                                            {event.tiers.map((tier, index) => (
-                                                <div key={index}>
+                                            {event.tiers.map((tier, i) => (
+                                                <div key={i}>
                                                     {tier.name} @ {tier.price} ETH
                                                 </div>
                                             ))}
                                         </td>
                                         <td className='p-2'>
-                                            {event.tiers.map((tier, index) => (
-                                                <div key={index}>
-                                                    {(tier.ticketCount - tier.ticketRemaining)}/{tier.ticketCount}
+                                            {event.tiers.map((tier, i) => (
+                                                <div key={i}>
+                                                    {(tier.ticketsSold)}/{tier.ticketsCount}
                                                 </div>
                                             ))}
                                         </td>
                                         <td className='p-2'>
-                                            {event.tiers.map((tier, index) => (
-                                                <div key={index}>
-                                                    {tier.price * (tier.ticketCount - tier.ticketRemaining)} ETH
+                                            {event.tiers.map((tier, i) => (
+                                                <div key={i}>
+                                                    {tier.price * (tier.ticketsSold)} ETH
                                                 </div>
                                             ))}
                                         </td>

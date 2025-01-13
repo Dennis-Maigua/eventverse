@@ -11,18 +11,22 @@ import { getCookie, isAuth } from '../utils/AuthHelpers';
 const EventDetails = () => {
     const [event, setEvent] = useState({});
     const [quantities, setQuantities] = useState({});
-    const [account, setAccount] = useState(null);
-    const [eventId, setEventId] = useState(null);
-    const [buttonText, setButtonText] = useState('Checkout');
+    const [values, setValues] = useState({
+        eventId: '',
+        contractAddress: null,
+        account: null,
+        buttonText: 'Checkout'
+    });
     
     const { id } = useParams();
     const navigate = useNavigate();
     
     const token = getCookie('token');
+    const { eventId, contractAddress, account, buttonText } = values;
 
     const web3 = new Web3(window.ethereum);
-    const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
-    const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
+    // const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
+    // const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
 
     useEffect(() => {
         loadDetails();
@@ -36,9 +40,17 @@ const EventDetails = () => {
             );
 
             setEvent(response.data);
-            setEventId(parseInt(response.data.eventId));
 
-            // Initialize ticket quantities with 0 for all tiers
+            const {eventId, contractAddress} = response.data;
+
+            setValues({ ...values, 
+                eventId: eventId,
+                contractAddress: contractAddress
+             });
+
+            console.log("Event ID from contract:", eventId);
+            console.log("Deployed contract address:", contractAddress);
+
             const initialQuantities = {};
             response.data.tiers.forEach(tier => {
                 initialQuantities[tier._id] = 0;
@@ -53,29 +65,17 @@ const EventDetails = () => {
     };
 
     const handleChange = (tierId, quantity) => {
-        setQuantities(prev => ({
-            ...prev, 
+        setQuantities(prev => ({ ...prev, 
             [tierId]: Math.max(0, quantity) // Ensure quantity is non-negative
         }));
     };
-
-    const totalPrice = useMemo(() => {
-        if (!event.tiers) return 0;
-        
-        const total = event.tiers.reduce((total, tier) => {
-            const quantity = quantities[tier._id] || 0;
-            return total + quantity * tier.price;
-        }, 0);
-
-        return parseFloat(total.toFixed(6)); // Round to 6 decimal places and ensure it's a number
-    }, [event.tiers, quantities]);
     
     const connectWallet = async () => {
         if (web3) {
             try {
                 await window.ethereum.request({ method: "eth_requestAccounts" });
                 const accounts = await web3.eth.getAccounts();
-                setAccount(accounts[0]);
+                setValues({ ...values, account: accounts[0] });
             } 
             catch (err) {
                 console.error("MetaMask connection failed: ", err);
@@ -86,77 +86,95 @@ const EventDetails = () => {
         }
     };
 
+    const calculateTotalCost = () => {
+        if (!event.tiers) return 0;
+    
+        return Object.entries(quantities).reduce((total, [tierId, quantity]) => {
+            const tier = event.tiers.find(t => t._id === tierId);
+            if (tier) {
+                return total + tier.price * quantity;
+            }
+            return total;
+        }, 0);
+    };
+
     const handlePurchase = async () => {
-        setButtonText('Processing...');
+        setValues({ ...values, buttonText: 'Processing...' });
         
-        // Redirect to sign-in if the user is not authenticated
         if (!isAuth()) {
-            setButtonText('Checkout');
             toast.error("Please sign in first!");
+            setValues({ ...values, buttonText: 'Checkout' });
             return;
         }
         
         if (!account) {
-            setButtonText('Checkout');
-            toast.error("Please connect MetaMask!");
+            toast.error("Please connect MetaMask first!");
+            setValues({ ...values, buttonText: 'Checkout' });
             return;
         }
 
         const selectedTickets = Object.entries(quantities)
-            .filter(([_, quantity]) => quantity > 0)
-            .map(([tierId, quantity]) => ({ tierId, quantity }));
+            .filter(([_, quantity]) => quantity > 0);
 
         if (selectedTickets.length === 0) {
-            setButtonText('Checkout');
-            return toast.error('Please select and add a ticket!');
+            toast.error('Please select and add a ticket!');
+            setValues({ ...values, buttonText: 'Checkout' });
+            return;
         }
 
         try {
-            // Calculate total cost for all the selected ticket tiers
-            const { tierId, quantity } = selectedTickets[0];
-            const tierIndex = event.tiers.findIndex(tier => tier._id === tierId);
-            const tier = event.tiers[tierIndex];
-            const totalCost = web3.utils.toWei((tier.price * quantity).toString(), 'ether');
-
-            if (!tier) console.error('Tier not found!');
-
-            console.log("Tier Index:", tierIndex);
-            console.log("Quantity:", quantity);
-
-            // Call the buyTickets function
-            await contract.methods.buyTickets(eventId, tierIndex, quantity).send({
-                from: account,
-                value: totalCost
+            // Map tierId to tierIndex
+            const tierIndexes = selectedTickets.map(([tierId]) => {
+                const tierIndex = event.tiers.findIndex(tier => tier._id === tierId);
+                if (tierIndex === -1) {
+                    toast.error(`Invalid tierId: ${tierId}`);
+                }
+                return tierIndex;
             });
 
+            const addedQuantities = selectedTickets.map(([_, quantity]) => quantity);
+
+            const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
+
+            // Call the buyTickets function
+            await contract.methods.buyTickets(
+                eventId,
+                tierIndexes, 
+                addedQuantities
+            ).send({
+                from: account,
+                value: web3.utils.toWei(calculateTotalCost().toString(), "ether")
+            });
+
+            console.log("Ticket(s) bought via blockchain successfully!");
+
+            const mappedTickets = Object.entries(quantities)
+                .filter(([_, quantity]) => quantity > 0)
+                .map(([tierId, quantity]) => ({ tierId, quantity }));
+
             await axios.post(
-                `${process.env.REACT_APP_SERVER_URL}/tickets/buy`,
-                { eventId: id, tickets: selectedTickets },
+                `${process.env.REACT_APP_SERVER_URL}/tickets/buy`, { 
+                    eventId: id,
+                    contractAddress,
+                    account,
+                    tickets: mappedTickets, 
+                    totalCost: calculateTotalCost() 
+                },
                 { headers: { Authorization: `Bearer ${token}` } }
             )
             .then((response) => {
-                // Update the UI after successful purchase
-                setEvent(prev => ({
-                    ...prev,
-                    tiers: prev.tiers.map((tier, idx) =>
-                        idx === tierIndex
-                            ? { ...tier, ticketRemaining: tier.ticketRemaining - quantity }
-                            : tier
-                    ),
-                }));
-
                 toast.success(response.data.message);
                 navigate('/my-tickets');
             })
             .catch((err) => {
-                setButtonText('Checkout');
                 toast.error(err.response?.data?.error);
+                setValues({ ...values, buttonText: 'Checkout' });
             });
         }
 
         catch (err) {
-            setButtonText('Checkout');
-            console.error('Transaction failed: ', err);
+            setValues({ ...values, buttonText: 'Checkout' });
+            console.error('Error buying tickets: ', err);
 
             if (err.message.includes("revert")) {
                 toast.error("Transaction reverted. Check input data or contract logic.");
@@ -205,7 +223,7 @@ const EventDetails = () => {
                                 <div key={tier._id} className="grid grid-cols-4 border-b py-2">
                                     <p className="">{tier.name}</p>
                                     <p className="text-red-500 font-semibold">{tier.price} ETH</p>
-                                    <p className="text-sm text-slate-400">(Rem: {tier.ticketRemaining})</p>
+                                    <p className="text-sm text-slate-400">(Rem: {tier.ticketsCount - tier.ticketsSold})</p>
 
                                     <div>
                                         <button
@@ -238,7 +256,7 @@ const EventDetails = () => {
 
                     <div className="flex flex-col gap-2 mt-8">
                         <p className="font-semibold text-lg text-right">
-                            Total: {totalPrice} ETH
+                            Total: {calculateTotalCost()} ETH
                         </p>                        
                     
                         {!account ? (

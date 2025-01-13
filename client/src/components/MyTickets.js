@@ -31,6 +31,10 @@ const MyTickets = () => {
         }
     };
 
+    const shorten = (content) => {
+        return `${content.slice(0, 4)}...${content.slice(-4)}`;
+    };
+
     return (
         <Layout>
             <ToastContainer />
@@ -53,11 +57,13 @@ const MyTickets = () => {
                         <table className='min-w-full divide-y divide-gray-200'>
                             <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
                                 <tr>
-                                    <th className='p-2'> Event </th>
-                                    <th className='p-2'> Date </th>
-                                    <th className='p-2'> Time </th>
-                                    <th className='p-2'> Venue </th>
-                                    <th className='p-2'> Tickets </th>
+                                    <th className='p-2'> Contract </th>
+                                    <th className='p-2'> Account </th>
+                                    <th className='p-2'> Event Name </th>
+                                    <th className='p-2'> Event Venue </th>
+                                    <th className='p-2'> Event Date </th>
+                                    <th className='p-2'> Purchase Date </th>
+                                    <th className='p-2'> Ticket Tiers </th>
                                     <th className='p-2'> Quantity </th>
                                     <th className='p-2'> Total </th>
                                 </tr>
@@ -65,12 +71,18 @@ const MyTickets = () => {
                             <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
                                 {tickets.map(ticket => (
                                     <tr key={ticket._id}>
-                                        <td className='p-2 truncate'>{ticket.eventId.name}</td>
+                                    <td className='p-2'>{shorten(ticket.contractAddress)}</td>
+                                    <td className='p-2'>{shorten(ticket.account)}</td>
                                         <td className='p-2'>
-                                            {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(ticket.eventId.date))}
-                                        </td>
-                                        <td className='p-2'>
-                                            {new Date(ticket.eventId.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            <div className='flex flew-row gap-1 items-center'>
+                                                <img
+                                                    src={ticket.eventId.posterUrl}
+                                                    alt='cover'
+                                                    name='posterUrl'
+                                                    className='h-10 w-10 self-center border object-cover'
+                                                />
+                                                {ticket.eventId.name}
+                                            </div>
                                         </td>
                                         <td className='p-2 truncate'>
                                             {ticket.eventId.venue.map((v, index) => (
@@ -80,11 +92,18 @@ const MyTickets = () => {
                                             ))}
                                         </td>
                                         <td className='p-2'>
+                                            {new Date(ticket.eventId.date).toLocaleString('en-US')}
+                                        </td>
+                                        <td className='p-2'>
+                                            {new Date(ticket.purchaseDate).toLocaleString('en-US')}
+                                        </td>
+                                        <td className='p-2'>
                                             {ticket.tiers.map((tier, index) => (
                                                 <div key={index}>
                                                     {tier.name} @ {tier.price} ETH
                                                 </div>
                                             ))}
+                                            <br/>
                                         </td>
                                         <td className='p-2'>
                                             {ticket.tiers.map((tier, index) => (
@@ -92,13 +111,17 @@ const MyTickets = () => {
                                                     {tier.quantity}
                                                 </div>
                                             ))}
+                                            <br/>
                                         </td>
                                         <td className='p-2'>
-                                            {ticket.tiers.map((tier, index) => (
-                                                <div key={index}>
-                                                    ${tier.price * tier.quantity}
-                                                </div>
-                                            ))}
+                                            <div>
+                                                {ticket.tiers.map((tier, index) => (
+                                                    <div key={index}>
+                                                        ${tier.price * tier.quantity}
+                                                    </div>
+                                                ))}
+                                                <p className='mt-1 border-t text-red-500'>{ticket.totalCost}</p>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

@@ -111,23 +111,25 @@ const Profile = () => {
     };
 
     const handleDelete = async () => {
-        const confirmDelete = window.confirm('Are you sure you want to delete your account?');
+        const confirmDelete = window.confirm('This action cannot be undone! Are you sure you want to delete your account?');
 
-        if (confirmDelete) {
-            try {
-                const response = await axios.delete(
-                    `${process.env.REACT_APP_SERVER_URL}/user/delete`,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+        if (!confirmDelete) {
+            return;
+        }
+        
+        try {
+            const response = await axios.delete(
+                `${process.env.REACT_APP_SERVER_URL}/user/delete`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
-                toast.success(response.data.message);
+            toast.success(response.data.message);
 
-                signout(() => navigate('/signin'));
-            }
+            signout(() => navigate('/signin'));
+        }
 
-            catch (err) {
-                toast.error(err.response?.data?.error);
-            }
+        catch (err) {
+            toast.error(err.response?.data?.error);
         }
     };
 

@@ -26,7 +26,7 @@ const CreateEvent = () => {
     const [tiers, setTiers] = useState([{ 
         name: '', 
         price: '' ,
-        ticketCount: ''
+        ticketsCount: ''
     }]);
     const [venue, setVenue] = useState([{ 
         name: '', 
@@ -44,8 +44,6 @@ const CreateEvent = () => {
     const { account, posterUrl, name, date, buttonText } = values;
 
     const web3 = new Web3(window.ethereum);
-    const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
-    const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
     
     useEffect(() => {
         connectWallet();
@@ -103,7 +101,7 @@ const CreateEvent = () => {
     };
 
     const handleAddTier = () => {
-        setTiers([...tiers, { name: '', price: '', ticketCount: '' }]);
+        setTiers([...tiers, { name: '', price: '', ticketsCount: '' }]);
     };
 
     const handleRemoveTier = (index) => {
@@ -139,23 +137,38 @@ const CreateEvent = () => {
 
         if (!account) {
             setValues({ ...values, buttonText: 'Submit' });
-            toast.error("Please connect MetaMask!");
+            toast.error("Please connect MetaMask first!");
             return;
         }
 
-        try {
-            // Access venue details
-            const loc = venue[0].name;
-            const lat = (venue[0].latitude).toString();
-            const long = (venue[0].longitude).toString();
+        const confirmCreate = window.confirm(
+            'This action cannot be undone! Are you sure you want to create this event?'
+        );
 
-            // Access tier details
-            const tierNames = tiers.map(tier => tier.name);
-            const tierPrices = tiers.map(tier => web3.utils.toWei(tier.price, "ether"));
-            const tierTicketCounts = tiers.map(tier => parseInt(tier.ticketCount));
+        if (!confirmCreate) {
+            setValues({ ...values, buttonText: 'Submit' });
+            return;
+        }
+
+        const loc = venue[0].name;
+        const lat = (venue[0].latitude).toString();
+        const long = (venue[0].longitude).toString();
+
+        const tierNames = tiers.map(tier => tier.name);
+        const tierPrices = tiers.map(tier => web3.utils.toWei(tier.price, "ether"));
+        const tierTicketsCounts = tiers.map(tier => parseInt(tier.ticketsCount));
+
+        try {
+            // First, deploy contract
+            const deployedContract = await new web3.eth.Contract(EventContract.abi)
+                .deploy({ data: EventContract.bytecode })
+                .send({ from: account });
+
+            const contractAddress = deployedContract.options.address;
+            console.log("Contract deployed at:", contractAddress);
 
             // Then, call createEvent function
-            const receipt = await contract.methods.createEvent(
+            const receipt = await deployedContract.methods.createEvent(
                 posterUrl,
                 name,
                 new Date(date).toISOString(),
@@ -164,42 +177,30 @@ const CreateEvent = () => {
                 long,
                 tierNames,
                 tierPrices,
-                tierTicketCounts
+                tierTicketsCounts
             )
             .send({ from: account });
 
-            console.log("Event created on blockchain successfully!");
-
-            // Get the `eventId` from the emitted EventCreated event
+            // Get the `eventId` from the created event
             const eventId = (Number(receipt.events.EventCreated.returnValues.eventId)).toString();
             console.log("Event ID from contract:", eventId);
+            console.log("Event created on blockchain successfully!");
 
             await axios.post(
                 `${process.env.REACT_APP_SERVER_URL}/event/create`, 
-                { eventId, posterUrl, name, date, venue, tiers }, 
+                { eventId, contractAddress, account, posterUrl, name, date, venue, tiers }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             )
             .then((response) => {
                 toast.success(response.data.message);
-
-                setVenue([{ name: '', latitude: '', longitude: '' }]);
-                setTiers([{ name: '', price: '', ticketCount: '' }]);
-                setValues({ 
-                    ...values, 
-                    posterUrl: '', 
-                    name: '', 
-                    date: '',
-                    buttonText: 'Submitted' 
-                });
-
                 navigate('/my-events');
             })
             .catch((err) => {
                 setValues({ ...values, buttonText: 'Submit' });
                 toast.error(err.response?.data?.error);
             });
-        } 
-        
+        }
+
         catch (err) {
             setValues({ ...values, buttonText: 'Submit' });
             console.error('Error saving event in blockchain: ', err);
@@ -321,8 +322,8 @@ const CreateEvent = () => {
                             <input
                               type="number"
                               placeholder="Quantity"
-                              value={tier.ticketCount}
-                              onChange={(e) => handleTierChange(index, 'ticketCount', e.target.value)}
+                              value={tier.ticketsCount}
+                              onChange={(e) => handleTierChange(index, 'ticketsCount', e.target.value)}
                               className="w-1/4 p-3 shadow rounded"
                               required
                             />

@@ -6,22 +6,12 @@ const EventSchema = new mongoose.Schema({
         ref: 'User', 
         required: true 
     },
-    eventId: {
-        type: String,
-        required: true,
-    },
-    posterUrl: {
-        type: String,
-        required: true,
-    },
-    name: { 
-        type: String, 
-        required: true 
-    },
-    date: { 
-        type: Date, 
-        required: true 
-    },
+    eventId: { type: String, required: true },
+    contractAddress: { type: String, required: true },
+    account: { type: String, required: true },
+    posterUrl: { type: String, required: true },
+    name: { type: String, required: true },
+    date: { type: Date, required: true },
     venue: [
         {
             name: { type: String, required: true },
@@ -33,8 +23,8 @@ const EventSchema = new mongoose.Schema({
         {
             name: { type: String, required: true },
             price: { type: Number, required: true },
-            ticketCount: { type: Number, required: true },
-            ticketRemaining: { type: Number, required: true }
+            ticketsCount: { type: Number, required: true },
+            ticketsSold: { type: Number, default: 0 }
         },
     ]
 }, {

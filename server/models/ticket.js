@@ -11,6 +11,8 @@ const TicketSchema = new mongoose.Schema({
         ref: 'User', 
         required: true 
     },
+    contractAddress: { type: String, required: true },
+    account: { type: String, required: true },
     tiers: [
         {
             name: { type: String, required: true },
@@ -18,6 +20,7 @@ const TicketSchema = new mongoose.Schema({
             quantity: { type: Number, required: true }
         },
     ],
+    totalCost: { type: Number, required: true },
     purchaseDate: { type: Date, default: Date.now }
 });
 

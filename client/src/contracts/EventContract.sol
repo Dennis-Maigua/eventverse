@@ -29,7 +29,7 @@ contract EventContract {
     uint256 public eventCount;
 
     event EventCreated(uint256 indexed eventId, address indexed owner);
-    event TicketPurchased(uint256 indexed eventId, uint256 tierIndex, uint256 quantity, address indexed buyer);
+    event TicketPurchased(uint256 indexed eventId, uint256[] tierIndexes, uint256[] quantities, address indexed buyer);
 
     modifier onlyOwner(uint256 eventId) {
         require(events[eventId].owner == msg.sender, "Only event owner can perform this action");
@@ -44,11 +44,11 @@ contract EventContract {
         string memory _latitude,
         string memory _longitude,
         string[] memory _tierNames,
-        uint256[] memory _prices,
-        uint256[] memory _ticketCounts
+        uint256[] memory _tierPrices,
+        uint256[] memory _tierTicketsCounts
     ) 
     public {
-        require(_tierNames.length == _prices.length && _prices.length == _ticketCounts.length, "Tier data mismatch");
+        require(_tierNames.length == _tierPrices.length && _tierPrices.length == _tierTicketsCounts.length, "Tier data mismatch");
 
         Event storage newEvent = events[eventCount];
         newEvent.owner = msg.sender;
@@ -61,8 +61,8 @@ contract EventContract {
         for (uint256 i = 0; i < _tierNames.length; i++) {
             newEvent.tiers.push(Ticket({
                 name: _tierNames[i],
-                price: _prices[i],
-                totalTickets: _ticketCounts[i],
+                price: _tierPrices[i],
+                totalTickets: _tierTicketsCounts[i],
                 ticketsSold: 0
             }));
         }
@@ -99,35 +99,33 @@ contract EventContract {
     }
 
     function buyTickets(
-    uint256 _eventId, 
-    uint256 _tierIndex, 
-    uint256 _quantity
+        uint256 eventId, 
+        uint256[] memory tierIndexes, 
+        uint256[] memory quantities
     ) 
-        public 
-        payable 
+    public 
+    payable 
     {
-        // Ensure the event exists and is active
-        require(_eventId < eventCount, "Event does not exist");
-        Event storage _event = events[_eventId];
+        Event storage _event = events[eventId];
         require(_event.isActive, "Event is not active");
+        require(tierIndexes.length == quantities.length, "Mismatch in tiers and quantities");
 
-        // Validate the tier index
-        require(_tierIndex < _event.tiers.length, "Invalid tier index");
+        uint256 totalCost = 0;
 
-        // Validate ticket tier and availability
-        Ticket storage tier = _event.tiers[_tierIndex];
-        require(_quantity > 0, "Quantity must be greater than zero");
-        require(tier.ticketsSold + _quantity <= tier.totalTickets, "Not enough tickets available");
+        for (uint256 i = 0; i < tierIndexes.length; i++) {
+            uint256 tierIndex = tierIndexes[i];
+            uint256 quantity = quantities[i];
+            Ticket storage ticket = _event.tiers[tierIndex];
 
-        // Calculate the total cost and validate payment
-        uint256 totalCost = tier.price * _quantity;
-        require(msg.value == totalCost, "Incorrect ETH sent");
+            require(ticket.ticketsSold + quantity <= ticket.totalTickets, "Not enough tickets available");
+            totalCost += ticket.price * quantity;
+            ticket.ticketsSold += quantity;
+        }
 
-        // Update the number of tickets sold
-        tier.ticketsSold += _quantity;
+        require(msg.value >= totalCost, "Insufficient payment");
 
-        // Emit an event for the ticket purchase
-        emit TicketPurchased(_eventId, _tierIndex, _quantity, msg.sender);
+        // Emit the event with arrays of tier indexes and quantities
+        emit TicketPurchased(eventId, tierIndexes, quantities, msg.sender);
     }
 
     function deactivateEvent(uint256 _eventId) 

@@ -2,13 +2,12 @@ const Event = require('../models/event');
 const Ticket = require('../models/ticket');
 
 exports.createEvent = async (req, res) => {
-    const { eventId, posterUrl, name, date, venue, tiers } = req.body;
+    const { eventId, contractAddress, account, posterUrl, name, date, venue, tiers } = req.body;
 
     try {
-        // Ensure all fields are provided
-        if (!eventId) {
+        if (!eventId || !contractAddress || !account) {
             return res.status(400).json({ 
-                error: 'Event ID not found!' 
+                error: 'Blockchain data is missing!' 
             });
         }
 
@@ -34,18 +33,19 @@ exports.createEvent = async (req, res) => {
 
         // Validate tiers
         for (const tier of tiers) {
-            if (!tier.name || !tier.price || tier.price <= 0 || tier.ticketCount <= 0) {
+            if (!tier.name || !tier.price || tier.price <= 0 || tier.ticketsCount <= 0) {
                 return res.status(400).json({
                     error: 'Enter a valid ticket name, price, and quantity!',
                 });
             }
-
-            tier.ticketRemaining = tier.ticketCount;
+            tier.ticketsSold = 0;
         }
 
         const event = new Event({
             owner: req.user._id,
             eventId,
+            contractAddress, 
+            account,
             posterUrl,
             name,
             date: eventDate,
@@ -201,7 +201,7 @@ exports.loadDetails = async (req, res) => {
 };
 
 exports.buyTickets = async (req, res) => {
-    const { eventId, tickets } = req.body; // Array of { tierId, quantity }
+    const { eventId, contractAddress, account, tickets, totalCost } = req.body; // Array of { tierId, quantity }
     const userId = req.user._id;
 
     try {
@@ -213,42 +213,51 @@ exports.buyTickets = async (req, res) => {
             });
         }
 
+        if (!contractAddress || !account || !totalCost) {
+            return res.status(400).json({ 
+                error: 'Input data is missing!' 
+            });
+        }
+
         let validationError = null;
         tickets.forEach(ticket => {
             const tier = event.tiers.id(ticket.tierId);
-            if (!tier || tier.ticketRemaining < ticket.quantity) {
+            if (!tier || tier.ticketsCount - tier.ticketsSold < ticket.quantity) {
                 validationError = `Not enough ${tier ? tier.name : 'selected'} tickets available!`;
             }
         });
         
-        // If there was a validation error, return the response and skip saving
         if (validationError) {
             return res.status(400).json({ 
                 error: validationError 
             });
         }
         
-        // Update the tiers only if validation passed
         tickets.forEach(ticket => {
             const tier = event.tiers.id(ticket.tierId);
-            tier.ticketRemaining -= ticket.quantity;
+            tier.ticketsSold += ticket.quantity;
         });
 
+        // Update tier quantities in events
         await event.save();
 
         const userTickets = new Ticket({
             eventId,
             userId,
+            contractAddress, 
+            account,
             tiers: tickets.map(ticket => {
-                const tier = event.tiers.id(ticket.tierId); // Not making sense
+                const tier = event.tiers.id(ticket.tierId);
                 return {
                     name: tier.name,
                     price: tier.price,
                     quantity: ticket.quantity,
                 };
             }),
+            totalCost
         });
 
+        // Save ticket details
         await userTickets.save();
 
         console.log('TICKETS PURCHASE SUCCESSFUL: ', userTickets);
@@ -273,7 +282,7 @@ exports.myTickets = async (req, res) => {
 
         // Fetch tickets purchased by the user
         const tickets = await Ticket.find({ userId })
-            .populate('eventId', 'name date venue');
+            .populate('eventId', 'posterUrl name date venue');
 
         console.log('LOAD USER TICKETS SUCCESSFUL: ', tickets);
         return res.json(tickets);
