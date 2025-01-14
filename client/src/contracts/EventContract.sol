@@ -6,10 +6,11 @@ contract EventContract {
         address owner;
         string posterUrl;
         string name;
-        string date;
+        uint256 date;
         Venue venue;
         Ticket[] tiers;
         bool isActive;
+        uint256 revenue;
     }
 
     struct Venue {
@@ -30,6 +31,8 @@ contract EventContract {
 
     event EventCreated(uint256 indexed eventId, address indexed owner);
     event TicketPurchased(uint256 indexed eventId, uint256[] tierIndexes, uint256[] quantities, address indexed buyer);
+    event EventCanceled(uint256 indexed eventId, address indexed owner);
+    event FundsWithdrawn(uint256 indexed eventId, address indexed owner, uint256 amount);
 
     modifier onlyOwner(uint256 eventId) {
         require(events[eventId].owner == msg.sender, "Only event owner can perform this action");
@@ -39,7 +42,7 @@ contract EventContract {
     function createEvent(
         string memory _posterUrl,
         string memory _name,
-        string memory _date,
+        uint256 _date,
         string memory _venueName,
         string memory _latitude,
         string memory _longitude,
@@ -49,12 +52,13 @@ contract EventContract {
     ) 
     public {
         require(_tierNames.length == _tierPrices.length && _tierPrices.length == _tierTicketsCounts.length, "Tier data mismatch");
+        require(_date > block.timestamp, "Event date must be in the future");
 
         Event storage newEvent = events[eventCount];
         newEvent.owner = msg.sender;
         newEvent.posterUrl = _posterUrl;
         newEvent.name = _name;
-        newEvent.date = _date;
+        newEvent.date = _date; // Store as UNIX timestamp
         newEvent.venue = Venue(_venueName, _latitude, _longitude);
         newEvent.isActive = true;
 
@@ -72,9 +76,7 @@ contract EventContract {
     }
 
     function getEventTiers(uint256 _eventId) 
-    public 
-    view 
-    returns (
+    public view returns (
         string[] memory names,
         uint256[] memory prices,
         uint256[] memory totalTickets,
@@ -99,43 +101,58 @@ contract EventContract {
     }
 
     function buyTickets(
-        uint256 eventId, 
-        uint256[] memory tierIndexes, 
-        uint256[] memory quantities
+        uint256 _eventId, 
+        uint256[] memory _tierIndexes, 
+        uint256[] memory _addedQuantities
     ) 
-    public 
-    payable 
-    {
-        Event storage _event = events[eventId];
+    public payable {
+        Event storage _event = events[_eventId];
         require(_event.isActive, "Event is not active");
-        require(tierIndexes.length == quantities.length, "Mismatch in tiers and quantities");
+        require(_tierIndexes.length == _addedQuantities.length, "Mismatch in tiers and quantities");
 
         uint256 totalCost = 0;
 
-        for (uint256 i = 0; i < tierIndexes.length; i++) {
-            uint256 tierIndex = tierIndexes[i];
-            uint256 quantity = quantities[i];
-            Ticket storage ticket = _event.tiers[tierIndex];
+        for (uint256 i = 0; i < _tierIndexes.length; i++) {
+            uint256 _tierIndex = _tierIndexes[i];
+            uint256 _quantity = _addedQuantities[i];
 
-            require(ticket.ticketsSold + quantity <= ticket.totalTickets, "Not enough tickets available");
-            totalCost += ticket.price * quantity;
-            ticket.ticketsSold += quantity;
+            Ticket storage ticket = _event.tiers[_tierIndex];
+            require(ticket.ticketsSold + _quantity <= ticket.totalTickets, "Not enough tickets available");
+            
+            totalCost += ticket.price * _quantity;
+            ticket.ticketsSold += _quantity;
         }
 
         require(msg.value >= totalCost, "Insufficient payment");
 
-        // Emit the event with arrays of tier indexes and quantities
-        emit TicketPurchased(eventId, tierIndexes, quantities, msg.sender);
+        _event.revenue += totalCost;
+        
+        emit TicketPurchased(_eventId, _tierIndexes, _addedQuantities, msg.sender);
     }
 
-    function deactivateEvent(uint256 _eventId) 
+    function cancelEvent(uint256 _eventId) 
     public onlyOwner(_eventId) {
-        events[_eventId].isActive = false;
+        Event storage _event = events[_eventId];
+        require(_event.revenue == 0, "Cannot cancel event after ticket sales");
+        require(_event.isActive, "Event is already canceled");
+
+        _event.isActive = false;
+
+        emit EventCanceled(_eventId, msg.sender);
     }
 
-    function withdrawFunds(uint eventId) 
-    public onlyOwner(eventId) {
-        uint balance = address(this).balance;
+    function withdrawFunds(uint256 _eventId) 
+    public onlyOwner(_eventId) {
+        Event storage _event = events[_eventId];
+        require(!_event.isActive, "Cannot withdraw funds from an active event");
+        require(block.timestamp >= _event.date, "Can only withdraw funds after the event date");
+        require(_event.revenue > 0, "No funds to withdraw");
+
+        uint256 balance = _event.revenue;
+        _event.revenue = 0;
+
         payable(msg.sender).transfer(balance);
+
+        emit FundsWithdrawn(_eventId, msg.sender, balance);
     }
 }

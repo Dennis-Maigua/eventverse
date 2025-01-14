@@ -85,7 +85,7 @@ const Ethers = () => {
                         <br/>
                         <p><u>Poster URL:</u> {event.posterUrl}</p>
                         <p><u>Name:</u> {event.name}</p>
-                        <p><u>Date:</u> {new Date(event.date).toLocaleDateString()}</p>
+                        <p><u>Date:</u> {new Date(event.date * 1000).toLocaleDateString()}</p>
                         <p><u>Active:</u> {event.isActive ? "Yes" : "No"}</p>
                         <br/>
                         <h4><strong>Venue:</strong></h4>

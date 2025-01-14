@@ -122,7 +122,6 @@ const CreateEvent = () => {
                 const accounts = await web3.eth.getAccounts();
 
                 setValues({ ...values, account: accounts[0] });
-                console.log("My Account from Metamask:", account);
             } 
             catch (err) {
                 console.error("MetaMask connection failed: ", err);
@@ -147,15 +146,6 @@ const CreateEvent = () => {
             return;
         }
 
-        const confirmCreate = window.confirm(
-            'This cannot be undone! Are you sure you want to create this event?'
-        );
-
-        if (!confirmCreate) {
-            setValues({ ...values, buttonText: 'Submit' });
-            return;
-        }
-
         const loc = venue[0].name;
         const lat = (venue[0].latitude).toString();
         const long = (venue[0].longitude).toString();
@@ -177,7 +167,7 @@ const CreateEvent = () => {
             const receipt = await deployedContract.methods.createEvent(
                 posterUrl,
                 name,
-                new Date(date).toISOString(),
+                Math.floor(new Date(date).getTime() / 1000), // Convert to UNIX timestamp
                 loc,
                 lat,
                 long,
@@ -209,7 +199,8 @@ const CreateEvent = () => {
 
         catch (err) {
             setValues({ ...values, buttonText: 'Submit' });
-            console.error('Error saving event in blockchain: ', err);
+            console.error('Error creating event in blockchain: ', err);
+            toast.error('Error creating event in blockchain!');
         }
     };
 

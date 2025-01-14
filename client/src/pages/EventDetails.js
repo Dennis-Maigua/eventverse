@@ -12,23 +12,23 @@ const EventDetails = () => {
     const [event, setEvent] = useState({});
     const [quantities, setQuantities] = useState({});
     const [values, setValues] = useState({
-        eventId: '',
-        contractAddress: null,
-        account: null,
-        buttonText: 'Checkout'
+        account: '',
+        buttonText: 'Buy Now'
     });
     
     const { id } = useParams();
     const navigate = useNavigate();
     
     const token = getCookie('token');
-    const { eventId, contractAddress, account, buttonText } = values;
+    const { account, buttonText } = values;
 
     const web3 = new Web3(window.ethereum);
 
     useEffect(() => {
-        loadDetails();
-        connectWallet();
+        if (id) {
+            loadDetails();
+            connectWallet();
+        }
     }, [id]);
 
     const loadDetails = async () => {
@@ -39,18 +39,8 @@ const EventDetails = () => {
 
             setEvent(response.data);
 
-            const {eventId, contractAddress} = response.data;
-
-            setValues({ ...values, 
-                eventId: eventId,
-                contractAddress: contractAddress
-             });
-
-            console.log("Event ID from contract:", eventId);
-            console.log("Deployed contract address:", contractAddress);
-
             const initialQuantities = {};
-            response.data.tiers.forEach(tier => {
+            response.data.tiers?.forEach(tier => {
                 initialQuantities[tier._id] = 0;
             });
 
@@ -106,13 +96,13 @@ const EventDetails = () => {
         
         if (!isAuth()) {
             toast.error("Please sign in first!");
-            setValues({ ...values, buttonText: 'Checkout' });
+            setValues({ ...values, buttonText: 'Buy Now' });
             return;
         }
         
         if (!account) {
             toast.error("Please connect MetaMask first!");
-            setValues({ ...values, buttonText: 'Checkout' });
+            setValues({ ...values, buttonText: 'Buy Now' });
             return;
         }
 
@@ -121,24 +111,26 @@ const EventDetails = () => {
 
         if (selectedTickets.length === 0) {
             toast.error('Please select and add a ticket!');
-            setValues({ ...values, buttonText: 'Checkout' });
+            setValues({ ...values, buttonText: 'Buy Now' });
             return;
         }
 
+        const tierIndexes = selectedTickets.map(([tierId]) => {
+            const tierIndex = event.tiers.findIndex(tier => tier._id === tierId);
+            if (tierIndex === -1) {
+                throw new Error(`Invalid tierId: ${tierId}`);
+            }
+            return tierIndex;
+        });
+
+        const eventId = event.eventId;
+        const contractAddress = event.contractAddress;
+        const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
+
+        const addedQuantities = selectedTickets.map(([_, quantity]) => quantity);
+        const totalCost = calculateTotalCost();
+        
         try {
-            // Map tierId to tierIndex
-            const tierIndexes = selectedTickets.map(([tierId]) => {
-                const tierIndex = event.tiers.findIndex(tier => tier._id === tierId);
-                if (tierIndex === -1) {
-                    toast.error(`Invalid tierId: ${tierId}`);
-                }
-                return tierIndex;
-            });
-
-            const addedQuantities = selectedTickets.map(([_, quantity]) => quantity);
-            const totalPrice = calculateTotalCost();
-            const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
-
             // Call the buyTickets function
             const receipt = await contract.methods.buyTickets(
                 eventId,
@@ -146,17 +138,16 @@ const EventDetails = () => {
                 addedQuantities
             ).send({
                 from: account,
-                value: web3.utils.toWei(totalPrice.toString(), "ether")
+                value: web3.utils.toWei(totalCost.toString(), "ether")
             });
 
             // Extract transaction details
             const txnHash = receipt.transactionHash;
-            
+            console.log("Transaction Hash:", txnHash);          
             console.log("Ticket(s) bought via blockchain successfully!");
 
-            const mappedTickets = Object.entries(quantities)
-                .filter(([_, quantity]) => quantity > 0)
-                .map(([tierId, quantity]) => ({ tierId, quantity }));
+            // Send purchase details to the server
+            const mappedTickets = selectedTickets.map(([tierId, quantity]) => ({ tierId, quantity }));
 
             await axios.post(
                 `${process.env.REACT_APP_SERVER_URL}/tickets/buy`, { 
@@ -164,7 +155,7 @@ const EventDetails = () => {
                     txnHash,
                     account,
                     tickets: mappedTickets, 
-                    totalCost: totalPrice 
+                    totalCost 
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             )
@@ -174,13 +165,14 @@ const EventDetails = () => {
             })
             .catch((err) => {
                 toast.error(err.response?.data?.error);
-                setValues({ ...values, buttonText: 'Checkout' });
+                setValues({ ...values, buttonText: 'Buy Now' });
             });
         }
 
         catch (err) {
-            setValues({ ...values, buttonText: 'Checkout' });
-            console.error('Error buying tickets: ', err);
+            setValues({ ...values, buttonText: 'Buy Now' });
+            console.error('Error buying tickets from blockchain: ', err);
+            toast.error("Error buying tickets from blockchain!");
         }
     };
 
@@ -199,6 +191,9 @@ const EventDetails = () => {
                 <div className="w-full md:w-1/2 p-4 md:p-8 border shadow-lg rounded-lg">
                     <div className='flex flex-col gap-3'>
                         <h1 className="text-2xl font-semibold">{event.name}</h1>
+                        <p className="text-sm text-slate-400 font-semibold italic">
+                            {event.venue?.[0]?.name}
+                        </p>
                         <p className="text-sm text-gray-600">
                             {new Date(event.date).toLocaleString('en-US', {
                                 weekday: 'long',
@@ -212,7 +207,7 @@ const EventDetails = () => {
                         </p>
                     </div>
 
-                    <h2 className="text-lg font-semibold mt-12">Get your tickets:</h2>
+                    <h2 className="text-lg font-semibold mt-12">Ticket Tiers:</h2>
                     <div className="flex flex-col my-4">
                         {event.tiers && event.tiers.length > 0 ? (
                             event.tiers.map(tier => (

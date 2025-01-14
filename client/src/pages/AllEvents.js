@@ -58,7 +58,7 @@ const Events = () => {
                             />
                             <div className="p-4 flex flex-col gap-1">
                                 <h2 className="text-lg font-semibold text-gray-600 truncate">{event.name}</h2>
-                                <p className="text-sm text-slate-400">
+                                <p className="text-sm font-semibold italic text-slate-400">
                                     {new Date(event.date).toLocaleString('en-US', {
                                         weekday: 'short',
                                         year: 'numeric',
@@ -69,7 +69,7 @@ const Events = () => {
                                         hour12: true,
                                     })}
                                 </p>
-                                <p className="text-sm italic text-gray-600 truncate">
+                                <p className="text-sm text-gray-600 truncate">
                                     {event.venue[0].name}
                                 </p>
                                 <p className="text-red-400 font-semibold">
