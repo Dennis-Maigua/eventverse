@@ -200,7 +200,9 @@ const CreateEvent = () => {
         catch (err) {
             setValues({ ...values, buttonText: 'Submit' });
             console.error('Error creating event in blockchain: ', err);
-            toast.error('Error creating event in blockchain!');
+            
+            const errorMessage = err?.message || "Error creating event in blockchain!";
+            toast.error(errorMessage);
         }
     };
 

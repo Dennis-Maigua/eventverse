@@ -172,7 +172,9 @@ const EventDetails = () => {
         catch (err) {
             setValues({ ...values, buttonText: 'Buy Now' });
             console.error('Error buying tickets from blockchain: ', err);
-            toast.error("Error buying tickets from blockchain!");
+            
+            const errorMessage = err?.message || "Error buying tickets from blockchain!";
+            toast.error(errorMessage);
         }
     };
 

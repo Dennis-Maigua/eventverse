@@ -98,7 +98,7 @@ const MyTickets = () => {
                                     <tr key={ticket._id}>
                                         <td className='p-2'>{shorten(ticket.txnHash)}</td>
                                         <td className='p-2'>{shorten(ticket.account)}</td>
-                                        <td className='p-2'>
+                                        <td className='px-2'>
                                             <div className='flex flew-row gap-1 items-center'>
                                                 <img
                                                     src={ticket.eventId.posterUrl}
@@ -148,9 +148,7 @@ const MyTickets = () => {
                                         src={posterUrl} 
                                         alt={name} 
                                         className="h-40 w-40 object-cover rounded-lg" 
-                                    />
-                                    <h2 className="text-xl font-semibold">{name}</h2>
-                                    
+                                    />                                    
                                     <p className="text-sm mt-4">Transaction Hash:</p>
                                     <p className="text-sm text-red-500 truncate">{txnHash}</p>
                                     <p className="text-sm">Account:</p>

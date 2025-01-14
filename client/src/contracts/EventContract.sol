@@ -133,8 +133,8 @@ contract EventContract {
     function cancelEvent(uint256 _eventId) 
     public onlyOwner(_eventId) {
         Event storage _event = events[_eventId];
-        require(_event.revenue == 0, "Cannot cancel event after ticket sales");
         require(_event.isActive, "Event is already canceled");
+        require(_event.revenue == 0, "Cannot cancel event after ticket sales");
 
         _event.isActive = false;
 
@@ -151,8 +151,17 @@ contract EventContract {
         uint256 balance = _event.revenue;
         _event.revenue = 0;
 
-        payable(msg.sender).transfer(balance);
+        // Adding safety checks for transfer
+        (bool success, ) = payable(msg.sender).call{value: balance}("");
+        require(success, "Transfer failed");
+
+        // payable(msg.sender).transfer(balance);
 
         emit FundsWithdrawn(_eventId, msg.sender, balance);
+    }
+
+    // Optional: Function to prevent accidental deposits to the contract
+    receive() external payable {
+        revert("Direct deposits are not allowed");
     }
 }

@@ -8,7 +8,7 @@ const Ethers = () => {
     const [events, setEvents] = useState([]);
 
     const web3 = new Web3(window.ethereum);
-    const contractAddress = process.env.REACT_APP_DEPLOYED_CONTRACT; // Replace with the deployed contract address
+    const contractAddress = "0xC986021941B96D2aDC4f66244fa27C80Db9bF37E"; // Replace with the deployed contract address
     const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
     
     useEffect(() => {
@@ -80,12 +80,21 @@ const Ethers = () => {
             <div className="flex flex-wrap py-12 px-4 md:px-8">
                 {events.map((event, i) => (
                     <div key={i} className="p-4 w-full md:w-1/2 lg:w-1/3">
-                        <h3><strong>Event {i}</strong></h3>
+                        <h3><strong>Event {i} - Blockchain Details</strong></h3>
                         <p><u>Owner:</u> {event.owner}</p>
                         <br/>
-                        <p><u>Poster URL:</u> {event.posterUrl}</p>
+                        <p className='truncate'><u>Poster URL:</u> {event.posterUrl}</p>
                         <p><u>Name:</u> {event.name}</p>
-                        <p><u>Date:</u> {new Date(event.date * 1000).toLocaleDateString()}</p>
+                        <p><u>Date:</u> {new Date(Number(event.date) * 1000).toLocaleDateString('en-US', {
+                                weekday: 'short',
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: 'numeric',
+                                hour12: true,
+                            })}
+                        </p>
                         <p><u>Active:</u> {event.isActive ? "Yes" : "No"}</p>
                         <br/>
                         <h4><strong>Venue:</strong></h4>
