@@ -123,7 +123,7 @@ const EventDetails = () => {
             return tierIndex;
         });
 
-        const eventId = event.eventId;
+        const blockId = event.blockId;
         const contractAddress = event.contractAddress;
         const contract = new web3.eth.Contract(EventContract.abi, contractAddress);
 
@@ -133,10 +133,11 @@ const EventDetails = () => {
         try {
             // Call the buyTickets function
             const receipt = await contract.methods.buyTickets(
-                eventId,
+                blockId,
                 tierIndexes, 
                 addedQuantities
-            ).send({
+            )
+            .send({
                 from: account,
                 value: web3.utils.toWei(totalCost.toString(), "ether")
             });

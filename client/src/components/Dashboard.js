@@ -145,9 +145,9 @@ const Dashboard = () => {
     const renderContent = () => {
         switch (activeComponent.name) {
             case 'Dashboard':
-                return <DashContent activeUsers={activeCount.active} inactiveUsers={users.length - activeCount.active} totalUsers={users}
-                    unreadMessages={messagesCount.unread} readMessages={messagesCount.read} totalMessages={messages} totalEvents={events}
-                    totalTickets={tickets} />;
+                return <DashContent activeUsers={activeCount.active} inactiveUsers={users.length - activeCount.active} 
+                    totalUsers={users} unreadMessages={messagesCount.unread} readMessages={messagesCount.read} 
+                    totalMessages={messages} totalEvents={events} totalTickets={tickets} />;
             case 'Users':
                 return <UsersContent list={users} token={token} shorten={shortenContent} />;
             case 'Events':
@@ -241,44 +241,45 @@ const Header = ({ headerName, isActive, setActiveComponent }) => {
     );
 };
 
-const DashContent = ({ activeUsers, inactiveUsers, totalUsers, unreadMessages, readMessages, totalMessages }) => {
+const DashContent = ({ activeUsers, inactiveUsers, totalUsers, unreadMessages, 
+    readMessages, totalMessages, totalEvents, totalTickets }) => {
     return (
         <section className='grid grid-cols-2 lg:grid-cols-3 gap-4'>
-            <div className='py-3 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {activeUsers} </h3>
                 <p className='text-gray-500 text-sm'> Active Users </p>
             </div>
-            <div className='py-3 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {inactiveUsers} </h3>
                 <p className='text-gray-500 text-sm'> Inactive Users </p>
             </div>
-            <div className='py-3 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {totalUsers.length} </h3>
                 <p className='text-gray-500 text-sm'> Total Users </p>
             </div>
             
-            <div className='py-3 bg-white rounded-lg shadow text-center'>
-                <h3 className='text-lg font-semibold text-gray-700'> - </h3>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
+                <h3 className='text-lg font-semibold text-gray-700'> {totalEvents.length} </h3>
                 <p className='text-gray-500 text-sm'> Total Events </p>
             </div>
-            <div className='py-3 bg-white rounded-lg shadow text-center'>
-                <h3 className='text-lg font-semibold text-gray-700'> - </h3>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
+                <h3 className='text-lg font-semibold text-gray-700'> {totalTickets.length} </h3>
                 <p className='text-gray-500 text-sm'> Total Tickets </p>
             </div>
-            <div className='py-3 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'>  </h3>
                 <p className='text-gray-500 text-sm'>  </p>
             </div>
 
-            <div className='py-3 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {unreadMessages} </h3>
                 <p className='text-gray-500 text-sm'> Unread Messages </p>
             </div>
-            <div className='py-3 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {readMessages} </h3>
                 <p className='text-gray-500 text-sm'> Read Messages </p>
             </div>
-            <div className='py-3 bg-white rounded-lg shadow text-center'>
+            <div className='py-4 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> {totalMessages.length} </h3>
                 <p className='text-gray-500 text-sm'> Total Messages </p>
             </div>
@@ -508,12 +509,13 @@ const EventsContent = ({ list, token, shorten }) => {
         blockId: '',
         contractAddress: '',
         account: '',
+        posterUrl: '',
         name: '',
         date: '',
         buttonText: 'Update'
     });
 
-    const { id, owner, blockId, contractAddress, account, name, date, buttonText } = values;
+    const { id, owner, blockId, contractAddress, account, posterUrl, name, date, buttonText } = values;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -528,9 +530,10 @@ const EventsContent = ({ list, token, shorten }) => {
             ...values,
             id: event._id,
             owner: event.owner,
-            blockId: event.eventId,
+            blockId: event.blockId,
             contractAddress: event.contractAddress,
             account: event.account,
+            posterUrl: event.posterUrl,
             name: event.name,
             date: eventDate
         });
@@ -598,7 +601,7 @@ const EventsContent = ({ list, token, shorten }) => {
                             <tr key={event._id}>
                                 <td className='p-2'>{shorten(event._id)}</td>
                                 <td className='p-2'>{shorten(event.owner)}</td>
-                                <td className='p-2'>{event.eventId}</td>
+                                <td className='p-2'>{event.blockId}</td>
                                 <td className='p-2'>{shorten(event.contractAddress)}</td>
                                 <td className='p-2'>{shorten(event.account)}</td>
                                 <td className='p-2'>{event.name}</td>
@@ -627,9 +630,13 @@ const EventsContent = ({ list, token, shorten }) => {
                 <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
                     <div className='fixed inset-0 bg-black opacity-50' onClick={() => setEditEvent(null)}/>
                     <div className='bg-white rounded-lg border shadow-lg p-10 z-10 max-w-2xl w-full'>
-                        <div className='text-center mb-10'>
-                            <h1 className='text-3xl font-semibold mb-6'> Edit Event </h1>
-                            <p className='font-semibold'> ID: <span>{id}</span></p>
+                        <div className='flex flex-col items-center text-center mb-8'>
+                            <img
+                                src={posterUrl}
+                                alt={name}
+                                name='posterUrl'
+                                className='h-40 w-40 self-center border shadow-lg object-cover cursor-pointer'
+                            />
                         </div>
 
                         <form onSubmit={handleUpdate} className='flex flex-col gap-4'>
@@ -926,8 +933,8 @@ const MessagesContent = ({ list, token, shorten }) => {
     return (
         <section className='max-w-md md:min-w-full mx-auto bg-white rounded-lg shadow'>
             <div className='overflow-x-auto'>
-                <table className='min-w-max divide-y divide-gray-200'>
-                    <thead className='bg-gray-50 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
+                <table className='min-w-full divide-y divide-gray-200'>
+                    <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
                         <tr>
                             <th className='p-2'> Actions </th>
                             <th className='p-2'> Status </th>
@@ -963,11 +970,6 @@ const MessagesContent = ({ list, token, shorten }) => {
                                 <td className='p-2'>
                                     <div className='flex items-center'>
                                         <span>{shorten(contact._id)}</span>
-                                        {/* <CopyToClipboard text={contact._id}>
-                                            <button className='ml-2'>
-                                                <MdOutlineContentCopy className='text-gray-500 hover:text-gray-800' />
-                                            </button>
-                                        </CopyToClipboard> */}
                                     </div>
                                 </td>
 

@@ -52,7 +52,7 @@
     "chai-as-promised": "^8.0.1",
     "chai-bignumber": "^3.1.0",
     "mocha": "^11.0.1",
-    "postcss": "^8.4.49",
+    "postcss": "^8.5.1",
     "tailwindcss": "^3.4.17",
     "truffle": "^5.11.5",
     "web3": "^4.16.0"

@@ -2,10 +2,10 @@ const Event = require('../models/event');
 const Ticket = require('../models/ticket');
 
 exports.createEvent = async (req, res) => {
-    const { eventId, contractAddress, account, posterUrl, name, date, venue, tiers } = req.body;
+    const { blockId, contractAddress, account, posterUrl, name, date, venue, tiers } = req.body;
 
     try {
-        if (!eventId || !contractAddress || !account) {
+        if (!blockId || !contractAddress || !account) {
             return res.status(400).json({ 
                 error: 'Blockchain data is missing!' 
             });
@@ -43,7 +43,7 @@ exports.createEvent = async (req, res) => {
 
         const event = new Event({
             owner: req.user._id,
-            eventId,
+            blockId,
             contractAddress, 
             account,
             posterUrl,

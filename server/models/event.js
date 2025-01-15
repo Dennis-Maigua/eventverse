@@ -6,7 +6,7 @@ const EventSchema = new mongoose.Schema({
         ref: 'User', 
         required: true 
     },
-    eventId: { type: String, required: true },
+    blockId: { type: String, required: true },
     contractAddress: { type: String, required: true },
     account: { type: String, required: true },
     posterUrl: { type: String, required: true },

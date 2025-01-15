@@ -177,14 +177,14 @@ const CreateEvent = () => {
             )
             .send({ from: account });
 
-            // Get the `eventId` from the created event
-            const eventId = (Number(receipt.events.EventCreated.returnValues.eventId)).toString();
-            console.log("Event ID from contract:", eventId);
+            // Get the `eventId` from the created block
+            const blockId = (Number(receipt.events.EventCreated.returnValues.eventId)).toString();
+            console.log("Event ID from contract:", blockId);
             console.log("Event created on blockchain successfully!");
 
             await axios.post(
                 `${process.env.REACT_APP_SERVER_URL}/event/create`, 
-                { eventId, contractAddress, account, posterUrl, name, date, venue, tiers }, 
+                { blockId, contractAddress, account, posterUrl, name, date, venue, tiers }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             )
             .then((response) => {
