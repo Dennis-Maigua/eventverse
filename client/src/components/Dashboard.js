@@ -7,17 +7,14 @@ import Layout from './Layout';
 import { getCookie, isAuth } from '../utils/AuthHelpers';
 import Avatar from '../assets/avatar.png';
 
-// import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { MdOutlineContentCopy } from 'react-icons/md';
-// import { Bar, Line, Pie } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
 const Dashboard = () => {
     const [users, setUsers] = useState([]);
-    const [userTrends, setUserTrends] = useState([]);
     const [messages, setMessages] = useState([]);
-    const [messageTrends, setMessageTrends] = useState([]);
+    const [events, setEvents] = useState([]);
+    const [tickets, setTickets] = useState([]);
 
     const [activeCount, setActiveCount] = useState({
         active: 0,
@@ -36,10 +33,10 @@ const Dashboard = () => {
         const init = async () => {
             await fetchUsers();
             await countActive();
-            await fetchUserTrends();
             await fetchContactMessages();
             await countMessages();
-            await fetchMessageTrends();
+            await fetchEvents();
+            await fetchTickets();
         };
         init();
     }, []);
@@ -49,7 +46,7 @@ const Dashboard = () => {
     const fetchUsers = async () => {
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_SERVER_URL}/users/fetch`,
+                `${process.env.REACT_APP_SERVER_URL}/users/all`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -76,25 +73,10 @@ const Dashboard = () => {
         }
     };
 
-    const fetchUserTrends = async () => {
-        try {
-            const response = await axios.get(
-                `${process.env.REACT_APP_SERVER_URL}/users/trends`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-
-            setUserTrends(response.data);
-        }
-
-        catch (err) {
-            toast.error(err.response?.data?.error);
-        }
-    };
-
     const fetchContactMessages = async () => {
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_SERVER_URL}/messages/fetch`,
+                `${process.env.REACT_APP_SERVER_URL}/messages/all`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -122,14 +104,27 @@ const Dashboard = () => {
         }
     };
 
-    const fetchMessageTrends = async () => {
+    const fetchEvents = async () => {
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_SERVER_URL}/messages/trends`,
-                { headers: { Authorization: `Bearer ${token}` } }
+                `${process.env.REACT_APP_SERVER_URL}/events/all`
             );
 
-            setMessageTrends(response.data);
+            setEvents(response.data);
+        }
+
+        catch (err) {
+            toast.error(err.response?.data?.error);
+        }
+    };
+
+    const fetchTickets = async () => {
+        try {
+            const response = await axios.get(
+                `${process.env.REACT_APP_SERVER_URL}/tickets/all`
+            );
+
+            setTickets(response.data);
         }
 
         catch (err) {
@@ -151,13 +146,14 @@ const Dashboard = () => {
         switch (activeComponent.name) {
             case 'Dashboard':
                 return <DashContent activeUsers={activeCount.active} inactiveUsers={users.length - activeCount.active} totalUsers={users}
-                    unreadMessages={messagesCount.unread} readMessages={messagesCount.read} totalMessages={messages} />;
-            case 'Analytics':
-                return <AnalyticsContent activeUsers={activeCount.active} inactiveUsers={users.length - activeCount.active}
-                    unreadMessages={messagesCount.unread} readMessages={messagesCount.read}
-                    usersTrend={userTrends} messagesTrend={messageTrends} />;
+                    unreadMessages={messagesCount.unread} readMessages={messagesCount.read} totalMessages={messages} totalEvents={events}
+                    totalTickets={tickets} />;
             case 'Users':
                 return <UsersContent list={users} token={token} shorten={shortenContent} />;
+            case 'Events':
+                return <EventsContent list={events} token={token} shorten={shortenContent} />;
+            case 'Tickets':
+                return <TicketsContent list={tickets} token={token} shorten={shortenContent} />;
             case 'Messages':
                 return <MessagesContent list={messages} token={token} shorten={shortenContent} />;
             default:
@@ -194,10 +190,11 @@ const Sidebar = ({ isActive, setActiveComponent }) => {
     return (
         <section className='md:block static hidden w-48 bg-white shadow p-8'>
             <h1 className='text-xl font-bold text-gray-800'> Admin </h1>
-            <nav className='flex flex-col mt-8 text-sm'>
+            <nav className='flex flex-col mt-4 text-sm'>
                 <span onClick={() => setActiveComponent({ name: 'Dashboard', header: 'Dashboard' })} className={isActive('Dashboard')}> Dashboard </span>
-                <span onClick={() => setActiveComponent({ name: 'Analytics', header: 'Analytics' })} className={isActive('Analytics')}> Analytics </span>
                 <span onClick={() => setActiveComponent({ name: 'Users', header: 'Users' })} className={isActive('Users')}> Users </span>
+                <span onClick={() => setActiveComponent({ name: 'Events', header: 'Events' })} className={isActive('Events')}> Events </span>
+                <span onClick={() => setActiveComponent({ name: 'Tickets', header: 'Tickets' })} className={isActive('Tickets')}> Tickets </span>
                 <span onClick={() => setActiveComponent({ name: 'Messages', header: 'Messages' })} className={isActive('Messages')}> Messages </span>
             </nav>
         </section>
@@ -262,15 +259,15 @@ const DashContent = ({ activeUsers, inactiveUsers, totalUsers, unreadMessages, r
             
             <div className='py-3 bg-white rounded-lg shadow text-center'>
                 <h3 className='text-lg font-semibold text-gray-700'> - </h3>
-                <p className='text-gray-500 text-sm'> Active Events </p>
-            </div>
-            <div className='py-3 bg-white rounded-lg shadow text-center'>
-                <h3 className='text-lg font-semibold text-gray-700'> - </h3>
-                <p className='text-gray-500 text-sm'> Cancelled Events </p>
-            </div>
-            <div className='py-3 bg-white rounded-lg shadow text-center'>
-                <h3 className='text-lg font-semibold text-gray-700'> - </h3>
                 <p className='text-gray-500 text-sm'> Total Events </p>
+            </div>
+            <div className='py-3 bg-white rounded-lg shadow text-center'>
+                <h3 className='text-lg font-semibold text-gray-700'> - </h3>
+                <p className='text-gray-500 text-sm'> Total Tickets </p>
+            </div>
+            <div className='py-3 bg-white rounded-lg shadow text-center'>
+                <h3 className='text-lg font-semibold text-gray-700'>  </h3>
+                <p className='text-gray-500 text-sm'>  </p>
             </div>
 
             <div className='py-3 bg-white rounded-lg shadow text-center'>
@@ -286,100 +283,6 @@ const DashContent = ({ activeUsers, inactiveUsers, totalUsers, unreadMessages, r
                 <p className='text-gray-500 text-sm'> Total Messages </p>
             </div>
         </section>
-    );
-};
-
-const AnalyticsContent = ({ activeUsers, inactiveUsers, usersTrend, unreadMessages, readMessages, messagesTrend }) => {
-    const usersData = {
-        labels: ['Active', 'Inactive'],
-        datasets: [
-            {
-                label: 'Count',
-                data: [activeUsers, inactiveUsers],
-                backgroundColor: [
-                    'rgba(54, 162, 235, 0.2)', // Active Users
-                    'rgba(255, 99, 132, 0.2)', // Inactive Users
-                ],
-                borderColor: [
-                    'rgba(54, 162, 235, 1)', // Active Users
-                    'rgba(255, 99, 132, 1)', // Inactive Users
-                ],
-                borderWidth: 1,
-            },
-        ],
-    };
-
-    const messagesData = {
-        labels: ['Read', 'Unread'],
-        datasets: [
-            {
-                label: 'Count',
-                data: [readMessages, unreadMessages],
-                backgroundColor: [
-                    'rgba(201, 203, 207, 0.2)', // Read Messages
-                    'rgba(50, 50, 50, 0.2)', // Unread Messages
-                ],
-                borderColor: [
-                    'rgba(201, 203, 207, 1)', // Read Messages
-                    'rgba(50, 50, 50, 1)', // Unread Messages
-                ],
-                borderWidth: 1,
-            },
-        ],
-    };
-
-    return (
-        <section className='flex flex-col gap-8'>
-            <div className='grid grid-cols-2 lg:grid-cols-3 md:gap-4 gap-6'>
-                <div className='p-5 bg-white rounded-lg shadow'>
-                    <h3 className='font-semibold text-gray-700 mb-4'> Users </h3>
-                    {/* <Pie data={usersData} /> */}
-                </div>
-
-                <div className='p-5 bg-white rounded-lg shadow'>
-                    <h3 className='font-semibold text-gray-700 mb-4'> Messages </h3>
-                    {/* <Pie data={messagesData} /> */}
-                </div>
-            </div>
-
-            <div className='grid grid-cols-1 lg:grid-cols-2 md:gap-4 gap-6'>
-                <div className='p-4 bg-white rounded-lg shadow'>
-                    <h3 className='font-semibold text-gray-700 mb-4'> User Trends </h3>
-                    {/* <Bar
-                        data={{
-                            labels: usersTrend.map(trend => `${trend._id.month}/${trend._id.day}/${trend._id.year}`),
-                            datasets: [
-                                {
-                                    label: 'Accounts Created',
-                                    data: usersTrend.map(trend => trend.count),
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                    borderColor: 'rgba(75, 192, 192, 1)',
-                                    borderWidth: 1,
-                                }
-                            ]
-                        }}
-                    /> */}
-                </div>
-
-                <div className='p-4 bg-white rounded-lg shadow'>
-                    <h3 className='font-semibold text-gray-700 mb-4'> Message Trends </h3>
-                    {/* <Bar
-                        data={{
-                            labels: messagesTrend.map(trend => `${trend._id.month}/${trend._id.day}/${trend._id.year}`),
-                            datasets: [
-                                {
-                                    label: 'Messages Sent',
-                                    data: messagesTrend.map(trend => trend.count),
-                                    backgroundColor: 'rgba(255, 159, 243, 0.2)',
-                                    borderColor: 'rgba(255, 159, 243, 1)',
-                                    borderWidth: 1,
-                                }
-                            ]
-                        }}
-                    /> */}
-                </div>
-            </div>
-        </section >
     );
 };
 
@@ -464,43 +367,48 @@ const UsersContent = ({ list, token, shorten }) => {
                 <table className='min-w-full divide-y divide-gray-200'>
                     <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
                         <tr>
-                            <th className='px-4 py-3'> ID </th>
-                            <th className='px-4 py-3'> Role </th>
-                            <th className='px-4 py-3'> Profile </th>
-                            <th className='px-4 py-3'> Username </th>
-                            <th className='px-4 py-3'> Email </th>
-                            <th className='px-4 py-3'> Phone </th>
-                            <th className='px-4 py-3'> Address </th>
-                            <th className='px-4 py-3'> Actions </th>
+                            <th className='p-2'> ID </th>
+                            <th className='p-2'> Role </th>
+                            <th className='p-2'> Profile </th>
+                            <th className='p-2'> Username </th>
+                            <th className='p-2'> Email </th>
+                            <th className='p-2'> Phone </th>
+                            <th className='p-2'> Address </th>
+                            <th className='p-2'> </th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
                         {list.map(user => (
                             <tr key={user._id}>
-                                <td className='px-4 py-3'>
+                                <td className='p-2'>
                                     <div className='flex items-center'>
                                         <span>{shorten(user._id)}</span>
-                                        {/* <CopyToClipboard text={user._id}>
-                                            <button className='ml-2'>
-                                                <MdOutlineContentCopy className='text-gray-500 hover:text-gray-800' />
-                                            </button>
-                                        </CopyToClipboard> */}
                                     </div>
                                 </td>
 
-                                <td className='px-4 py-3'>{user.role}</td>
-                                <td className='px-4 py-3'>
+                                <td className='p-2'>{user.role}</td>
+                                <td className='p-2'>
                                     <div className='flex items-center'>
-                                        <img src={user.profileUrl || Avatar} alt='Profile' className='w-10 h-10 rounded-full' />
+                                        <img src={user.profileUrl || Avatar} alt={user.username} className='w-10 h-10 rounded-full' />
                                     </div>
                                 </td>
-                                <td className='px-4 py-3'>{user.username}</td>
-                                <td className='px-4 py-3'>{user.email}</td>
-                                <td className='px-4 py-3'>{user.phone}</td>
-                                <td className='px-4 py-3'>{user.address}</td>
-                                <td className='px-4 py-3 font-medium'>
-                                    <button className='text-blue-500 hover:opacity-80' onClick={() => clickEdit(user)}> Edit </button>
-                                    <button className='text-red-500 hover:opacity-80 ml-3' onClick={() => handleDelete(user._id)}> Delete </button>
+                                <td className='p-2'>{user.username}</td>
+                                <td className='p-2'>{user.email}</td>
+                                <td className='p-2'>{user.phone}</td>
+                                <td className='p-2'>{user.address}</td>
+                                <td className='p-2 font-medium'>
+                                    <button 
+                                        className='text-blue-500 hover:opacity-80' 
+                                        onClick={() => clickEdit(user)}
+                                    > 
+                                        Edit 
+                                    </button>
+                                    <button 
+                                        className='text-red-500 hover:opacity-80 ml-3' 
+                                        onClick={() => handleDelete(user._id)}
+                                    > 
+                                        Delete 
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -510,12 +418,11 @@ const UsersContent = ({ list, token, shorten }) => {
 
             {editUser && (
                 <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
-                    <div className='fixed inset-0 bg-black opacity-50'></div>
+                    <div className='fixed inset-0 bg-black opacity-50' onClick={() => setEditUser(null)} />
                     <div className='bg-white rounded-lg border shadow-lg p-10 z-10 max-w-2xl w-full'>
                         <div className='text-center mb-10'>
                             <h1 className='text-3xl font-semibold mb-6'> Edit User </h1>
-                            <span className='font-semibold'> ID: </span>
-                            <span className=''> {id} </span>
+                            <p className='font-semibold'> ID: <span>{id}</span></p>
                         </div>
 
                         <form onSubmit={handleUpdate} className='flex flex-col gap-4'>
@@ -585,9 +492,412 @@ const UsersContent = ({ list, token, shorten }) => {
                                 value={buttonText}
                                 className='py-3 text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded cursor-pointer'
                             />
+                        </form>
+                    </div>
+                </div>
+            )}
+        </section>
+    );
+};
 
-                            <button type='button' onClick={() => setEditUser(null)}
-                                className='font-semibold hover:text-red-500'> Cancel </button>
+const EventsContent = ({ list, token, shorten }) => {
+    const [editEvent, setEditEvent] = useState(null);
+    const [values, setValues] = useState({
+        id: '',
+        owner: '',
+        blockId: '',
+        contractAddress: '',
+        account: '',
+        name: '',
+        date: '',
+        buttonText: 'Update'
+    });
+
+    const { id, owner, blockId, contractAddress, account, name, date, buttonText } = values;
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setValues({ ...values, [name]: value });
+    };
+
+    const clickEdit = (event) => {
+        const eventDate = new Date(event.date).toISOString().slice(0, 16);
+
+        setEditEvent(event);
+        setValues({
+            ...values,
+            id: event._id,
+            owner: event.owner,
+            blockId: event.eventId,
+            contractAddress: event.contractAddress,
+            account: event.account,
+            name: event.name,
+            date: eventDate
+        });
+    };
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        setValues({ ...values, buttonText: 'Updating...' });
+
+        try {
+            const response = await axios.put(
+                `${process.env.REACT_APP_SERVER_URL}/event/update/${id}`, 
+                values,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            setEditEvent(null);
+            toast.success(response.data.message);
+            window.location.reload();
+        }
+
+        catch (err) {
+            toast.error(err.response?.data?.error);
+        }
+    };
+
+    const handleDelete = async (eventId) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this event?');
+
+        if (confirmDelete) {
+            try {
+                const response = await axios.delete(
+                    `${process.env.REACT_APP_SERVER_URL}/event/delete/${eventId}`, 
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                toast.success(response.data.message);
+                window.location.reload();
+            }
+
+            catch (err) {
+                toast.error(err.response?.data?.error);
+            }
+        }
+    };
+
+    return (
+        <section className='max-w-md md:min-w-full mx-auto bg-white rounded-lg shadow'>
+            <div className='overflow-x-auto'>
+                <table className='min-w-full divide-y divide-gray-200'>
+                    <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
+                        <tr>
+                            <th className='p-2'> Event ID </th>
+                            <th className='p-2'> Owner </th>
+                            <th className='p-2'> Block ID </th>
+                            <th className='p-2'> Contract Address </th>
+                            <th className='p-2'> Account </th>
+                            <th className='p-2'> Name </th>
+                            <th className='p-2'> Date </th>
+                            <th className='p-2'> </th>
+                        </tr>
+                    </thead>
+                    <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
+                        {list.map(event => (
+                            <tr key={event._id}>
+                                <td className='p-2'>{shorten(event._id)}</td>
+                                <td className='p-2'>{shorten(event.owner)}</td>
+                                <td className='p-2'>{event.eventId}</td>
+                                <td className='p-2'>{shorten(event.contractAddress)}</td>
+                                <td className='p-2'>{shorten(event.account)}</td>
+                                <td className='p-2'>{event.name}</td>
+                                <td className='p-2'>{new Date(event.date).toLocaleString('en-US')}</td>
+                                <td className='p-2 font-medium'>
+                                    <button 
+                                        className='text-blue-500 hover:opacity-80' 
+                                        onClick={() => clickEdit(event)}
+                                    > 
+                                        Edit 
+                                    </button>
+                                    <button 
+                                        className='text-red-500 hover:opacity-80 ml-3' 
+                                        onClick={() => handleDelete(event._id)}
+                                    > 
+                                        Delete 
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {editEvent && (
+                <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
+                    <div className='fixed inset-0 bg-black opacity-50' onClick={() => setEditEvent(null)}/>
+                    <div className='bg-white rounded-lg border shadow-lg p-10 z-10 max-w-2xl w-full'>
+                        <div className='text-center mb-10'>
+                            <h1 className='text-3xl font-semibold mb-6'> Edit Event </h1>
+                            <p className='font-semibold'> ID: <span>{id}</span></p>
+                        </div>
+
+                        <form onSubmit={handleUpdate} className='flex flex-col gap-4'>
+                            <div className='grid grid-cols-2 gap-4'>
+                                <input
+                                    type='text'
+                                    name='owner'
+                                    value={owner}
+                                    placeholder='Owner'
+                                    onChange={handleChange}
+                                    className='p-3 shadow rounded'
+                                />
+                                <input
+                                    type='text'
+                                    name='contractAddress'
+                                    value={contractAddress}
+                                    placeholder='Contract Address'
+                                    onChange={handleChange}
+                                    className='p-3 shadow rounded'
+                                />
+                            </div>
+
+                            <div className='grid grid-cols-2 gap-4'>
+                                <input
+                                    type='text'
+                                    name='blockId'
+                                    value={blockId}
+                                    placeholder='Block ID'
+                                    onChange={handleChange}
+                                    className='p-3 shadow rounded'
+                                />
+                                <input
+                                    type='text'
+                                    name='account'
+                                    value={account}
+                                    placeholder='Account'
+                                    onChange={handleChange}
+                                    className='p-3 shadow rounded'
+                                />
+                            </div>
+
+                            <div className='grid grid-cols-2 gap-4'>
+                                <input
+                                    type='text'
+                                    name='name'
+                                    value={name}
+                                    placeholder='Name'
+                                    onChange={handleChange}
+                                    className='p-3 shadow rounded'
+                                />
+                                <input
+                                    type="datetime-local"
+                                    name="date"
+                                    value={date}
+                                    placeholder="Date"
+                                    onChange={handleChange}
+                                    className='p-3 shadow rounded'
+                                />
+                            </div>
+
+                            <input
+                                type='submit'
+                                value={buttonText}
+                                className='py-3 text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded cursor-pointer'
+                            />
+                        </form>
+                    </div>
+                </div>
+            )}
+        </section>
+    );
+};
+
+const TicketsContent = ({ list, token, shorten }) => {
+    const [editTicket, setEditTicket] = useState(null);
+    const [values, setValues] = useState({
+        id: '',
+        eventId: '',
+        userId: '',
+        txnHash: '',
+        account: '',
+        totalCost: '',
+        purchaseDate: '',
+        buttonText: 'Update'
+    });
+
+    const { id, eventId, userId, txnHash, account, totalCost, purchaseDate, buttonText } = values;
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setValues({ ...values, [name]: value });
+    };
+
+    const clickEdit = (ticket) => {
+        const ticketDate = new Date(ticket.purchaseDate).toISOString().slice(0, 16);
+
+        setEditTicket(ticket);
+        setValues({
+            ...values,
+            id: ticket._id,
+            eventId: ticket.eventId,
+            userId: ticket.userId,
+            txnHash: ticket.txnHash,
+            account: ticket.account,
+            totalCost: ticket.totalCost,
+            purchaseDate: ticketDate
+        });
+    };
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        setValues({ ...values, buttonText: 'Updating...' });
+
+        try {
+            const response = await axios.put(
+                `${process.env.REACT_APP_SERVER_URL}/admin/update`, 
+                values,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            setEditTicket(null);
+            toast.success(response.data.message);
+            window.location.reload();
+        }
+
+        catch (err) {
+            toast.error(err.response?.data?.error);
+        }
+    };
+
+    const handleDelete = async (userId) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this user?');
+
+        if (confirmDelete) {
+            try {
+                const response = await axios.delete(
+                    `${process.env.REACT_APP_SERVER_URL}/admin/delete/${userId}`,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                toast.success(response.data.message);
+                window.location.reload();
+            }
+
+            catch (err) {
+                toast.error(err.response?.data?.error);
+            }
+        }
+    };
+
+    return (
+        <section className='max-w-md md:min-w-full mx-auto bg-white rounded-lg shadow'>
+            <div className='overflow-x-auto'>
+                <table className='min-w-full divide-y divide-gray-200'>
+                    <thead className='bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider'>
+                        <tr>
+                            <th className='p-2'> Ticket ID </th>
+                            <th className='p-2'> Event ID </th>
+                            <th className='p-2'> User ID </th>
+                            <th className='p-2'> Txn Hash </th>
+                            <th className='p-2'> Account </th>
+                            <th className='p-2'> Total (ETH) </th>
+                            <th className='p-2'> Purchased On </th>
+                            <th className='p-2'> </th>
+                        </tr>
+                    </thead>
+                    <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
+                        {list.map(ticket => (
+                            <tr key={ticket._id}>
+                                <td className='p-2'>{shorten(ticket._id)}</td>
+                                <td className='p-2'>{shorten(ticket.eventId)}</td>
+                                <td className='p-2'>{shorten(ticket.userId)}</td>
+                                <td className='p-2'>{shorten(ticket.txnHash)}</td>
+                                <td className='p-2'>{shorten(ticket.account)}</td>
+                                <td className='p-2'>{ticket.totalCost}</td>
+                                <td className='p-2'>{new Date(ticket.purchaseDate).toLocaleString('en-US')}</td>
+                                <td className='p-2 font-medium'>
+                                    <button 
+                                        className='text-blue-500 hover:opacity-80' 
+                                        onClick={() => clickEdit(ticket)}
+                                    > 
+                                        Edit 
+                                    </button>
+                                    <button 
+                                        className='text-red-500 hover:opacity-80 ml-3' 
+                                        onClick={() => handleDelete(ticket._id)}
+                                    > 
+                                        Delete 
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {editTicket && (
+                <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
+                    <div className='fixed inset-0 bg-black opacity-50' onClick={() => setEditTicket(null)} />
+                    <div className='bg-white rounded-lg border shadow-lg p-10 z-10 max-w-2xl w-full'>
+                        <div className='text-center mb-10'>
+                            <h1 className='text-3xl font-semibold mb-6'> Edit Ticket </h1>
+                            <p className='font-semibold'> ID: <span>{id}</span></p>
+                        </div>
+
+                        <form onSubmit={handleUpdate} className='flex flex-col gap-4'>
+                            <div className='grid grid-cols-2 gap-4'>
+                                <input
+                                    type='eventId'
+                                    name='eventId'
+                                    value={eventId}
+                                    placeholder='Event ID'
+                                    onChange={handleChange}
+                                    className='p-3 shadow rounded'
+                                />
+                                <input
+                                    type='text'
+                                    name='userId'
+                                    value={userId}
+                                    placeholder='User ID'
+                                    onChange={handleChange}
+                                    className='p-3 shadow rounded'
+                                />
+                            </div>
+
+                            <div className='grid grid-cols-2 gap-4'>
+                                <input
+                                    type='text'
+                                    name='txnHash'
+                                    value={txnHash}
+                                    placeholder='TXN Hash'
+                                    onChange={handleChange}
+                                    className='p-3 shadow rounded'
+                                />
+                                <input
+                                    type='text'
+                                    name='account'
+                                    value={account}
+                                    placeholder='Account'
+                                    onChange={handleChange}
+                                    className='p-3 shadow rounded'
+                                />
+                            </div>
+
+                            <div className='grid grid-cols-2 gap-4'>
+                                <input
+                                    type='text'
+                                    name='totalCost'
+                                    value={totalCost}
+                                    placeholder='Total Cost'
+                                    onChange={handleChange}
+                                    className='p-3 shadow rounded'
+                                />
+                                <input
+                                    type="datetime-local"
+                                    name="purchaseDate"
+                                    value={purchaseDate}
+                                    placeholder="Purchased On"
+                                    onChange={handleChange}
+                                    className='p-3 shadow rounded'
+                                />
+                            </div>
+
+                            <input
+                                type='submit'
+                                value={buttonText}
+                                className='py-3 text-white font-semibold bg-red-500 hover:opacity-90 shadow rounded cursor-pointer'
+                            />
                         </form>
                     </div>
                 </div>
@@ -619,25 +929,25 @@ const MessagesContent = ({ list, token, shorten }) => {
                 <table className='min-w-max divide-y divide-gray-200'>
                     <thead className='bg-gray-50 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
                         <tr>
-                            <th className='px-4 py-3'> Actions </th>
-                            <th className='px-4 py-3'> Status </th>
-                            <th className='px-4 py-3'> ID </th>
-                            <th className='px-4 py-3'> Subject </th>
-                            <th className='px-4 py-3'> Email </th>
-                            <th className='px-4 py-3'> Message </th>
+                            <th className='p-2'> Actions </th>
+                            <th className='p-2'> Status </th>
+                            <th className='p-2'> ID </th>
+                            <th className='p-2'> Subject </th>
+                            <th className='p-2'> Email </th>
+                            <th className='p-2'> Message </th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-gray-200 text-sm whitespace-nowrap'>
                         {list.map((contact) => (
                             <tr key={contact._id}>
                                 {contact.status === 'Unread' ? (
-                                    <td className='px-4 py-3'>
+                                    <td className='p-2'>
                                         <button className='text-blue-500 hover:opacity-80 font-medium' onClick={() => handleReadMessage(contact._id)}>
                                             Mark as Read
                                         </button>
                                     </td>
                                 ) : (
-                                    <td className='px-4 py-3'>
+                                    <td className='p-2'>
                                         <button disabled className='text-gray-300 font-medium'>
                                             None
                                         </button>
@@ -645,12 +955,12 @@ const MessagesContent = ({ list, token, shorten }) => {
                                 )}
 
                                 {contact.status === 'Unread' ? (
-                                    <td className='px-4 py-3 text-red-500 font-medium'>{contact.status}</td>
+                                    <td className='p-2 text-red-500 font-medium'>{contact.status}</td>
                                 ) : (
-                                    <td className='px-4 py-3 text-green-500 font-medium'>{contact.status}</td>
+                                    <td className='p-2 text-green-500 font-medium'>{contact.status}</td>
                                 )}
 
-                                <td className='px-4 py-3'>
+                                <td className='p-2'>
                                     <div className='flex items-center'>
                                         <span>{shorten(contact._id)}</span>
                                         {/* <CopyToClipboard text={contact._id}>
@@ -661,9 +971,9 @@ const MessagesContent = ({ list, token, shorten }) => {
                                     </div>
                                 </td>
 
-                                <td className='px-4 py-3'>{contact.subject}</td>
-                                <td className='px-4 py-3'>{contact.email}</td>
-                                <td className='px-4 py-3'>{contact.message}</td>
+                                <td className='p-2'>{contact.subject}</td>
+                                <td className='p-2'>{contact.email}</td>
+                                <td className='p-2'>{contact.message}</td>
                             </tr>
                         ))}
                     </tbody>

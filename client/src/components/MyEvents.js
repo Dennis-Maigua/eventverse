@@ -19,8 +19,8 @@ const MyEvents = () => {
     const [account, setAccount] = useState('');
     const [editEvent, setEditEvent] = useState(null);
     const [values, setValues] = useState({
-        posterUrl: '',
         id: '',
+        posterUrl: '',
         name: '',
         date: '',
         locality: '',
@@ -298,7 +298,7 @@ const MyEvents = () => {
                                             </div>
                                         </td>
                                         <td className='p-2'>{new Date(event.date).toLocaleString('en-US')}</td>
-                                        <td className='p-2'>{event.venue[0].name}</td>
+                                        <td className='p-2 truncate'>{event.venue[0].name}</td>
                                         <td className='p-2'>
                                             {event.tiers.map((tier, i) => (
                                                 <div key={i}>
@@ -395,7 +395,7 @@ const MyEvents = () => {
                                             type="text"
                                             name="name"
                                             value={name}
-                                            placeholder="Event Name"
+                                            placeholder="Name"
                                             onChange={handleChange}
                                             className='p-3 shadow rounded'
                                         />
@@ -403,7 +403,7 @@ const MyEvents = () => {
                                             type="datetime-local"
                                             name="date"
                                             value={date}
-                                            placeholder="Event Date"
+                                            placeholder="Date"
                                             onChange={handleChange}
                                             className='p-3 shadow rounded'
                                         />
@@ -418,7 +418,7 @@ const MyEvents = () => {
                                                 type="text"
                                                 name="locality"
                                                 value={locality}
-                                                placeholder="Event Location"
+                                                placeholder="Venue"
                                                 onChange={handleChange}
                                                 className='w-full p-3 shadow rounded'
                                             />

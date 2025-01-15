@@ -89,7 +89,7 @@ const MyTickets = () => {
                                     {/* <th className='p-2'> Venue </th> */}
                                     <th className='p-2'> Purchased On </th>
                                     <th className='p-2'> Ticket(s) </th>
-                                    <th className='p-2'> Payment </th>
+                                    <th className='p-2'> Total (ETH) </th>
                                     <th className='p-2'> </th>
                                 </tr>
                             </thead>
@@ -129,7 +129,7 @@ const MyTickets = () => {
                                                 </div>
                                             ))}
                                         </td>
-                                        <td className='p-2'>{ticket.totalCost} ETH</td>
+                                        <td className='p-2'>{ticket.totalCost}</td>
                                         <td className='p-2 font-medium'>
                                             <button className='text-blue-500 hover:opacity-80' onClick={() => clickView(ticket)}> View </button>
                                         </td>

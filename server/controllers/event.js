@@ -162,7 +162,7 @@ exports.deleteEvent = async (req, res) => {
     }
 };
 
-exports.allEvents = async (req, res) => {
+exports.fetchEvents = async (req, res) => {
     try {
         const events = await Event.find();
 
@@ -292,6 +292,22 @@ exports.myTickets = async (req, res) => {
         console.log('ERROR LOADING USER TICKETS: ', err);
         return res.status(500).json({
             error: 'Error loading user tickets!'
+        });
+    }
+};
+
+exports.fetchTickets = async (req, res) => {
+    try {
+        const tickets = await Ticket.find();
+
+        console.log('FETCH ALL TICKETS SUCCESSFUL: ', tickets);
+        return res.json(tickets);
+    } 
+    
+    catch (err) {
+        console.log('ERROR FETCHING ALL TICKETS: ', err);
+        return res.status(500).json({
+            error: 'Error fetching all tickets!'
         });
     }
 };

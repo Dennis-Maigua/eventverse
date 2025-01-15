@@ -100,29 +100,3 @@ exports.countByStatus = async (req, res) => {
         });
     }
 }
-
-exports.contactTrends = async (req, res) => {
-    try {
-        const trends = await Contact.aggregate([
-            {
-                $group: {
-                    _id: {
-                        year: { $year: "$createdAt" },
-                        month: { $month: "$createdAt" },
-                        day: { $dayOfMonth: "$createdAt" }
-                    },
-                    count: { $sum: 1 }
-                }
-            },
-            { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 } }
-        ]);
-
-        return res.json(trends);
-    }
-
-    catch (err) {
-        return res.status(500).json({ 
-            error: 'Error loading contact message trends!' 
-        });
-    }
-};
